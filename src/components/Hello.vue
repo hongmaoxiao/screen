@@ -1,41 +1,43 @@
 <template>
     <div class="screen-container">
-      <div class="user-detail" ref="userDetail" v-show="showUserOverview">
-        <div class="user-detail-inner">
-          <div class="user-detail-inner-title">
-            用户体验报告
-          </div>
-          <div class="user-detail-inner-placeholder"></div>
-          <div class="user-detail-inner-top">
-            <div class="user-avatar">
-              {{summary.username}}
+      <transition name="slide-fade">
+        <div class="user-detail" ref="userDetail" v-show="showUserOverview">
+          <div class="user-detail-inner">
+            <div class="user-detail-inner-title">
+              用户体验报告
             </div>
-            <div class="user-info-overview">
-              <p>{{summary.phone}}</p>
-              <p class="user-info-intention">购买意向{{summary.intention}}%</p>
-              <p class="font-weight-200">语言留言{{communicate}}分钟</p>
-              <p class="font-weight-200">通话时长{{voiceTime}}分钟</p>
+            <div class="user-detail-inner-placeholder"></div>
+            <div class="user-detail-inner-top">
+              <div class="user-avatar">
+                {{summary.username}}
+              </div>
+              <div class="user-info-overview">
+                <p>{{summary.phone}}</p>
+                <p class="user-info-intention">购买意向{{summary.intention}}%</p>
+                <p class="font-weight-200">语言留言{{communicate}}分钟</p>
+                <p class="font-weight-200">通话时长{{voiceTime}}分钟</p>
+              </div>
+              <div class="user-sex">
+                <span class="sex-name">{{summary.sex}}士</span>
+                <img class="sex-min" :src="summary.sex === '男' ? man : girl" alt="sex">
+              </div>
             </div>
-            <div class="user-sex">
-              <span class="sex-name">{{summary.sex}}士</span>
-              <img class="sex-min" :src="summary.sex === '男' ? man : girl" alt="sex">
+            <div class="user-detail-inner-mid">
+              {{sexTag}}关注了{{summary.lookcar}}，预算{{summary.budget}}
+              万，喜欢{{focusMostColor}}。
             </div>
-          </div>
-          <div class="user-detail-inner-mid">
-            {{sexTag}}关注了{{summary.lookcar}}，预算{{summary.budget}}
-            万，喜欢{{focusMostColor}}。
-          </div>
-          <div class="user-detail-inner-btm">
-            <div class="user-focus-title">
-              <img class="conmen" :src="conmen" alt="conmen">
-              <span>重点关注</span>
-            </div>
-            <div class="user-focus-feature">
-              <p v-for="focus in mostFocus">{{focus}}</p>
+            <div class="user-detail-inner-btm">
+              <div class="user-focus-title">
+                <img class="conmen" :src="conmen" alt="conmen">
+                <span>重点关注</span>
+              </div>
+              <div class="user-focus-feature">
+                <p v-for="focus in mostFocus">{{focus}}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </transition>
       <div class="wrapper-left">
         <div class="grid-content screen-left">
           <div class="left-top
@@ -257,16 +259,16 @@
 <script>
     import axios from 'axios';
     import IOdometer from 'vue-odometer';
-    import focus from './focus';
-    import focusScatter from './focusScatter';
-    import purchase from './purchase';
-    import activeUser from './activeUser';
-    import carPreference from './carPreference';
-    import trend from './trend.png';
-    import man from './man.png';
-    import girl from './girl.png';
-    import car from './car.png';
-    import conmen from './conmen.png';
+    import focus from 'components/Charts/focus';
+    import focusScatter from 'components/Charts/focusScatter';
+    import purchase from 'components/Charts/purchase';
+    import activeUser from 'components/Charts/activeUser';
+    import carPreference from 'components/Charts/carPreference';
+    import trend from 'assets/trend.png';
+    import man from 'assets/man.png';
+    import girl from 'assets/girl.png';
+    import car from 'assets/car.png';
+    import conmen from 'assets/conmen.png';
 
     axios.defaults.headers.common['Content-type'] = "application/json";
     // axios.interceptors.response.use(response => {
@@ -388,9 +390,10 @@
         this.fecthCurrentLookInterval = null;
         this.fecthCurrentLookInterval = setInterval(this.fecthCurrentLookDatas, 2000);
         this.scatterWidth = this.$refs.scatter.offsetHeight * 487 / 973 + 30 + 'px';
+        this.windowHeight = document.body.clientHeight;
+        this.windowWidth = document.body.clientWidth;
         window.addEventListener('resize', this.handleResize);
-        setTimeout(this.getRandomAutoShowIndex, 1000);
-        // this.handleShowOverviewInterval();
+        this.handleShowOverviewInterval();
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
@@ -418,7 +421,7 @@
           return Math.round(seconds / 60);
         },
         handleShowOverviewInterval() {
-          setTimeout(this.getRandomAutoShowIndex, 100000);
+          setTimeout(this.getRandomAutoShowIndex, 1000);
         },
         getRandomAutoShowIndex() {
           const len = this.swiperGroup.length;
@@ -453,7 +456,7 @@
           this.showUserOverview = true;
           setTimeout(() => {
             this.handleHideOverview(target);
-          }, 20000);
+          }, 2000);
         },
         handleShowOverview(top, target) {
           target.querySelector(".single-user").style.background = '#f03635';
@@ -1244,5 +1247,21 @@
       position: absolute;
       width: 60%;
       height: 80%;
+    }
+    .slide-fade-enter {
+      opacity: 0;
+    }
+    .slide-fade-enter-to {
+      opacity: 1;
+    }
+    .slide-fade-enter-to {
+      transition: all 1s linear;
+    }
+    .slide-fade-leave-active {
+      transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+    .slide-fade-leave-active {
+      transform: translateX(17.74vw);
+      opacity: 0;
     }
 </style>
