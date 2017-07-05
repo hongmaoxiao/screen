@@ -65,7 +65,6 @@
           }
         },
         setCarPreference(listData) {
-          console.log("ccccccc: ", listData);
           let carDatas = [];
           let carCategory = [];
           for (var i = 0, len = listData.length; i < len; i++) {
@@ -85,6 +84,7 @@
             xAxis: [{
               type: 'category',
               boundaryGap: true,
+              nameGap: 150,
               data : carCategory,
               axisLine: {
                 show: false,
@@ -98,10 +98,11 @@
                 textStyle: {
                   fontSize: 0.7 * this.perVw,
                   color: '#fff',
+                  baseline: 'top',
                 },
                 formatter: function(value, index) {
                   const half = Math.floor(value.length / 2);
-                  return value.slice(0, half) + '\n' + value.slice(half);
+                  return value.slice(0, half) + '\n\n' + value.slice(half);
                 },
               },
               splitArea: {
@@ -161,6 +162,7 @@
                   textStyle: {
                     color: "#fff",
                     fontSize: 0.88 * this.perVw,
+                    fontWeight: 200,
                   }
                 },
                 emphasis: {
@@ -173,6 +175,7 @@
                   textStyle: {
                     color: "#fff",
                     fontSize: 0.88 * this.perVw,
+                    fontWeight: 200,
                   }
                 },
               },

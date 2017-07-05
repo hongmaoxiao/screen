@@ -87,6 +87,8 @@
             background: 'rgba(31, 34, 45, 1)',
             title: {
               text: '用户关注重点占比',
+              left: 0,
+              top: 0,
               textStyle: {
                 fontWeight: 'normal',
                 fontSize: 1.14 * this.perVw,
@@ -108,6 +110,7 @@
               boundaryGap: [0, 0.01]
             },
             yAxis: {
+              offset: 2.5 * this.perVw,
               type: 'category',
               data: category,
               splitLine: {
@@ -121,9 +124,12 @@
               },
               axisLabel: {
                 margin: 10,
+                interval: 0,
                 textStyle: {
                   fontSize: 0.88 * this.perVw,
                   color: '#fff',
+                  baseline: 'middle',
+                  align: 'left',
                 }
               },
             },
@@ -151,6 +157,7 @@
                   normal: {
                     show: true,
                     position: 'right',
+                    offset: [0.8 * this.perVw, 0],
                     formatter: function(a) {
                       const val = a.value / total * 100;
                       return val.toFixed(1) + '%';
@@ -158,6 +165,7 @@
                     textStyle: {
                       color: "#fff",
                       fontSize: 0.88 * this.perVw,
+                      fontWeight: 200,
                     }
                   },
                   emphasis: {
@@ -170,6 +178,7 @@
                     textStyle: {
                       color: "#fff",
                       fontSize: 0.88 * this.perVw,
+                      fontWeight: 200,
                     }
                   },
                 },

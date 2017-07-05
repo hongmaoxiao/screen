@@ -107,7 +107,8 @@
                     formatter: '{b}',
                     textStyle: {
                       color: '#fff',
-                      fontSize: nameSize
+                      fontSize: nameSize,
+                      fontWeight: 200,
                     }
                   },
                   emphasis: {
@@ -116,18 +117,19 @@
                     formatter: '{b}',
                     textStyle: {
                       color: '#fff',
-                      fontSize: nameSize
+                      fontSize: nameSize,
+                      fontWeight: 200,
                     }
                   },
                 },
                 labelLine: {
                   normal: {
                     show: true,
-                    length: 90,
+                    length: 5 * this.perVw,
                   },
                   emphasis: {
                     show: true,
-                    length: 90,
+                    length: 5 * this.perVw,
                   },
                 },
                 data: mapData.reverse()
