@@ -1,5 +1,5 @@
 <template>
-    <div :class="className" :listData="listData" :perVw="perVw" :id="id" :style="{height: height, width: width}"></div>
+    <div :class="className" :lastTenLook="lastTenLook" :listData="listData" :perVw="perVw" :id="id" :style="{height: height, width: width}"></div>
 </template>
 <script>
     import _ from 'lodash';
@@ -35,7 +35,11 @@
         perVw: {
           type: Number,
           require: true
-        }
+        },
+        lastTenLook: {
+          type: Array,
+          require: true
+        },
       },
       data() {
         return {
@@ -155,8 +159,11 @@
         listData(newList, oldList) {
           const diff = _.differenceBy(newList, oldList, _.isEqual);
           if (diff.length > 0) {
-            this.render(newList);
+            this.render(newList, this.lastTenLook);
           }
+        },
+        lastTenLook(newLastTenLook) {
+          this.render(this.listData, newLastTenLook);
         },
         perVw(newVal) {
           this.perVw = newVal;
@@ -171,21 +178,33 @@
             this.chart.resize();
           }
         },
-        render(newList) {
+        render(newList, newLastTenLook) {
           this.chart = echarts.init(document.getElementById(this.id));
-          this.setFocusScatter(newList);
+          this.setFocusScatter(newList, newLastTenLook);
         },
-        setFocusScatter(listData) {
-          const labelSize = 0.88 * this.perVw;
-          let focusScatterData = [];
+        mapTenLook(tenLook, max) {
+          let res = [];
+          _.forEach(tenLook, (value, key) => {
+            const pos = this.positionMap[value];
+            if (pos && pos.x && pos.y) {
+              res.push([pos.x, pos.y, Math.floor(Math.random() * max), value]);
+            }
+          })
+          return res;
+        },
+        setFocusScatter(listData, lastTenLook) {
           const $this = this;
+          let focusScatterData = [];
+          console.log(listData)
+          const topFocusScatterData = this.mapTenLook(_.uniq(lastTenLook), listData[0][0]);
+          console.log("ssss: ", topFocusScatterData);
+          const labelSize = 0.88 * this.perVw;
           _.forEach(listData, (value, key) => {
             const pos = $this.positionMap[value[1]];
             if (pos && pos.x && pos.y) {
               focusScatterData.push([pos.x, pos.y, value[0], value[1]]);
             }
           })
-          const topFocusScatterData = focusScatterData.slice(0, 4);
           const itemStyle = {
             normal: {
               opacity: 0.8,

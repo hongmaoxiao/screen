@@ -125,9 +125,14 @@
                 <span class="end-time">{{today}}</span>
                 数据统计
               </p>
-              <p class="statistics-overview-current">
-                最新数据： {{currentLook}}
-              </p>
+                <p class="statistics-overview-current">
+                  最新数据：
+                  <transition name="slide-up">
+                    <span v-show="showLook">
+                      {{currentLook}}
+                    </span>
+                  </transition>
+                </p>
             </div>
           </div>
           <div class="attention-mid most-focus">
@@ -143,7 +148,7 @@
               <div class="most-focus-left-main" ref="scatter">
                 <img class="car" :src="car" alt="car">
                 <div class="focus-scatter" :style="{ width: scatterWidth }">
-                  <focusScatter :perVw="perVw" :listData="carfoucus" height='100%' :width='scatterWidth' />
+                  <focusScatter :lastTenLook="lastTenLook" :perVw="perVw" :listData="carfoucus" height='100%' :width='scatterWidth' />
                 </div>
               </div>
               <div class="most-focus-left-placeholder"></div>
@@ -245,7 +250,7 @@
           >
             <div class="single-user">
               <p class="single-user-name-box">
-                <span class="single-user-name">{{ user.name }}</span>
+                <span class="single-user-name">{{ user.username }}</span>
               </p>
               <i class="arrow left-arrow"></i>
             </div>
@@ -285,6 +290,10 @@
       data() {
         return {
           carId: 0,
+          lookId: 0,
+          currentUserId: 0,
+          lastTenLook: [],
+          showLook: false,
           trend: trend + '?' + +new Date(),
           man: man + '?' + +new Date(),
           girl: girl + '?' + +new Date(),
@@ -374,14 +383,13 @@
       },
       mounted() {
         this.getUrlHash();
-        this.fetchBasicDatas();
         this.fecthOnlineDatas();
-        this.fecthCurrentLookDatas();
+        // this.fecthCurrentLookDatas();
         this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
         this.windowHeight = document.body.clientHeight;
         this.windowWidth = document.body.clientWidth;
         window.addEventListener('resize', this.handleResize);
-        this.handleShowOverviewInterval();
+        // this.handleShowOverviewInterval();
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
@@ -390,6 +398,7 @@
         getUrlHash() {
           const url = window.location.href;
           this.carId = url.match(/car=(\d+)/) ? parseInt(url.match(/car=(\d+)/)[1]) : '';
+          this.fetchBasicDatas();
         },
         launchFullscreen(element) {
           if(element.requestFullscreen) {
@@ -427,15 +436,14 @@
             this.handleShowOverviewInterval();
           }
         },
-        handleAutoShow(showObj) {
+        handleAutoShow(uid) {
           const index = _.findIndex(this.$refs.mySwiper.$children, (obj) => {
-            return obj.$el.dataset.uid == showObj.id;
+            console.log("obj: ", obj);
+            return obj.$el.dataset.uid == uid;
           })
           const target = this.$refs.mySwiper.$children[index].$el;
           const {top, height} = target.getBoundingClientRect();
-          this.fecthOnlineUsersInfo(showObj.id, () => {
-            this.handleShowOverview(top + height / 2, target);
-          });
+          this.handleShowOverview(top + height / 2, target);
         },
         setUserDetailPostion(top, target) {
           const height = $(".user-detail").height();
@@ -462,7 +470,6 @@
           const arrow = target.querySelector(".arrow");
           arrow.style.display = "none";
           this.showUserOverview = false;
-          this.handleShowOverviewInterval();
         },
         fetchBasicDatas() {
           const $this = this;
@@ -478,8 +485,9 @@
         },
         fecthOnlineDatas() {
           const $this = this;
-          axios.get(`/dealer/users/online?t=${+new Date()}`)
+          axios.get(`/dealer/users/experience/report/${this.lookId}?t=${+new Date()}`)
           .then(response => {
+            console.log("data: ", response.data);
             $this.assignOnlineDatas(response.data)
             setTimeout($this.fecthOnlineDatas, 5000);
           })
@@ -488,42 +496,7 @@
             setTimeout($this.fecthOnlineDatas, 5000);
           });
         },
-        fecthCurrentLookDatas() {
-          const $this = this;
-          axios.get(`/dealer/user/dynamic/look?t=${+new Date()}`)
-          .then(response => {
-            const parsed = response.data;
-            if (parsed.name && parsed.car_name && parsed.part) {
-              this.currentLook = parsed.name + '正在观看' + parsed.car_name + parsed.part;
-            }
-            setTimeout($this.fecthCurrentLookDatas, 2000);
-          })
-          .catch(error => {
-            console.log(error);
-            setTimeout($this.fecthCurrentLookDatas, 2000);
-          });
-        },
-        fecthOnlineUsersInfo(uid, cb) {
-          const $this = this;
-          axios.get(`/dealer/users/online/${uid}?t=${+new Date()}`)
-          .then(response => {
-            const parsed = response.data;
-            $this.summary.username = parsed.data.username;
-            $this.summary.phone = parsed.data.phone;
-            $this.summary.lookcar = parsed.data.lookcar;
-            $this.summary.intention = parsed.data.intention;
-            $this.summary.sex = parsed.data.sex;
-            $this.summary.focus = parsed.data.focus;
-            $this.summary.color = parsed.data.color;
-            $this.summary.voice_time = isNaN(parsed.data.voice_time) ? 0 : parsed.data.voice_time;
-            $this.summary.budget = parsed.data.budget;
-            $this.summary.communicate_time = parsed.data.communicate_time;
-            cb();
-          })
-          .catch(error => {
-            console.log(error);
-          });
-        },
+
         assignBasicDatas(parsed) {
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
@@ -542,9 +515,62 @@
           }
         },
         assignOnlineDatas(parsed) {
-          if (parsed && parsed.data.length > 0) {
-            this.currentUsers = parsed.data;
+          console.log("opppp: ", parsed);
+          if (parsed && parsed.data) {
+            if (parsed.data.latest) {
+              this.randerCurrentLook(parsed.data.latest);
+            }
+            this.lastTenLook = parsed.data.look_list;
+            if (parsed.data.user) {
+              this.ifNewOnlineUser(parsed.data);
+              this.ifHasUsers(parsed.data.user);
+            }
           }
+        },
+        ifHasUsers(user) {
+          const index = _.findIndex(this.currentUsers, function(o) {
+            return o.id == user.id;
+          })
+          if (index > -1) {
+            this.currentUsers.splice(index, 1)
+          }
+          this.currentUsers.push(user);
+          if (this.currentUsers.length > 10) {
+            this.currentUsers.shift();
+          }
+        },
+        ifNewOnlineUser(parsed) {
+          this.lookId = parsed.id;
+          if (this.currentUserId != parsed.user.id) {
+            this.currentUserId = parsed.user.id;
+            setTimeout(() => {
+              this.fecthOnlineUsersInfo(parsed.user);
+              this.handleAutoShow(parsed.user.id);
+            }, 1000);
+          }
+        },
+        randerCurrentLook(look) {
+          this.currentLook = look.name + '正在观看' + look.car + look.part;
+          this.showLook = true;
+          setTimeout(() => {
+            this.showLook = false;
+          }, 3000)
+        },
+        toggleLook(cb) {
+          this.showLook = true;
+          cb();
+        },
+        fecthOnlineUsersInfo(user) {
+          this.summary.username = user.username;
+          this.summary.phone = user.phone;
+          this.summary.lookcar = user.lookcar;
+          this.summary.intention = user.intention;
+          this.summary.sex = user.sex;
+          this.summary.focus = user.focus;
+          this.summary.color = user.color;
+          this.summary.voice_time = isNaN(user.voice_time) ? 0 : user.voice_time;
+          this.summary.budget = user.budget;
+          this.summary.communicate_time = user.communicate_time;
         },
         orderPurchaseUsers(purchase) {
           this.purchaseUsers = _.reverse(_.map(purchase, (purchaseObj) => {
@@ -1262,6 +1288,23 @@
   transform: translateX(17.74vw);
   opacity: 0;
 }
+.screen-container .slide-up-enter {
+  opacity: 0;
+}
+.screen-container .slide-up-enter-active {
+  opacity: 1;
+}
+.screen-container .slide-up-enter-active {
+  transition: all 1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.screen-container .slide-up-leave-active {
+  transition: all 1s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.screen-container .slide-up-leave-active {
+  transform: translateY(-1vw);
+  opacity: 0;
+}
+
 .screen-container .odometer.odometer-auto-theme, .screen-container .odometer.odometer-theme-default {
   font-family: "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
   font-weight: 200;
