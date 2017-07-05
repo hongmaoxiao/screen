@@ -70,11 +70,8 @@
           let focusData = [];
           let allData = [];
           const len = listData.length;
-          const newList = _.sortBy(listData, [function(data) {
-            return data[0];
-          }]);
-          _.forEach(newList, (value, key) => {
-            if ( key >= len - 4 ) {
+          _.forEach(listData, (value, key) => {
+            if ( key < 4 ) {
               category.push(value[1]);
               focusData.push(value[0]);
             }

@@ -133,6 +133,18 @@
               x: 180,
               y: 180,
             },
+            '隐私玻璃': {
+              x: 230,
+              y: 250,
+            },
+            '18寸轮毂': {
+              x: 240,
+              y: 90,
+            },
+            '19寸轮毂': {
+              x: 40,
+              y: 90,
+            },
           }
         };
       },
@@ -173,9 +185,7 @@
               focusScatterData.push([pos.x, pos.y, value[0], value[1]]);
             }
           })
-          const topFocusScatterData = _.sortBy(focusScatterData, [function(data) {
-            return -data[2];
-          }]).slice(0, 4);
+          const topFocusScatterData = focusScatterData.slice(0, 4);
           const itemStyle = {
             normal: {
               opacity: 0.8,

@@ -284,8 +284,7 @@
       },
       data() {
         return {
-          factoryId: 117,
-          carId: 29524,
+          carId: 0,
           trend: trend + '?' + +new Date(),
           man: man + '?' + +new Date(),
           girl: girl + '?' + +new Date(),
@@ -374,6 +373,7 @@
         }
       },
       mounted() {
+        this.getUrlHash();
         this.fetchBasicDatas();
         this.fecthOnlineDatas();
         this.fecthCurrentLookDatas();
@@ -387,6 +387,10 @@
         window.removeEventListener('resize', this.handleResize);
       },
       methods: {
+        getUrlHash() {
+          const url = window.location.href;
+          this.carId = url.match(/car=(\d+)/) ? parseInt(url.match(/car=(\d+)/)[1]) : '';
+        },
         launchFullscreen(element) {
           if(element.requestFullscreen) {
             element.requestFullscreen();
@@ -462,7 +466,7 @@
         },
         fetchBasicDatas() {
           const $this = this;
-          axios.get(`/dealer/factory/overview/${this.factoryId}/${this.carId}?t=${+new Date()}`)
+          axios.get(`/dealer/factory/overview/${this.carId}?t=${+new Date()}`)
           .then(response => {
             $this.assignBasicDatas(response.data);
             setTimeout($this.fetchBasicDatas, 5000);
@@ -531,7 +535,9 @@
             this.carPreferenceList = parsed.dealer_car;
             this.activeUser = parsed.active_user_num.date;
             this.purchaseList = parsed.car_intention;
-            this.carfoucus = parsed.carfoucus;
+            this.carfoucus = _.sortBy(parsed.carfoucus, [function(data) {
+              return -data[0];
+            }]);
             this.orderPurchaseUsers(parsed.car_intention);
           }
         },
