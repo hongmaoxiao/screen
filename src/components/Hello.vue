@@ -39,110 +39,192 @@
         </div>
       </transition>
       <div class="wrapper-left">
-        <div class="grid-content screen-left">
-          <div class="left-top
-          ">
-            <div class="overview-top">
-              <p class="header"></p>
-              <p class="overview-title">总览信息</p>
+        <div class="screen-left-top">
+          <div class="statistics-overview-main">
+            <p class="statistics-overview-title" @click="fullScreen()" id="full-screen">
+              车势科技
+            </p>
+            <p class="sub-title">汽车行业智能销售专家</p>
+          </div>
+        </div>
+        <div class="screen-left-btm">
+          <div class="information-overview">
+            <div class="information-overview-top
+            ">
+              <p class="overview-title">信息总览</p>
+              <p class="overview-sub-title">当天用户数据</p>
             </div>
-            <div class="overview-mid">
-              <p class="vr-total-num">
-                <i-odometer
-                  :value="totalUsers"
-                ></i-odometer>
-              </p>
-              <p class="vr-total-title">VR体验总人数</p>
-              <p class="gradual-icon">
-                <span class="gradual-left"></span>
-                <span class="gradual-mid"></span>
-                <span class="gradual-right"></span>
-              </p>
-            </div>
-            <div class="overview-btm">
-              <div class="current-online-placeholder-top"></div>
-              <div class="current-online">
-                <p class="current-online-num">
-                  <i-odometer
-                    :value="currentOnlineUsers"
-                  ></i-odometer>
-                </p>
-                <p class="current-online-title">当前在线人数</p>
-                <p class="current-online-icon">
-                  <img :src="trend" alt="trend">
-                </p>
+            <div class="information-overview-btm
+            ">
+              <div class="overview-one-of-four">
+                <div class="overview-inner">
+                  <p class="vr-total-num">
+                    <i-odometer
+                      :value="totalUsers"
+                    ></i-odometer>人
+                  </p>
+                  <p class="vr-total-title">移动VR体验总人数</p>
+                </div>
               </div>
-              <div class="current-online-placeholder-btm"></div>
+              <div class="overview-one-of-four">
+                <div class="overview-inner">
+                  <p class="current-online-num">
+                    <i-odometer
+                      :value="currentOnlineUsers"
+                    ></i-odometer>人
+                  </p>
+                  <p class="current-online-title">当前在线人数</p>
+                </div>
+              </div>
+              <div class="overview-one-of-four">
+                <div class="overview-inner">
+                  <p class="average-look-car-time-num">
+                    <i-odometer
+                      :value="averageLookTime"
+                    ></i-odometer>
+                    <span class="average-look-car-time-unit">分钟</span>
+                  </p>
+                  <p class="average-look-car-time-title">平均看车时间</p>
+                </div>
+              </div>
+              <div class="overview-one-of-four">
+                <div class="overview-inner">
+                  <div class="sex-main-rate">
+                    <span class="sex-boy">
+                      <img class="man sex-icon" :src="man" alt="man">
+                      <i-odometer
+                        :value="mrate"
+                      ></i-odometer>
+                      %
+                    </span>
+                    <span class="sex-girl">
+                      <img class="girl sex-icon" :src="girl" alt="girl">
+                      <i-odometer
+                        :value="wrate"
+                      ></i-odometer>
+                      %
+                    </span>
+                  </div>
+                  <div class="sex-main-title">男女占比</div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="left-mid average-look-car-time">
-            <div class="average-look-car-time-placeholder-top"></div>
-            <div class="average-look-car-time-main">
-              <p class="average-look-car-time-title">平均看车时间</p>
-              <p class="average-look-car-time-num">
-                <i-odometer
-                  :value="averageLookTime"
-                ></i-odometer>
-                <span class="average-look-car-time-unit">分钟</span>
-              </p>
-            </div>
-            <div class="average-look-car-time-placeholder-btm"></div>
-          </div>
-          <div class="left-btm sex">
-            <div class="sex-placeholder-top"></div>
-            <div class="sex-main">
-              <div class="sex-main-title">男女占比</div>
-              <div class="sex-main-rate">
-                <span class="sex-boy">
-                  <i-odometer
-                    :value="mrate"
-                  ></i-odometer>
-                  %
-                  <img class="man sex-icon" :src="man" alt="man">
-                </span>
-                <span class="sex-girl">
-                  <i-odometer
-                    :value="wrate"
-                  ></i-odometer>
-                  %
-                  <img class="girl sex-icon" :src="girl" alt="girl">
-                </span>
+          <div class="charts">
+            <div class="attention-mid most-focus">
+              <div class="most-focus-left divide-by-three">
+                <div class="most-focus-left-overview attention-mid-top">
+                  <p class="zh-name">
+                    客户关注点热力图
+                  </p>
+                  <p class="en-name">
+                    看车时长热力图
+                  </p>
+                </div>
+                <div class="most-focus-left-main" ref="scatter">
+                  <img class="car" :src="car" alt="car">
+                  <div class="focus-scatter" :style="{ width: scatterWidth }">
+                    <focusScatter :lastTenLook="lastTenLook" :perVw="perVw" :listData="carfoucus" height='100%' :width='scatterWidth' />
+                  </div>
+                </div>
+                <div class="most-focus-left-placeholder"></div>
+              </div>
+              <div class="most-focus-mid divide-by-three">
+                <div class="most-focus-mid-placeholder"></div>
+                <div class="most-focus-rate-chart">
+                  <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' />
+                </div>
+              </div>
+              <div class="most-focus-right divide-by-three-last">
+                <div class="attention-mid-top">
+                  <p class="zh-name">
+                    车系偏好
+                  </p>
+                  <p class="en-name">
+                    看车零部件时长占比
+                  </p>
+                </div>
+                <div class="model-preference">
+                  <carPreference :perVw="perVw" :listData="carPreferenceList" height='100%' width='100%' />
+                </div>
+                <div class="most-focus-left-placeholder"></div>
               </div>
             </div>
-            <div class="sex-placeholder-btm"></div>
+            <div class="attention-btm">
+              <div class="color-preference divide-by-three">
+                <div class="attention-btm-placeholder-top"></div>
+                <div class="color-preference-main attention-btm-mid">
+                  <div class="attention-btm-mid-overview">
+                    <p class="zh-name">
+                      个性化选配统计
+                    </p>
+                    <p class="en-name">
+                      观看总时长和次数
+                    </p>
+                  </div>
+                  <div class="attention-btm-mid-content color-rate">
+                    <div class="color-wrapper">
+                      <div class="color" v-for="color in lookColors">
+                        <span class="color-bg" :style="{ background: color[2] }"></span>
+                        <span>{{color[1]}}</span>
+                        <span class="color-rate-num">{{color[0]}}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="attention-btm-placeholder-bottom"></div>
+              </div>
+              <div class="purchase-intention divide-by-three">
+                <div class="attention-btm-placeholder-top"></div>
+                <div class="purchase-intention-main attention-btm-mid">
+                  <div class="attention-btm-mid-overview">
+                    <p class="zh-name">
+                      购买意向统计
+                    </p>
+                    <p class="en-name">
+                      客户购买意向人数
+                    </p>
+                  </div>
+                  <div class="attention-btm-mid-content">
+                    <purchase :perVw="perVw" :listData="purchaseList" height='80%' width='100%' />
+                    <div class="purchase-user">
+                      <p v-for="purchase in purchaseUsers" class="divide-by-four">{{purchase}}人</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="attention-btm-placeholder-bottom"></div>
+              </div>
+              <div class="active-user divide-by-three-last">
+                <div class="attention-btm-placeholder-top"></div>
+                <div class="active-user-main attention-btm-mid">
+                  <div class="attention-btm-mid-overview">
+                    <p class="zh-name">
+                      当日看车人数
+                    </p>
+                    <p class="en-name">
+                      当日看车人数
+                    </p>
+                  </div>
+                  <div class="attention-btm-mid-content">
+                    <active-user :perVw="perVw" :listData="activeUser" height='100%' width='100%' />
+                  </div>
+                </div>
+                <div class="attention-btm-placeholder-bottom"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="wrapper-mid">
+      <!-- <div class="wrapper-mid">
         <div class="grid-content screen-mid">
-          <div class="attention-top statistics-overview">
-            <div class="statistics-overview-placeholder"></div>
-            <div class="statistics-overview-main">
-              <p class="statistics-overview-title" @click="fullScreen()" id="full-screen">车势科技--汽车行业智能销售专家</p>
-              <p class="statistics-overview-time">
-                <span class="start-time">{{yestoday}}</span>
-                -
-                <span class="end-time">{{today}}</span>
-                数据统计
-              </p>
-                <p class="statistics-overview-current">
-                  最新数据：
-                  <transition name="slide-up">
-                    <span v-show="showLook">
-                      {{currentLook}}
-                    </span>
-                  </transition>
-                </p>
-            </div>
-          </div>
           <div class="attention-mid most-focus">
             <div class="most-focus-left divide-by-three">
               <div class="most-focus-left-overview attention-mid-top">
                 <p class="zh-name">
-                  用户关注重点
+                  客户关注点热力图
                 </p>
                 <p class="en-name">
-                  Key attention
+                  看车时长热力图
                 </p>
               </div>
               <div class="most-focus-left-main" ref="scatter">
@@ -158,7 +240,6 @@
               <div class="most-focus-rate-chart">
                 <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' />
               </div>
-              <!-- <div class="most-focus-left-placeholder"></div> -->
             </div>
             <div class="most-focus-right divide-by-three-last">
               <div class="attention-mid-top">
@@ -166,7 +247,7 @@
                   车系偏好
                 </p>
                 <p class="en-name">
-                  Model preference
+                  看车零部件时长占比
                 </p>
               </div>
               <div class="model-preference">
@@ -181,10 +262,10 @@
               <div class="color-preference-main attention-btm-mid">
                 <div class="attention-btm-mid-overview">
                   <p class="zh-name">
-                    颜色偏好占比
+                    个性化选配统计
                   </p>
                   <p class="en-name">
-                    Color preference
+                    观看总时长和次数
                   </p>
                 </div>
                 <div class="attention-btm-mid-content color-rate">
@@ -204,10 +285,10 @@
               <div class="purchase-intention-main attention-btm-mid">
                 <div class="attention-btm-mid-overview">
                   <p class="zh-name">
-                    购买意向分配
+                    购买意向统计
                   </p>
                   <p class="en-name">
-                    Distribution of purchase intention
+                    客户购买意向人数
                   </p>
                 </div>
                 <div class="attention-btm-mid-content">
@@ -224,10 +305,10 @@
               <div class="active-user-main attention-btm-mid">
                 <div class="attention-btm-mid-overview">
                   <p class="zh-name">
-                    活跃用户
+                    当日看车人数
                   </p>
                   <p class="en-name">
-                    Active users
+                    当日看车人数
                   </p>
                 </div>
                 <div class="attention-btm-mid-content">
@@ -238,7 +319,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
       <div class="wrapper-right" :class="currentUsers.length === 0 ? activeBg : ''">
       </div>
       <div class="current-user">
@@ -438,7 +519,6 @@
         },
         handleAutoShow(uid) {
           const index = _.findIndex(this.$refs.mySwiper.$children, (obj) => {
-            console.log("obj: ", obj);
             return obj.$el.dataset.uid == uid;
           })
           const target = this.$refs.mySwiper.$children[index].$el;
@@ -487,7 +567,6 @@
           const $this = this;
           axios.get(`/dealer/users/experience/report/${this.lookId}?t=${+new Date()}`)
           .then(response => {
-            console.log("data: ", response.data);
             $this.assignOnlineDatas(response.data)
             setTimeout($this.fecthOnlineDatas, 5000);
           })
@@ -515,7 +594,6 @@
           }
         },
         assignOnlineDatas(parsed) {
-          console.log("opppp: ", parsed);
           if (parsed && parsed.data) {
             if (parsed.data.latest) {
               this.randerCurrentLook(parsed.data.latest);
@@ -607,7 +685,61 @@
   height: 100vh;
 }
 .screen-container .wrapper-left {
+  width: 94.8vw;
+}
+.screen-container .screen-left-top {
+  height: 14.5vh;
+  background: #212531;
+  border-bottom: 1px solid #3d465d;
+  border-right: 1px solid #3d465d;
+}
+.screen-container .screen-left-btm {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 85.5vh;
+  background: #212531;
+}
+.screen-container .information-overview {
   width: 17.4vw;
+  height: 100%;
+  border-right: 1px solid #3d465d;
+  position: relative;
+}
+.screen-container .information-overview-top {
+  position: relative;
+  height: 15%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.screen-container .information-overview-btm {
+  height: 85%;
+}
+.screen-container .overview-one-of-four {
+  height: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.screen-container .overview-inner {
+  width: 70%;
+  height: 70%;
+  display: flex;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+.charts {
+  width: 77.4vw;
+  height: 100%;
+  border-right: 1px solid #3d465d;
+  position: relative;
 }
 .screen-container .wrapper-mid {
   width: 77.4vw;
@@ -622,9 +754,6 @@
 }
 .screen-container .grid-content {
   height: 100vh;
-}
-.screen-container .screen-left {
-  background: #212531;
 }
 .screen-container .screen-mid {
   background: #181923;
@@ -646,143 +775,40 @@
   justify-content: center;
   align-items: center;
 }
-.screen-container .overview-top {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 23.5%;
-}
-.screen-container .overview-top .header {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 0.39vw;
-  background: #f03635;
-}
-.screen-container .overview-top .overview-title {
-  margin-bottom: 0.78vw;
+.screen-container .overview-title {
   font-size: 1.35vw;
+  padding: 0;
 }
-.screen-container .overview-mid {
-  width: 100%;
-  height: 20.5%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
+.screen-container .vr-total-num {
+  font-size: 1.5vw;
 }
-.screen-container .overview-mid p {
-  line-height: 1.0em;
-}
-.screen-container .overview-mid .vr-total-num {
-  font-size: 2.65vw;
-}
-.screen-container .overview-mid .vr-total-title {
+.screen-container .vr-total-title {
   font-size: 0.8vw;
 }
-.screen-container .overview-mid .gradual-icon {
-  width: 100%;
-  height: 7.8%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-.screen-container .overview-mid .gradual-icon span {
-  display: inline-block;
-}
-.screen-container .overview-mid .gradual-icon .gradual-left {
-  width: 6.3%;
-  height: 100%;
-  margin-right: 1.8%;
-  background: #f98b4f;
-}
-.screen-container .overview-mid .gradual-icon .gradual-mid {
-  width: 13.5%;
-  height: 100%;
-  margin-right: 1.8%;
-  background: #f65438;
-}
-.screen-container .overview-mid .gradual-icon .gradual-right {
-  width: 20.5%;
-  height: 100%;
-  background: #f32625;
-}
-.screen-container .overview-btm {
-  width: 100%;
-  height: 56%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.screen-container .overview-btm div {
-  width: 100%;
-}
-.screen-container .overview-btm .current-online-placeholder-top {
-  height: 30%;
-}
-.screen-container .overview-btm .current-online {
-  height: 45%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
-.screen-container .overview-btm .current-online .current-online-num {
+
+.screen-container .current-online-num {
   margin: 0;
   padding: 0;
-  font-size: 2.65vw;
+  font-size: 1.5vw;
 }
-.screen-container .overview-btm .current-online .current-online-title {
+.screen-container .current-online-title {
   margin: 0;
   padding: 0;
   font-size: 0.8vw;
 }
-.screen-container .overview-btm .current-online .current-online-icon {
-  width: 52%;
-  height: auto;
-}
-.screen-container .overview-btm .current-online .current-online-icon img {
-  width: 100%;
-  height: auto;
-}
-.screen-container .overview-btm .current-online-placeholder-btm {
+.screen-container .current-online-placeholder-btm {
   height: 25%;
 }
-.screen-container .average-look-car-time {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.average-look-car-time-title {
+  font-size: 0.8vw;
 }
-.screen-container .average-look-car-time .average-look-car-time-placeholder-top {
-  height: 27.4%;
-}
-.screen-container .average-look-car-time .average-look-car-time-main {
-  height: 50.3%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
-.screen-container .average-look-car-time .average-look-car-time-main .average-look-car-time-title {
-  font-size: 1.6vw;
-}
-.screen-container .average-look-car-time .average-look-car-time-main .average-look-car-time-num {
-  font-size: 2.03vw;
+.average-look-car-time-num {
+  font-size: 1.5vw;
   color: #dddddd;
 }
-.screen-container .average-look-car-time .average-look-car-time-main .average-look-car-time-num .average-look-car-time-unit {
+.average-look-car-time-num .average-look-car-time-unit {
   display: inline-block;
-  font-size: 1vw;
-}
-.screen-container .average-look-car-time .average-look-car-time-placeholder-btm {
-  height: 22.3%;
+  font-size: 1.5vw;
 }
 .screen-container .sex {
   display: flex;
@@ -790,9 +816,7 @@
   justify-content: center;
   align-items: center;
 }
-.screen-container .sex .sex-placeholder-top {
-  height: 23%;
-}
+
 .screen-container .sex .sex-main {
   width: 100%;
   height: 52%;
@@ -801,57 +825,65 @@
   justify-content: space-between;
   align-items: center;
 }
-.screen-container .sex .sex-main .sex-main-title {
-  font-size: 1.6vw;
+.sex-main-title {
+  font-size: 0.8vw;
 }
-.screen-container .sex .sex-main .sex-main-rate {
+.sex-main-rate {
   width: 100%;
-  height: 38.7%;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   font-weight: 200;
 }
-.screen-container .sex .sex-main .sex-main-rate > span {
-  width: 50%;
+.sex-main-rate > span {
+  width: 40%;
   height: 100%;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-size: 2.03vw;
+  font-size: 1.5vw;
 }
-.screen-container .sex .sex-main .sex-main-rate > span img {
+.sex-boy {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+.sex-girl {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.sex-main-rate > span img {
   width: auto;
-  height: 100%;
-  margin-left: 1vw;
+  height: 2vw;
+  margin-right: 0.3vw;
 }
 .screen-container .sex .sex-placeholder-btm {
   height: 25%;
 }
-.screen-container .attention-top {
-  height: 14.5%;
-}
-.screen-container .attention-top .statistics-overview-placeholder {
-  height: 10%;
-}
-.screen-container .attention-top .statistics-overview-main {
-  height: 90%;
+.screen-container .statistics-overview-main {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
 }
-.screen-container .attention-top .statistics-overview-main .statistics-overview-title {
+.screen-container .statistics-overview-main .statistics-overview-title {
   font-size: 1.6vw;
   font-weight: 900;
 }
-.screen-container .attention-top .statistics-overview-main .statistics-overview-time {
+.screen-container .statistics-overview-main .sub-title {
+  font-size: 0.71vw;
+}
+.screen-container .statistics-overview-main .statistics-overview-time {
   font-size: 0.92vw;
   color: #6f778e;
 }
-.screen-container .attention-top .statistics-overview-main .statistics-overview-current {
+.screen-container .statistics-overview-main .statistics-overview-current {
   display: flex;
   flex-direction: row;
   justify-content: center;
