@@ -64,10 +64,17 @@
             this.chart.resize();
           }
         },
+        half(val) {
+          const half = Math.floor(val.length / 2);
+          return val.slice(0, half) + '\n\n' + val.slice(half);
+        },
         setCarPreference(listData) {
+          const $this = this;
           let carDatas = [];
           let carCategory = [];
+          let colors = [];
           for (var i = 0, len = listData.length; i < len; i++) {
+            colors.push(listData[i][2])
             carDatas.push(listData[i][0]);
             carCategory.push(listData[i][1]);
           }
@@ -75,6 +82,7 @@
             return sum + n;
           }, 0)
           this.chart.setOption({
+            color: colors,
             grid: {
               left: '0%',
               right: '0%',
@@ -100,9 +108,11 @@
                   color: '#fff',
                   baseline: 'top',
                 },
-                formatter: function(value, index) {
-                  const half = Math.floor(value.length / 2);
-                  return value.slice(0, half) + '\n\n' + value.slice(half);
+                formatter: function(value) {
+                  if (value.length > 8) {
+                    return $this.half(value);
+                  }
+                  return value;
                 },
               },
               splitArea: {

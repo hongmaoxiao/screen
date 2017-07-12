@@ -195,9 +195,9 @@
         setFocusScatter(listData, lastTenLook) {
           const $this = this;
           let focusScatterData = [];
-          console.log(listData)
-          const topFocusScatterData = this.mapTenLook(_.uniq(lastTenLook), listData[0][0]);
-          console.log("ssss: ", topFocusScatterData);
+          let topFocusScatterData = [];
+          const max = listData[0] ? listData[0][0] : 100;
+          topFocusScatterData = this.mapTenLook(_.uniq(lastTenLook), max);
           const labelSize = 0.88 * this.perVw;
           _.forEach(listData, (value, key) => {
             const pos = $this.positionMap[value[1]];

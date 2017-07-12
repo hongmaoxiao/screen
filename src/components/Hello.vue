@@ -46,6 +46,9 @@
             </p>
             <p class="sub-title">汽车行业智能销售专家</p>
           </div>
+          <div class="scroll">
+            {{scrollText}}
+          </div>
         </div>
         <div class="screen-left-btm">
           <div class="information-overview">
@@ -58,9 +61,12 @@
             ">
               <div class="overview-one-of-four">
                 <div class="overview-inner">
-                  <p class="vr-total-num">
+                  <p class="vr-total-num iOdometer">
                     <i-odometer
+                      class="iOdometer"
                       :value="totalUsers"
+                      :theme="carTheme"
+                      :duration="2500"
                     ></i-odometer>人
                   </p>
                   <p class="vr-total-title">移动VR体验总人数</p>
@@ -71,6 +77,7 @@
                   <p class="current-online-num">
                     <i-odometer
                       :value="currentOnlineUsers"
+                      :theme="digitalTheme"
                     ></i-odometer>人
                   </p>
                   <p class="current-online-title">当前在线人数</p>
@@ -81,6 +88,7 @@
                   <p class="average-look-car-time-num">
                     <i-odometer
                       :value="averageLookTime"
+                      :theme="carTheme"
                     ></i-odometer>
                     <span class="average-look-car-time-unit">分钟</span>
                   </p>
@@ -94,6 +102,7 @@
                       <img class="man sex-icon" :src="man" alt="man">
                       <i-odometer
                         :value="mrate"
+                        :theme="carTheme"
                       ></i-odometer>
                       %
                     </span>
@@ -101,6 +110,7 @@
                       <img class="girl sex-icon" :src="girl" alt="girl">
                       <i-odometer
                         :value="wrate"
+                        :theme="carTheme"
                       ></i-odometer>
                       %
                     </span>
@@ -145,7 +155,7 @@
                   </p>
                 </div>
                 <div class="model-preference">
-                  <carPreference :perVw="perVw" :listData="carPreferenceList" height='100%' width='100%' />
+
                 </div>
                 <div class="most-focus-left-placeholder"></div>
               </div>
@@ -163,13 +173,14 @@
                     </p>
                   </div>
                   <div class="attention-btm-mid-content color-rate">
-                    <div class="color-wrapper">
+                    <carColor :perVw="perVw" :listData="carColorList" height='100%' width='100%' />
+                    <!-- <div class="color-wrapper">
                       <div class="color" v-for="color in lookColors">
                         <span class="color-bg" :style="{ background: color[2] }"></span>
                         <span>{{color[1]}}</span>
                         <span class="color-rate-num">{{color[0]}}%</span>
                       </div>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
                 <div class="attention-btm-placeholder-bottom"></div>
@@ -215,111 +226,6 @@
           </div>
         </div>
       </div>
-      <!-- <div class="wrapper-mid">
-        <div class="grid-content screen-mid">
-          <div class="attention-mid most-focus">
-            <div class="most-focus-left divide-by-three">
-              <div class="most-focus-left-overview attention-mid-top">
-                <p class="zh-name">
-                  客户关注点热力图
-                </p>
-                <p class="en-name">
-                  看车时长热力图
-                </p>
-              </div>
-              <div class="most-focus-left-main" ref="scatter">
-                <img class="car" :src="car" alt="car">
-                <div class="focus-scatter" :style="{ width: scatterWidth }">
-                  <focusScatter :lastTenLook="lastTenLook" :perVw="perVw" :listData="carfoucus" height='100%' :width='scatterWidth' />
-                </div>
-              </div>
-              <div class="most-focus-left-placeholder"></div>
-            </div>
-            <div class="most-focus-mid divide-by-three">
-              <div class="most-focus-mid-placeholder"></div>
-              <div class="most-focus-rate-chart">
-                <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' />
-              </div>
-            </div>
-            <div class="most-focus-right divide-by-three-last">
-              <div class="attention-mid-top">
-                <p class="zh-name">
-                  车系偏好
-                </p>
-                <p class="en-name">
-                  看车零部件时长占比
-                </p>
-              </div>
-              <div class="model-preference">
-                <carPreference :perVw="perVw" :listData="carPreferenceList" height='100%' width='100%' />
-              </div>
-              <div class="most-focus-left-placeholder"></div>
-            </div>
-          </div>
-          <div class="attention-btm">
-            <div class="color-preference divide-by-three">
-              <div class="attention-btm-placeholder-top"></div>
-              <div class="color-preference-main attention-btm-mid">
-                <div class="attention-btm-mid-overview">
-                  <p class="zh-name">
-                    个性化选配统计
-                  </p>
-                  <p class="en-name">
-                    观看总时长和次数
-                  </p>
-                </div>
-                <div class="attention-btm-mid-content color-rate">
-                  <div class="color-wrapper">
-                    <div class="color" v-for="color in lookColors">
-                      <span class="color-bg" :style="{ background: color[2] }"></span>
-                      <span>{{color[1]}}</span>
-                      <span class="color-rate-num">{{color[0]}}%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="attention-btm-placeholder-bottom"></div>
-            </div>
-            <div class="purchase-intention divide-by-three">
-              <div class="attention-btm-placeholder-top"></div>
-              <div class="purchase-intention-main attention-btm-mid">
-                <div class="attention-btm-mid-overview">
-                  <p class="zh-name">
-                    购买意向统计
-                  </p>
-                  <p class="en-name">
-                    客户购买意向人数
-                  </p>
-                </div>
-                <div class="attention-btm-mid-content">
-                  <purchase :perVw="perVw" :listData="purchaseList" height='80%' width='100%' />
-                  <div class="purchase-user">
-                    <p v-for="purchase in purchaseUsers" class="divide-by-four">{{purchase}}人</p>
-                  </div>
-                </div>
-              </div>
-              <div class="attention-btm-placeholder-bottom"></div>
-            </div>
-            <div class="active-user divide-by-three-last">
-              <div class="attention-btm-placeholder-top"></div>
-              <div class="active-user-main attention-btm-mid">
-                <div class="attention-btm-mid-overview">
-                  <p class="zh-name">
-                    当日看车人数
-                  </p>
-                  <p class="en-name">
-                    当日看车人数
-                  </p>
-                </div>
-                <div class="attention-btm-mid-content">
-                  <active-user :perVw="perVw" :listData="activeUser" height='100%' width='100%' />
-                </div>
-              </div>
-              <div class="attention-btm-placeholder-bottom"></div>
-            </div>
-          </div>
-        </div>
-      </div> -->
       <div class="wrapper-right" :class="currentUsers.length === 0 ? activeBg : ''">
       </div>
       <div class="current-user">
@@ -344,12 +250,16 @@
 
 <script>
     import axios from 'axios';
-    import IOdometer from 'vue-odometer';
+    import IOdometer from './iOdometer';
+    import 'odometer/themes/odometer-theme-car.css';
+    import 'odometer/themes/odometer-theme-digital.css';
+    import './liMarquee.css';
+    import './jquery.liMarquee.js';
     import focus from './focus';
     import focusScatter from './focusScatter';
     import purchase from './purchase';
     import activeUser from './activeUser';
-    import carPreference from './carPreference';
+    import carColor from './carColor';
     import trend from './trend.png';
     import man from './man.png';
     import girl from './girl.png';
@@ -364,12 +274,15 @@
         focus,
         purchase,
         activeUser,
-        carPreference,
+        carColor,
         focusScatter,
         IOdometer,
       },
       data() {
         return {
+          scrollText: '到南京时，有朋友约去游逛，勾留7了一日；第二日上午便须渡江到浦口，下午上车北去。父亲因为事忙，本已说定不送我，叫旅馆里一个熟识的茶房8陪我同去。他再三嘱咐茶房，甚是仔细。但他终于不放心，怕茶房不妥帖9；颇踌躇10了一会。其实我那年已二十岁，北京已来往过两三次，是没有什么要紧的了。他踌躇了一会，终于决定还是自己送我去。我再三劝他不必去；他只说：“不要紧，他们去不好！',
+          carTheme: 'car',
+          digitalTheme: 'digital',
           carId: 0,
           lookId: 0,
           currentUserId: 0,
@@ -423,8 +336,7 @@
           wrate: null,
           totalUsers: null,
           currentOnlineUsers: null,
-          lookColors: [],
-          carPreferenceList: [],
+          carColorList: [],
           activeUser: [],
           purchaseList: [],
           purchaseUsers: [],
@@ -465,11 +377,20 @@
       mounted() {
         this.getUrlHash();
         this.fecthOnlineDatas();
-        // this.fecthCurrentLookDatas();
+        const $this = this;
         this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
         this.windowHeight = document.body.clientHeight;
         this.windowWidth = document.body.clientWidth;
         window.addEventListener('resize', this.handleResize);
+        setInterval(function() {
+          $this.totalUsers = $this.totalUsers + 1;
+          $this.currentOnlineUsers = $this.currentOnlineUsers + 1;
+        }, 2000);
+        setTimeout(() => {
+          $('.scroll').liMarquee({
+            height: 50,
+          });
+        }, 1000)
         // this.handleShowOverviewInterval();
       },
       beforeDestroy() {
@@ -577,14 +498,15 @@
         },
 
         assignBasicDatas(parsed) {
+          console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
             this.mrate = parsed.mrate;
-            this.currentOnlineUsers = parsed.vr_num;
+            this.currentOnlineUsers = parsed.vr_num + Math.random * 100;
             this.totalUsers = parsed.total_users_num;
-            this.lookColors = parsed.look_colors;
-            this.carPreferenceList = parsed.dealer_car;
+            this.carColorList = parsed.look_colors;
+            // this.carPreferenceList = parsed.dealer_car;
             this.activeUser = parsed.active_user_num.date;
             this.purchaseList = parsed.car_intention;
             this.carfoucus = _.sortBy(parsed.carfoucus, [function(data) {
@@ -664,6 +586,19 @@
 </script>
 
 <style scoped>
+.scroll {
+  width: 20vw;
+  height: 3vh;
+  background: #000;
+  border: 1px solid #fff;
+  position: absolute;
+  left: 3.5vw;
+  bottom: 2vh;
+  border-radius: 8px;
+  user-select: none;
+  overflow: hidden;
+  white-space: nowrap;
+}
 .screen-container {
   display: flex;
   flex-direction: row;
@@ -692,6 +627,7 @@
   background: #212531;
   border-bottom: 1px solid #3d465d;
   border-right: 1px solid #3d465d;
+  position: relative;
 }
 .screen-container .screen-left-btm {
   display: flex;
@@ -992,7 +928,7 @@
   font-size: 1.35vw;
 }
 .screen-container .en-name {
-  font-size: 0.92vw;
+  font-size: 0.8vw;
   color: #58646e;
 }
 .screen-container .divide-by-three {
