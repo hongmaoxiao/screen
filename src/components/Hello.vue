@@ -173,7 +173,22 @@
                     <p class="sub-title">看车颜色时长占比</p>
                   </div>
                 </div>
-                <div class="core-content core-content-btm"></div>
+                <div class="core-content core-content-btm core-color">
+                  <div class="core-color-item" v-for="(color, key) in carColorList">
+                    <div class="core-color-item-left">
+                      <span class="color-bg" :style="{ background: color[2] }">
+                        <i class="color-bg-arrow"></i>
+                      </span>
+                      <span class="color-name">{{color[1]}}</span>
+                    </div>
+                    <div class="core-color-item-right">
+                      <span class="color-rate-num">{{color[0]}}%</span>
+                      <div class="color-chart">
+                        <carColor :perVw="perVw" :id="'car-preference-chart' + key" :listData="carColorList" height='100%' width='100%' />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -728,6 +743,54 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
         @include borderradius('', '', 10px, 10px);
         box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.3);
       }
+      .core-color {
+        @include padding(5vh, 1vw, 3.2vh, 1vw);
+        @include flex('column', 'space-between', 'flex-start');
+
+        &-item {
+          @include wh(100%, '');
+          @include flex('row', 'flex-start', 'center');
+
+          &-left {
+            @include wh(70%, '');
+            @include flex('row', 'flex-start', 'center');
+
+            .color-bg {
+              width: 1.17vw;
+              height: 1.17vw;
+              position: relative;
+              border: 2px solid #fff;
+              margin-right: 0.5vw;
+              box-sizing: content-box;
+
+              &-arrow {
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0.2;
+                border-top: 1.17vw solid #fff;
+                border-right: 1.17vw solid transparent;
+              }
+            }
+            .color-name {
+              font-size: 0.7vw;
+            }
+
+          }
+          &-right {
+            @include wh(30%, '');
+            @include flex('row', 'flex-end', 'center');
+
+            .color-rate-num {
+              font-size: 0.8vw;
+              margin-right: 0.5vw;
+            }
+            .color-chart {
+              @include wh(2vw, 2vw);
+            }
+          }
+        }
+      }
       .heat {
         @include wh(36.8vw, 44.6vh);
       }
@@ -807,9 +870,6 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
   .overview-img {
     @include wh(1.2vw, auto);
   }
-  // .heat-img {
-  //   @include wh(40%, auto);
-  // }
   .info-number {
     font-size: 2vw;
 
