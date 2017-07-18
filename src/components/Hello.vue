@@ -1,249 +1,191 @@
 <template>
     <div class="screen-container">
-      <transition name="slide-fade">
-        <div class="user-detail" ref="userDetail" v-show="showUserOverview">
-          <div class="user-detail-inner">
-            <div class="user-detail-inner-title">
-              用户体验报告
-            </div>
-            <div class="user-detail-inner-placeholder"></div>
-            <div class="user-detail-inner-top">
-              <div class="user-avatar">
-                {{summary.username}}
-              </div>
-              <div class="user-info-overview">
-                <p>{{summary.phone}}</p>
-                <p class="user-info-intention">购买意向{{summary.intention}}%</p>
-                <p class="font-weight-200">语言留言{{communicate}}分钟</p>
-                <p class="font-weight-200">通话时长{{voiceTime}}分钟</p>
-              </div>
-              <div class="user-sex">
-                <span class="sex-name">{{summary.sex}}士</span>
-                <img class="sex-min" :src="summary.sex === '男' ? man : girl" alt="sex">
-              </div>
-            </div>
-            <div class="user-detail-inner-mid">
-              {{sexTag}}关注了{{summary.lookcar}}，预算{{summary.budget}}
-              万，喜欢{{focusMostColor}}。
-            </div>
-            <div class="user-detail-inner-btm">
-              <div class="user-focus-title">
-                <img class="conmen" :src="conmen" alt="conmen">
-                <span>重点关注</span>
-              </div>
-              <div class="user-focus-feature">
-                <p v-for="focus in mostFocus">{{focus}}</p>
-              </div>
-            </div>
-          </div>
+      <div class="screen-header">
+        <div class="logo">
+          <img :src="logo" class="logo-img" alt="logo">
         </div>
-      </transition>
-      <div class="wrapper-left">
-        <div class="screen-left-top">
-          <div class="statistics-overview-main">
-            <p class="statistics-overview-title" @click="fullScreen()" id="full-screen">
-              车势科技
-            </p>
-            <p class="sub-title">汽车行业智能销售专家</p>
+        <div class="title">
+          <div class="company-message">
+            <h2>车势科技</h2>
+            <h3 class="sub-title">汽车行业智能销售专家</h3>
           </div>
-          <div class="scroll">
-            {{scrollText}}
-          </div>
-        </div>
-        <div class="screen-left-btm">
-          <div class="information-overview">
-            <div class="information-overview-top
-            ">
-              <p class="overview-title">信息总览</p>
-              <p class="overview-sub-title">当天用户数据</p>
+          <div class="scroll-message">
+            <div class="current-view scroll-style">
+              {{scrollText}}
             </div>
-            <div class="information-overview-btm
-            ">
-              <div class="overview-one-of-four">
-                <div class="overview-inner">
-                  <p class="vr-total-num iOdometer">
-                    <i-odometer
-                      class="iOdometer"
-                      :value="totalUsers"
-                      :theme="carTheme"
-                      :duration="2500"
-                    ></i-odometer>人
-                  </p>
-                  <p class="vr-total-title">移动VR体验总人数</p>
-                </div>
-              </div>
-              <div class="overview-one-of-four">
-                <div class="overview-inner">
-                  <p class="current-online-num">
-                    <i-odometer
-                      :value="currentOnlineUsers"
-                      :theme="digitalTheme"
-                    ></i-odometer>人
-                  </p>
-                  <p class="current-online-title">当前在线人数</p>
-                </div>
-              </div>
-              <div class="overview-one-of-four">
-                <div class="overview-inner">
-                  <p class="average-look-car-time-num">
-                    <i-odometer
-                      :value="averageLookTime"
-                      :theme="carTheme"
-                    ></i-odometer>
-                    <span class="average-look-car-time-unit">分钟</span>
-                  </p>
-                  <p class="average-look-car-time-title">平均看车时间</p>
-                </div>
-              </div>
-              <div class="overview-one-of-four">
-                <div class="overview-inner">
-                  <div class="sex-main-rate">
-                    <span class="sex-boy">
-                      <img class="man sex-icon" :src="man" alt="man">
-                      <i-odometer
-                        :value="mrate"
-                        :theme="carTheme"
-                      ></i-odometer>
-                      %
-                    </span>
-                    <span class="sex-girl">
-                      <img class="girl sex-icon" :src="girl" alt="girl">
-                      <i-odometer
-                        :value="wrate"
-                        :theme="carTheme"
-                      ></i-odometer>
-                      %
-                    </span>
-                  </div>
-                  <div class="sex-main-title">男女占比</div>
-                </div>
-              </div>
+            <div class="current-lookcar scroll-style scroll-swiper">
+              <swiper :options="dateSwiperOption" ref="carSwiper">
+                <swiper-slide
+                  v-for="car in carList"
+                  key="car.id"
+                  :data-uid="car.id"
+                >
+                  {{ car.name }}
+                </swiper-slide>
+                <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
+                <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
+              </swiper>
             </div>
-          </div>
-          <div class="charts">
-            <div class="attention-mid most-focus">
-              <div class="most-focus-left divide-by-three">
-                <div class="most-focus-left-overview attention-mid-top">
-                  <p class="zh-name">
-                    客户关注点热力图
-                  </p>
-                  <p class="en-name">
-                    看车时长热力图
-                  </p>
-                </div>
-                <div class="most-focus-left-main" ref="scatter">
-                  <img class="car" :src="car" alt="car">
-                  <div class="focus-scatter" :style="{ width: scatterWidth }">
-                    <focusScatter :lastTenLook="lastTenLook" :perVw="perVw" :listData="carfoucus" height='100%' :width='scatterWidth' />
-                  </div>
-                </div>
-                <div class="most-focus-left-placeholder"></div>
-              </div>
-              <div class="most-focus-mid divide-by-three">
-                <div class="most-focus-mid-placeholder"></div>
-                <div class="most-focus-rate-chart">
-                  <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' />
-                </div>
-              </div>
-              <div class="most-focus-right divide-by-three-last">
-                <div class="attention-mid-top">
-                  <p class="zh-name">
-                    车系偏好
-                  </p>
-                  <p class="en-name">
-                    看车零部件时长占比
-                  </p>
-                </div>
-                <div class="model-preference">
-
-                </div>
-                <div class="most-focus-left-placeholder"></div>
-              </div>
-            </div>
-            <div class="attention-btm">
-              <div class="color-preference divide-by-three">
-                <div class="attention-btm-placeholder-top"></div>
-                <div class="color-preference-main attention-btm-mid">
-                  <div class="attention-btm-mid-overview">
-                    <p class="zh-name">
-                      个性化选配统计
-                    </p>
-                    <p class="en-name">
-                      观看总时长和次数
-                    </p>
-                  </div>
-                  <div class="attention-btm-mid-content color-rate">
-                    <carColor :perVw="perVw" :listData="carColorList" height='100%' width='100%' />
-                    <!-- <div class="color-wrapper">
-                      <div class="color" v-for="color in lookColors">
-                        <span class="color-bg" :style="{ background: color[2] }"></span>
-                        <span>{{color[1]}}</span>
-                        <span class="color-rate-num">{{color[0]}}%</span>
-                      </div>
-                    </div> -->
-                  </div>
-                </div>
-                <div class="attention-btm-placeholder-bottom"></div>
-              </div>
-              <div class="purchase-intention divide-by-three">
-                <div class="attention-btm-placeholder-top"></div>
-                <div class="purchase-intention-main attention-btm-mid">
-                  <div class="attention-btm-mid-overview">
-                    <p class="zh-name">
-                      购买意向统计
-                    </p>
-                    <p class="en-name">
-                      客户购买意向人数
-                    </p>
-                  </div>
-                  <div class="attention-btm-mid-content">
-                    <purchase :perVw="perVw" :listData="purchaseList" height='80%' width='100%' />
-                    <div class="purchase-user">
-                      <p v-for="purchase in purchaseUsers" class="divide-by-four">{{purchase}}人</p>
-                    </div>
-                  </div>
-                </div>
-                <div class="attention-btm-placeholder-bottom"></div>
-              </div>
-              <div class="active-user divide-by-three-last">
-                <div class="attention-btm-placeholder-top"></div>
-                <div class="active-user-main attention-btm-mid">
-                  <div class="attention-btm-mid-overview">
-                    <p class="zh-name">
-                      当日看车人数
-                    </p>
-                    <p class="en-name">
-                      当日看车人数
-                    </p>
-                  </div>
-                  <div class="attention-btm-mid-content">
-                    <active-user :perVw="perVw" :listData="activeUser" height='100%' width='100%' />
-                  </div>
-                </div>
-                <div class="attention-btm-placeholder-bottom"></div>
-              </div>
+            <div class="current-day scroll-style scroll-swiper">
+              <swiper :options="dateSwiperOption" ref="dateSwiper">
+                <swiper-slide
+                  v-for="date in dateList"
+                  key="date.value"
+                  :data-uid="date.value"
+                >
+                  {{ date.name }}
+                </swiper-slide>
+                <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
+                <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
+              </swiper>
             </div>
           </div>
         </div>
       </div>
-      <div class="wrapper-right" :class="currentUsers.length === 0 ? activeBg : ''">
-      </div>
-      <div class="current-user">
-        <swiper :options="swiperOption" ref="mySwiper">
-          <swiper-slide
-            v-for="user in currentUsers"
-            key="user.id"
-            :data-uid="user.id"
-          >
-            <div class="single-user">
-              <p class="single-user-name-box">
-                <span class="single-user-name">{{ user.username }}</span>
+      <div class="content">
+        <div class="content-left">
+          <div class="overview core-mr">
+            <div class="overview-title">
+              <div class="overview-title-bg">
+                <img :src="overviewBg" class="overview-img" alt="overview">
+              </div>
+              <div class="overview-title-name">
+                <p class="main-title">信息总览</p>
+                <p class="sub-title">当天客户数据</p>
+              </div>
+            </div>
+            <div class="overview-vr-experience core-mb overview-four-part">
+              <p class="info-number info-mb">
+                <i-odometer
+                  class="iOdometer"
+                  :value="totalUsers"
+                  :theme="carTheme"
+                  :duration="2500"
+                ></i-odometer>
               </p>
-              <i class="arrow left-arrow"></i>
+              <p class="divide-line divide-line-red info-mb"></p>
+              <p class="info-title">移动VR体验总人数</p>
             </div>
-          </swiper-slide>
-        </swiper>
-        <div class="bg-holder" v-show="currentUsers.length"></div>
+            <div class="overview-online core-mb overview-four-part">
+              <p class="info-number info-mb">
+                <i-odometer
+                  :value="currentOnlineUsers"
+                  :theme="digitalTheme"
+                ></i-odometer>
+              </p>
+              <p class="divide-line divide-line-yellow info-mb"></p>
+              <p class="info-title">当前在线人数</p>
+            </div>
+            <div class="ave-look core-mb overview-four-part">
+              <p class="info-number info-mb">
+                <i-odometer
+                  :value="averageLookTime"
+                  :theme="carTheme"
+                ></i-odometer>
+              </p>
+              <p class="divide-line divide-line-purple info-mb"></p>
+              <p class="info-title">平均看车时间（分钟）</p>
+            </div>
+            <div class="overview-sex overview-four-part">
+              <p class="info-number info-mb info-number-sex">
+                <span class="sex-boy sex">
+                  <img class="man sex-icon" :src="man" alt="man">
+                  <i-odometer
+                    :value="mrate"
+                    :theme="carTheme"
+                  ></i-odometer>
+                  %
+                </span>
+                <span class="sex-girl sex">
+                  <img class="girl sex-icon" :src="girl" alt="girl">
+                  <i-odometer
+                    :value="wrate"
+                    :theme="carTheme"
+                  ></i-odometer>
+                  %
+                </span>
+              </p>
+              <p class="divide-line divide-line-green info-mb"></p>
+              <p class="info-title">男女占比</p>
+            </div>
+          </div>
+          <div class="core-mid core-mr">
+            <div class="heat core-map core-mb">
+              <div class="core-header">
+                <div class="core-header-icon">
+                  <img :src="heat" class="heat-img" alt="heat">
+                </div>
+                <div class="core-header-title">
+                  <p class="main-title">客户关注点热力图</p>
+                  <p class="sub-title">看车时长热力图</p>
+                </div>
+              </div>
+              <div class="core-content core-content-top"></div>
+            </div>
+            <div class="today-look core-map">
+              <div class="core-header">
+                <div class="core-header-icon">
+                  <img :src="todayBg" alt="today">
+                </div>
+                <div class="core-header-title">
+                  <p class="main-title">当日看车人数</p>
+                  <p class="sub-title">当日看车人数增长趋势</p>
+                </div>
+              </div>
+              <div class="core-content core-content-btm">
+                <active-user :perVw="perVw" :listData="activeUser" height='100%' width='100%' />
+              </div>
+            </div>
+          </div>
+          <div class="core-right">
+            <div class="individuation core-map core-mb">
+              <div class="core-header">
+                <div class="core-header-icon">
+                  <img :src="individuation" alt="individuation">
+                </div>
+                <div class="core-header-title">
+                  <p class="main-title">个性化选配统计</p>
+                  <p class="sub-title">观看总时长和次数</p>
+                </div>
+              </div>
+              <div class="core-content core-content-top"></div>
+            </div>
+            <div class="purchase-color-chart-wrapper">
+              <div class="core-map core-mr purchase">
+                <div class="core-header">
+                  <div class="core-header-icon">
+                    <img :src="individuation" alt="purchase">
+                  </div>
+                  <div class="core-header-title">
+                    <p class="main-title">购买意向统计</p>
+                    <p class="sub-title">客户购买意向人数</p>
+                  </div>
+                </div>
+                <div class="core-content core-content-btm"></div>
+              </div>
+              <div class="core-map color-preference">
+                <div class="core-header">
+                  <div class="core-header-icon">
+                    <img :src="color" alt="color">
+                  </div>
+                  <div class="core-header-title">
+                    <p class="main-title">颜色偏好统计</p>
+                    <p class="sub-title">看车颜色时长占比</p>
+                  </div>
+                </div>
+                <div class="core-content core-content-btm"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="content-right">
+          <div class="online-offline">
+
+          </div>
+          <div class="current-online">
+
+          </div>
+        </div>
       </div>
     </div>
 </template>
@@ -260,9 +202,16 @@
     import purchase from './purchase';
     import activeUser from './activeUser';
     import carColor from './carColor';
+    import overviewBg from './overviewBg.svg';
+    import logo from './logo.svg';
     import trend from './trend.png';
-    import man from './man.png';
-    import girl from './girl.png';
+    import man from './man.svg';
+    import girl from './girl.svg';
+    import heat from './heat.svg';
+    import todayBg from './todayBg.svg';
+    import individuation from './individuation.svg';
+    import color from './color.svg';
+
     import car from './car.png';
     import conmen from './conmen.png';
 
@@ -288,9 +237,16 @@
           currentUserId: 0,
           lastTenLook: [],
           showLook: false,
+          logo: logo + '?' + +new Date(),
+          overviewBg: overviewBg,
           trend: trend + '?' + +new Date(),
-          man: man + '?' + +new Date(),
-          girl: girl + '?' + +new Date(),
+          man: man,
+          girl: girl,
+          heat: heat,
+          todayBg: todayBg,
+          individuation: individuation,
+          color: color,
+
           car: car + '?' + +new Date(),
           conmen: conmen + '?' + +new Date(),
           top: 0,
@@ -299,6 +255,19 @@
           yestoday: this.getDate(+new Date() - 24 * 60 * 60 * 1000),
           windowHeight: document.body.clientHeight,
           windowWidth: document.body.clientWidth,
+          dateSwiperOption: {
+            initialSlide: 0,
+            slidesPerView: 1,
+            centeredSlides: false,
+            autoplayDisableOnInteraction: false,
+            autoplay: 2500,
+            grabCursor: true,
+            loop: true,
+            paginationClickable: true,
+            nextButton: '.swiper-button-next',
+            prevButton: '.swiper-button-prev',
+            spaceBetween: 30,
+          },
           swiperOption: {
             initialSlide: 0,
             slidesPerView: 0,
@@ -331,6 +300,26 @@
             communicate_time: 0,
             budget: null,
           },
+          dateList: [
+            {
+              name: '7月12日',
+              value: '20170712',
+            },
+            {
+              name: '7月13日',
+              value: '20170713',
+            },
+          ],
+          carList: [
+            {
+              name: '长安cs15',
+              value: '1',
+            },
+            {
+              name: '长安cs95',
+              value: '2',
+            },
+          ],
           averageLookTime: null,
           mrate: null,
           wrate: null,
@@ -376,9 +365,9 @@
       },
       mounted() {
         this.getUrlHash();
-        this.fecthOnlineDatas();
+        // this.fecthOnlineDatas();
         const $this = this;
-        this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
+        // this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
         this.windowHeight = document.body.clientHeight;
         this.windowWidth = document.body.clientWidth;
         window.addEventListener('resize', this.handleResize);
@@ -387,7 +376,7 @@
           $this.currentOnlineUsers = $this.currentOnlineUsers + 1;
         }, 2000);
         setTimeout(() => {
-          $('.scroll').liMarquee({
+          $('.current-view').liMarquee({
             height: 50,
           });
         }, 1000)
@@ -585,696 +574,319 @@
     }
 </script>
 
-<style scoped>
-.scroll {
-  width: 20vw;
-  height: 3vh;
-  background: #000;
-  border: 1px solid #fff;
-  position: absolute;
-  left: 3.5vw;
-  bottom: 2vh;
-  border-radius: 8px;
-  user-select: none;
-  overflow: hidden;
-  white-space: nowrap;
+<style lang="scss" scoped>
+@mixin nopaddingmargin {
+  margin: 0;
+  padding: 0;
+}
+@mixin wh($width, $height) {
+  width: #{$width};
+  height: #{$height};
+}
+
+@mixin bg($color) {
+  background: #{$color};
+}
+
+@mixin padding($top, $right, $bottom, $left) {
+  padding-top: #{$top};
+  padding-right: #{$right};
+  padding-bottom: #{$bottom};
+  padding-left: #{$left};
+}
+
+@mixin margin($top, $right, $bottom, $left) {
+  margin-top: #{$top};
+  margin-right: #{$right};
+  margin-bottom: #{$bottom};
+  margin-left: #{$left};
+}
+
+@mixin borderradius($top, $right, $bottom, $left) {
+  border-top-left-radius: $top;
+  border-top-right-radius: $right;
+  border-bottom-left-radius: $bottom;
+  border-bottom-right-radius: $left;
+}
+
+$mainBg: '#353b4c';
+$mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
+
+@mixin flex($direction, $justify, $align) {
+  display: flex;
+  flex-direction: #{$direction};
+  justify-content: #{$justify};
+  align-items: #{$align};
 }
 .screen-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100vh;
+  @include wh(100vw, 100vh);
+  box-sizing: border-box;
+  position: relative;
   color: #fff;
-}
-.screen-container input:-webkit-autofill {
-  -webkit-box-shadow: 0 0 0px 1000px #293444 inset !important;
-  -webkit-text-fill-color: #3E3E3E !important;
-}
-.screen-container p {
-  margin: 0;
-  padding: 0;
-}
-.screen-container > div {
-  height: 100vh;
-}
-.screen-container .wrapper-left {
-  width: 94.8vw;
-}
-.screen-container .screen-left-top {
-  height: 14.5vh;
-  background: #212531;
-  border-bottom: 1px solid #3d465d;
-  border-right: 1px solid #3d465d;
-  position: relative;
-}
-.screen-container .screen-left-btm {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  height: 85.5vh;
-  background: #212531;
-}
-.screen-container .information-overview {
-  width: 17.4vw;
-  height: 100%;
-  border-right: 1px solid #3d465d;
-  position: relative;
-}
-.screen-container .information-overview-top {
-  position: relative;
-  height: 15%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-.screen-container .information-overview-btm {
-  height: 85%;
-}
-.screen-container .overview-one-of-four {
-  height: 25%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-.screen-container .overview-inner {
-  width: 70%;
-  height: 70%;
-  display: flex;
-  border: 1px solid #fff;
-  border-radius: 6px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-}
-.charts {
-  width: 77.4vw;
-  height: 100%;
-  border-right: 1px solid #3d465d;
-  position: relative;
-}
-.screen-container .wrapper-mid {
-  width: 77.4vw;
-  border: 0;
-}
-.screen-container .wrapper-right {
-  background: #181923;
-  width: 5.2vw;
-}
-.screen-container .activeBg {
-  background: #2b303d;
-}
-.screen-container .grid-content {
-  height: 100vh;
-}
-.screen-container .screen-mid {
-  background: #181923;
-}
-.screen-container .left-top {
-  height: 61.8vh;
-  border-bottom: 1px solid #3d465d;
-}
-.screen-container .left-mid {
-  height: 18.6vh;
-  border-bottom: 1px solid #3d465d;
-}
-.screen-container .left-btm {
-  height: 19.6vh;
-}
-.screen-container .overview {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.screen-container .overview-title {
-  font-size: 1.35vw;
-  padding: 0;
-}
-.screen-container .vr-total-num {
-  font-size: 1.5vw;
-}
-.screen-container .vr-total-title {
-  font-size: 0.8vw;
-}
+  .screen-header {
+    @include wh(100vw, 8.6vh);
+    @include bg($mainBg);
+    @include flex('row', 'flex-start', 'center');
+    box-shadow: $mainShadows;
 
-.screen-container .current-online-num {
-  margin: 0;
-  padding: 0;
-  font-size: 1.5vw;
-}
-.screen-container .current-online-title {
-  margin: 0;
-  padding: 0;
-  font-size: 0.8vw;
-}
-.screen-container .current-online-placeholder-btm {
-  height: 25%;
-}
-.average-look-car-time-title {
-  font-size: 0.8vw;
-}
-.average-look-car-time-num {
-  font-size: 1.5vw;
-  color: #dddddd;
-}
-.average-look-car-time-num .average-look-car-time-unit {
-  display: inline-block;
-  font-size: 1.5vw;
-}
-.screen-container .sex {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
+    .logo {
+      @include flex('row', 'center', 'center');
+      @include wh(13.9vw, 8.6vh);
+      @include bg('#b52f25');
+      .logo-img {
+        @include wh(7.6vw, auto);
+      }
+    }
+    .title {
+      @include wh(86.1vw, 8.6vh);
+      @include flex('row', 'flex-start', 'center');
 
-.screen-container .sex .sex-main {
-  width: 100%;
-  height: 52%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-}
-.sex-main-title {
-  font-size: 0.8vw;
-}
-.sex-main-rate {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-weight: 200;
-}
-.sex-main-rate > span {
-  width: 40%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5vw;
-}
-.sex-boy {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-}
-.sex-girl {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-}
-.sex-main-rate > span img {
-  width: auto;
-  height: 2vw;
-  margin-right: 0.3vw;
-}
-.screen-container .sex .sex-placeholder-btm {
-  height: 25%;
-}
-.screen-container .statistics-overview-main {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.screen-container .statistics-overview-main .statistics-overview-title {
-  font-size: 1.6vw;
-  font-weight: 900;
-}
-.screen-container .statistics-overview-main .sub-title {
-  font-size: 0.71vw;
-}
-.screen-container .statistics-overview-main .statistics-overview-time {
-  font-size: 0.92vw;
-  color: #6f778e;
-}
-.screen-container .statistics-overview-main .statistics-overview-current {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  border-radius: 0.78vw;
-  font-size: 0.92vw;
-  height: 26%;
-  padding: 0 1vw;
-  background: #212531;
-  color: #f03635;
-}
-.screen-container .attention-mid {
-  width: 100%;
-  height: 47.3%;
-  border-bottom: 1px solid #3d465d;
-  padding: 0 3.6% 0 4.6%;
-}
-.screen-container .attention-mid-top {
-  width: 100%;
-  height: 11.5%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-.screen-container .most-focus {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-.screen-container .most-focus .most-focus-left {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-.screen-container .most-focus .most-focus-left .most-focus-left-main {
-  position: relative;
-  width: 80%;
-  height: 79.9%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.screen-container .most-focus .most-focus-left .most-focus-left-main img {
-  width: auto;
-  height: 98%;
-}
-.screen-container .most-focus .most-focus-left .most-focus-left-main .focus-scatter {
-  position: absolute;
-  height: 98%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-.screen-container .most-focus .most-focus-mid {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-.screen-container .most-focus .most-focus-mid .most-focus-mid-placeholder {
-  width: 100%;
-  height: 11.5%;
-}
-.screen-container .most-focus .most-focus-mid .most-focus-rate-chart {
-  width: 100%;
-  height: 88.5%;
-}
-.screen-container .most-focus .most-focus-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-.screen-container .most-focus .most-focus-right .model-preference {
-  width: 100%;
-  height: 79.9%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-}
-.screen-container .most-focus .most-focus-left-placeholder {
-  width: 100%;
-  height: 8.6%;
-}
-.screen-container .attention-btm {
-  width: 100%;
-  height: 38.2%;
-  padding: 0 3.6% 0 4.6%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-}
-.screen-container .attention-btm > div {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-}
-.screen-container .zh-name {
-  font-size: 1.35vw;
-}
-.screen-container .en-name {
-  font-size: 0.8vw;
-  color: #58646e;
-}
-.screen-container .divide-by-three {
-  width: 33.3%;
-  height: 100%;
-}
-.screen-container .divide-by-four {
-  width: 100%;
-  height: 25%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.screen-container .divide-by-three-last {
-  width: 33.4%;
-  height: 100%;
-}
-.screen-container .attention-btm-mid {
-  width: 100%;
-  height: 78.8%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-.screen-container .attention-btm-placeholder-top {
-  width: 100%;
-  height: 9.4%;
-}
-.screen-container .attention-btm-placeholder-btm {
-  width: 100%;
-  height: 11.8%;
-}
-.screen-container .attention-btm-mid-overview {
-  width: 100%;
-  height: 17.6%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-.screen-container .attention-btm-mid-content {
-  position: relative;
-  width: 100%;
-  height: 82.4%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-}
-.screen-container .color-rate {
-  font-size: 1.05vw;
-}
-.screen-container .color-rate .color-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-.screen-container .color-rate .color {
-  width: 45%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-right: 5%;
-}
-.screen-container .color-rate .color-bg {
-  width: 1.17vw;
-  height: 1.17vw;
-}
-.screen-container .color-rate .color-rate-num {
-  font-weight: 200;
-}
-.screen-container .current-user {
-  position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 9999;
-  width: 5.786vw;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-.screen-container .current-user .single-user {
-  position: relative;
-  margin-left: 0.586vw;
-  width: 5.786vw;
-  height: 5.786vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 0.9%;
-}
-.screen-container .current-user .single-user.active {
-  background: #f03635;
-}
-.screen-container .current-user .single-user .single-user-name-box {
-  margin-left: -0.568vw;
-  width: 3.555vw;
-  height: 3.555vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: green;
-  border-radius: 50%;
-}
-.screen-container .current-user .single-user .single-user-name-box .single-user-name {
-  font-size: 0.7vw;
-  width: auto;
-  max-width: 90%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.screen-container .current-user .bg-holder {
-  width: 5.2vw;
-  height: 100vh;
-  background: #2b303d;
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: -1;
-}
-.screen-container .swiper-slide {
-  width: 100%;
-}
-.screen-container .user-detail {
-  width: 17.74vw;
-  height: 23.64vw;
-  background: rgba(108, 111, 123, 0.7);
-  position: fixed;
-  right: 5.786vw;
-  top: 0;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.user-detail {
-  width: 17.74vw;
-  height: 23.64vw;
-  background: rgba(108, 111, 123, 0.7);
-  position: fixed;
-  right: 5.786vw;
-  top: 0;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.user-detail .user-detail-inner {
-  width: 16.36vw;
-  height: 21.9vw;
-  background: rgba(43, 48, 61, 0.9);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-}
-.user-detail .user-detail-inner .user-detail-inner-title {
-  width: 14.97vw;
-  height: 3.11vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-bottom: 1px solid #9f9fc1;
-  font-size: 1.6vw;
-  font-weight: 900;
-  color: #848da9;
-}
-.user-detail .user-detail-inner .user-detail-inner-placeholder {
-  width: 13.84vw;
-  height: 1.095vw;
-}
-.user-detail .user-detail-inner .user-detail-inner-top {
-  width: 13.84vw;
-  height: 6.37vw;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-.user-detail .user-detail-inner .user-detail-inner-top .user-avatar {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  width: 3.125vw;
-  height: 3.125vw;
-  font-size: 0.92vw;
-  color: #fff;
-  background: #f03635;
-}
-.user-detail .user-detail-inner .user-detail-inner-top .user-info-overview {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: flex-start;
-  font-size: 0.74vw;
-}
-.user-detail .user-detail-inner .user-detail-inner-top .user-info-overview .user-info-intention {
-  color: #dddddd;
-}
-.user-detail .user-detail-inner .user-detail-inner-top .user-sex {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-.user-detail .user-detail-inner .user-detail-inner-top .user-sex .sex-name {
-  margin-right: 0.39vw;
-  color: #6f778e;
-  font-size: 0.74vw;
-}
-.user-detail .user-detail-inner .user-detail-inner-top .user-sex .sex-min {
-  width: 0.586vw;
-  height: auto;
-}
-.user-detail .user-detail-inner .user-detail-inner-mid {
-  width: 13.84vw;
-  height: 3.847vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: flex-start;
-  font-size: 0.92vw;
-  font-weight: 700;
-}
-.user-detail .user-detail-inner .user-detail-inner-btm {
-  width: 13.84vw;
-  height: 7.478vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-}
-.user-detail .user-detail-inner .user-detail-inner-btm .user-focus-title {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-}
-.user-detail .user-detail-inner .user-detail-inner-btm .user-focus-title .conmen {
-  margin-right: 0.3125vw;
-  width: 0.78vw;
-  height: auto;
-}
-.user-detail .user-detail-inner .user-detail-inner-btm .user-focus-title span {
-  font-size: 0.8vw;
-}
-.user-detail .user-detail-inner .user-detail-inner-btm .user-focus-feature {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.user-detail .user-detail-inner .user-detail-inner-btm .user-focus-feature p {
-  font-size: 0.92vw;
-  border-radius: 0.586vw;
-  background: #4f83f9;
-  margin: 0.39vw 0.39vw 0 0;
-  padding: 0.20vw 0.47vw;
-  line-height: 1.0em;
-}
-.screen-container .font-weight-200 {
-  font-weight: 200;
-}
-.screen-container .arrow {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-color: transparent;
-}
-.screen-container .left-arrow {
-  top: 50%;
-  margin-top: -0.586vw;
-  left: -1.172vw;
-  border-width: 0.586vw 0.586vw 0.586vw 0.586vw;
-  border-right-color: #f03635;
-  display: none;
-}
-.screen-container .purchase-user {
-  left: 0;
-  top: 20%;
-  font-size: 1.2vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  position: absolute;
-  font-weight: 200;
-  width: 60%;
-  height: 80%;
-}
-.screen-container .slide-fade-enter {
-  opacity: 0;
-}
-.screen-container .slide-fade-enter-active {
-  opacity: 1;
-}
-.screen-container .slide-fade-enter-active {
-  transition: all 1s linear;
-}
-.screen-container .slide-fade-leave-active {
-  transition: all 1s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.screen-container .slide-fade-leave-active {
-  transform: translateX(17.74vw);
-  opacity: 0;
-}
-.screen-container .slide-up-enter {
-  opacity: 0;
-}
-.screen-container .slide-up-enter-active {
-  opacity: 1;
-}
-.screen-container .slide-up-enter-active {
-  transition: all 1s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.screen-container .slide-up-leave-active {
-  transition: all 1s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.screen-container .slide-up-leave-active {
-  transform: translateY(-1vw);
-  opacity: 0;
-}
+      .company-message {
+        @include wh(41vw, 8.6vh);
+        @include flex('row', 'flex-start', 'center');
+        padding-left: 1.1vw;
+        font-size: 0.8vw;
 
-.screen-container .odometer.odometer-auto-theme, .screen-container .odometer.odometer-theme-default {
-  font-family: "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
-  font-weight: 200;
+        .sub-title {
+          margin-left: 0.6vw;
+          font-size: 0.6vw;
+          color: #7d7f90;
+        }
+      }
+      .scroll-message {
+        @include wh(45.1vw, 8.6vh);
+        @include flex('row', 'flex-start', 'center');
+
+        .current-view {
+          @include wh(17vw, 4.3vh);
+          height: 4.3vh !important;
+          line-height: 4.3vh !important;
+          font-size: 0.7vw;
+          margin-right: 0.77vw;
+          background: #272e3c;
+        }
+        .current-lookcar {
+          @include wh(14.4vw, 4.3vh);
+          margin-right: 0.77vw;
+        }
+        .current-day {
+          @include wh(10.4vw, 4.3vh);
+        }
+      }
+    }
+  }
+
+  .content {
+    position: relative;
+    @include wh(100vw, 91.4vh);
+    @include bg('#252735');
+    @include flex('row', 'flex-start', 'flex-start');
+
+    &-left {
+      position: relative;
+      @include flex('row', 'flex-start', 'flex-start');
+      @include wh(93.7vw, 91.4vh);
+      @include padding(3.5vh, 2vw, 3.4vh, 1.6vw);
+
+      .overview {
+        @include flex('column', 'flex-start', 'center');
+
+        &-title {
+          @include wh(12.3vw, 7.3vh);
+          @include flex('row', 'flex-start', 'center');
+          @include bg('#353b4d');
+          box-shadow: $mainShadows;
+
+          &-bg {
+            @include wh(3vw, 7.3vh);
+            @include flex('row', 'center', 'center');
+          }
+          &-name {
+            @include flex('column', 'center', 'flex-start');
+          }
+        }
+        &-four-part {
+          @include flex('column', 'center', 'center');
+          @include wh(12.3vw, 17.7vh);
+          @include bg('#2e3342');
+          border-radius: 10px;
+          box-shadow: $mainShadows;
+          & > p {
+            @include nopaddingmargin;
+            margin-bottom: 2vh;
+          }
+          & > p:last-child {
+            margin-bottom: 0;
+          }
+        }
+
+      }
+
+      .core-map {
+        @include flex('column', 'flex-start', 'flex-start');
+        @include bg('#2e3342');
+        @include borderradius('', '', 10px, 10px);
+        box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.3);
+      }
+      .heat {
+        @include wh(36.8vw, 44.6vh);
+      }
+      .today-look {
+        @include wh(36.8vw, 37.5vh);
+      }
+
+      .purchase-color-chart-wrapper {
+        @include flex('row', 'flex-start', 'flex-start');
+      }
+
+      .individuation {
+        @include wh(38.8vw, 44.6vh);
+      }
+      .purchase {
+        @include wh(18.8vw, 37.5vh);
+      }
+      .color-preference {
+        @include wh(18.8vw, 37.5vh);
+      }
+    }
+
+    &-right {
+      @include wh(6.3vw, 91.4vh);
+      @include bg($mainBg);
+      box-shadow: $mainShadows;
+
+      .online-offline {
+        @include wh(6.3vw, 17.3vh);
+        border-top: 1px solid #191c24;
+        border-bottom: 1px solid #191c24;
+      }
+      .current-online {
+        @include wh(6.3vw, 74.1vh);
+      }
+    }
+  }
+
+  .core-mb {
+    @include margin('', '', 1.9vh, '');
+  }
+  .core-mr {
+    @include margin('', 1.1vw, '', '');
+  }
+  .scroll-style {
+    color: #ff4b4c;
+    border-radius: 30px;
+    min-height: 20px;
+    @include flex('column', 'center', 'center');
+  }
+  .scroll-swiper {
+    border: 1px solid #ff4b4c;
+    border: 1px solid #ff4b4c;
+    text-align: center;
+    font-size: 0.7vw;
+
+    & > div {
+      width: 100%;
+    }
+  }
+  .swiper-button-red {
+    background-image: none;
+  }
+  .swiper-button-prev,
+  .swiper-button-next {
+    height: 4.3vh !important;
+    line-height: 4.3vh !important;
+    font-size: 0.9vw;
+    margin-top: -2.15vh;
+  }
+  .swiper-button-prev.swiper-button-red::after {
+    content: '<';
+  }
+  .swiper-button-next.swiper-button-red::after {
+    content: '>';
+  }
+  .overview-img {
+    @include wh(1.2vw, auto);
+  }
+  // .heat-img {
+  //   @include wh(40%, auto);
+  // }
+  .info-number {
+    font-size: 2vw;
+
+    &-sex {
+      @include flex('row', 'space-between', 'center');
+      @include wh(100%, auto);
+    }
+    .sex {
+      @include wh(42%, auto);
+      font-size: 1.5vw;
+    }
+    .sex-boy {
+      @include flex('row', 'flex-end', 'center');
+    }
+    .sex-girl {
+      @include flex('row', 'flex-start', 'center');
+    }
+    .sex-icon {
+      @include wh(auto, 3vh);
+      margin-right: 0.5vw;
+    }
+  }
+  .divide-line {
+    @include wh(3vw, 2px);
+
+    &-red {
+      background-color: #ff4b4c;
+    }
+    &-yellow {
+      background-color: #fec62b;
+    }
+    &-purple {
+      background-color: #a639d2;
+    }
+    &-green {
+      background-color: #3bcc68;
+    }
+  }
+  .info-title {
+    color: #7d7f90;
+    font-size: 0.7vw;
+  }
+  .core-header {
+    @include flex('row', 'flex-start', 'center');
+    @include wh(100%, 7.33vh);
+    @include bg('#353b4c');
+    box-shadow: $mainShadows;
+
+    &-icon {
+      @include wh(2.8vw, '');
+      @include flex('row', 'flex-end', 'center');
+      margin-right: 0.5vw;
+      img {
+        @include wh(40%, auto);
+      }
+    }
+    &-title {
+      @include flex('column', 'center', 'flex-start');
+    }
+  }
+  .core-content {
+
+  }
+  .core-content-top {
+    @include wh(100%, 37.27vh);
+  }
+  .core-content-btm {
+    @include wh(100%, 30.17vh);
+  }
+  .main-title {
+    @include nopaddingmargin;
+    font-size: 0.75vw;
+  }
+  .sub-title {
+    @include nopaddingmargin;
+    font-size: 0.5vw;
+    color: #7d7f90;
+  }
 }
 </style>

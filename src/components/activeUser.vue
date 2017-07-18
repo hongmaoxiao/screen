@@ -95,10 +95,11 @@
           max = _.max(userDatas);
           split = this.getGap(min, max);
           this.chart.setOption({
+              color: ['#37b9fd'],
               grid: {
-                left: '0%',
-                right: '5%',
-                bottom: '0%',
+                left: '2%',
+                right: '2%',
+                bottom: '5%',
                 containLabel: true
               },
               xAxis: [
@@ -110,18 +111,18 @@
                     show: false,
                   },
                   axisTick: {
-                    show: false
+                    show: false,
                   },
                   axisLabel: {
                     margin: 10,
                     textStyle: {
-                      fontSize: 0.8 * this.perVw,
+                      fontSize: 0.6 * this.perVw,
                       color: '#6f778e',
                     }
                   },
                   splitArea: {
                     interval: 'auto',
-                    show: true,
+                    show: false,
                     areaStyle: {
                       color: ['rgba(31, 34, 45, 0.5)', 'rgba(31, 34, 45, 1)']
                     }
@@ -135,7 +136,12 @@
                 min: min,
                 max: max,
                 splitLine: {
-                  show: false
+                  show: true,
+                  interval: 'auto',
+                  lineStyle: {
+                    color: ['#fff'],
+                    width: 1,
+                  },
                 },
                 axisLine: {
                   show: false,
@@ -146,7 +152,7 @@
                 axisLabel: {
                   margin: 10,
                   textStyle: {
-                    fontSize: 0.8 * this.perVw,
+                    fontSize: 0.6 * this.perVw,
                     color: '#6f778e',
                   }
                 },
@@ -161,23 +167,23 @@
                   showSymbol: true,
                   lineStyle: {
                     normal: {
-                      color: '#f03635',
+                      color: '#37b9fd',
                       width: 3,
                     },
                     emphasis: {
-                      color: '#f03635',
+                      color: '#37b9fd',
                       width: 3,
                     },
                   },
                   itemStyle: {
                     normal: {
-                      color: 'rgb(240, 54, 53)',
-                      borderColor: 'rgba(240, 54, 53, 0.2)',
+                      color: '#37b9fd',
+                      borderColor: 'rgba(55, 185, 253, 0.2)',
                       borderWidth: 12
                     },
                     emphasis: {
-                      color: 'rgb(240, 54, 53)',
-                      borderColor: 'rgba(240, 54, 53, 0.2)',
+                      color: '#37b9fd',
+                      borderColor: 'rgba(55, 185, 253, 0.2)',
                       borderWidth: 12
                     },
                   },
