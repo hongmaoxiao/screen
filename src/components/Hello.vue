@@ -184,7 +184,7 @@
                     <div class="core-color-item-right">
                       <span class="color-rate-num">{{color[0]}}%</span>
                       <div class="color-chart">
-                        <carColor :perVw="perVw" :id="'car-preference-chart' + key" :listData="carColorList" height='100%' width='100%' />
+                        <carColor :perVw="perVw" :colorIndex="key" :id="'car-preference-chart' + key" :sum="colorSum" :listData="carColorList" height='100%' width='100%' />
                       </div>
                     </div>
                   </div>
@@ -345,6 +345,7 @@
           purchaseList: [],
           purchaseUsers: [],
           carfoucus: [],
+          colorSum: 0,
         }
       },
       computed: {
@@ -366,6 +367,11 @@
         perVw() {
           return this.windowWidth / 100;
         },
+        // colorSum() {
+        //   return _.reduce(carColorList, (o) => {
+        //     return o[0];
+        //   }, 0)
+        // }
       },
       watch: {
         windowHeight(val) {
@@ -481,7 +487,7 @@
           axios.get(`/dealer/factory/overview/${this.carId}?t=${+new Date()}`)
           .then(response => {
             $this.assignBasicDatas(response.data);
-            setTimeout($this.fetchBasicDatas, 5000);
+            setTimeout($this.fetchBasicDatas, 500000);
           })
           .catch(error => {
             console.log(error);
@@ -502,7 +508,6 @@
         },
 
         assignBasicDatas(parsed) {
-          console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
@@ -510,6 +515,9 @@
             this.currentOnlineUsers = parsed.vr_num + Math.random * 100;
             this.totalUsers = parsed.total_users_num;
             this.carColorList = parsed.look_colors;
+            this.colorSum = _.reduce(this.carColorList, (result, value, key) => {
+              return result + value[0];
+            }, 0);
             // this.carPreferenceList = parsed.dealer_car;
             this.activeUser = parsed.active_user_num.date;
             this.purchaseList = parsed.car_intention;
@@ -756,8 +764,8 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
             @include flex('row', 'flex-start', 'center');
 
             .color-bg {
-              width: 1.17vw;
-              height: 1.17vw;
+              width: 1vw;
+              height: 1vw;
               position: relative;
               border: 2px solid #fff;
               margin-right: 0.5vw;
@@ -768,8 +776,8 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
                 left: 0;
                 top: 0;
                 opacity: 0.2;
-                border-top: 1.17vw solid #fff;
-                border-right: 1.17vw solid transparent;
+                border-top: 1vw solid #fff;
+                border-right: 1vw solid transparent;
               }
             }
             .color-name {

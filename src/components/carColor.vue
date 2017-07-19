@@ -1,5 +1,5 @@
 <template>
-    <div :class="className" :id="id" :perVw="perVw" :listData="listData" :style="{height: height, width: width}"></div>
+    <div :class="className" :id="id" :colorIndex="colorIndex" :perVw="perVw" :sum="sum" :listData="listData" :style="{height: height, width: width}"></div>
 </template>
 <script>
     import _ from 'lodash';
@@ -7,7 +7,7 @@
     // 引入 ECharts 主模块
     const echarts = require('echarts/lib/echarts');
     // 引入图
-    require('echarts/lib/chart/bar');
+    require('echarts/lib/chart/pie');
     // 引入提示框和标题组件
     export default {
       name: 'carPreferenceChart',
@@ -35,7 +35,15 @@
         perVw: {
           type: Number,
           require: true
-        }
+        },
+        sum: {
+          type: Number,
+          require: true
+        },
+        colorIndex: {
+          type: Number,
+          require: true,
+        },
       },
       data() {
         return {
@@ -69,128 +77,37 @@
           return val.slice(0, half) + '\n\n' + val.slice(half);
         },
         setCarPreference(listData) {
+          console.log("colors: ", listData);
+          console.log("colorsum: ", this.sum);
+          console.log("colorName: ", this.colorIndex);
           const $this = this;
           let carDatas = [];
-          let carCategory = [];
-          let colors = [];
-          for (var i = 0, len = listData.length; i < len; i++) {
-            colors.push(listData[i][2])
-            carDatas.push(listData[i][0]);
-            carCategory.push(listData[i][1]);
-          }
-          const total = _.reduce(carDatas, (sum, n) => {
-            return sum + n;
-          }, 0)
+          const colors = [listData[this.colorIndex][2], '#545a6c'];
+          carDatas.push({
+            name: listData[this.colorIndex][1],
+            value: listData[this.colorIndex][0],
+          });
+          carDatas.push({
+            name: '其它',
+            value: this.sum - listData[this.colorIndex][0] >= 0 ? this.sum - listData[this.colorIndex][0] : 0,
+          });
           this.chart.setOption({
             color: colors,
-            grid: {
-              left: '0%',
-              right: '0%',
-              bottom: '0%',
-              containLabel: true
-            },
-            xAxis: [{
-              type: 'category',
-              boundaryGap: true,
-              nameGap: 150,
-              data : carCategory,
-              axisLine: {
-                show: false,
-              },
-              axisTick: {
-                show: false
-              },
-              axisLabel: {
-                margin: 10,
-                interval: 0,
-                textStyle: {
-                  fontSize: 0.7 * this.perVw,
-                  color: '#fff',
-                  baseline: 'top',
+            series : [
+              {
+                name: '颜色偏好统计',
+                type: 'pie',
+                radius : '55%',
+                center: ['50%', '60%'],
+                silent: true,
+                data: carDatas,
+                labelLine: {
+                  normal: {
+                    show: false,
+                  },
                 },
-                formatter: function(value) {
-                  if (value.length > 8) {
-                    return $this.half(value);
-                  }
-                  return value;
-                },
-              },
-              splitArea: {
-                interval: 'auto',
-                show: true,
-                areaStyle: {
-                  color: ['rgba(31, 34, 45, 1)', 'rgba(31, 34, 45, 0.5)']
-                }
               }
-            }],
-            yAxis: {
-              show: false,
-              splitLine: {
-                show: false
-              },
-              axisLine: {
-                show: false,
-              },
-              axisTick: {
-                show: false
-              },
-              axisLabel: {
-                margin: 10,
-                textStyle: {
-                  fontSize: 0.88 * this.perVw,
-                  color: '#6f778e',
-                }
-              },
-            },
-            series: [{
-              name: '车系偏好',
-              type: 'bar',
-              barWidth: 10,
-              itemStyle: {
-                normal: {
-                  barBorderRadius: 10,
-                  color: new echarts.graphic.LinearGradient(
-                    0, 0, 0, 1,
-                    [
-                      {offset: 0, color: 'rgb(107, 75, 160)'},
-                      {offset: 1, color: 'rgb(74, 67, 154)'}
-                    ]
-                  )
-                },
-                emphasis: {
-                  show: false,
-                },
-              },
-              label: {
-                normal: {
-                  show: true,
-                  position: 'top',
-                  formatter: function(a) {
-                    const val = a.value / total * 100;
-                    return val.toFixed(1) + '%';
-                  },
-                  textStyle: {
-                    color: "#fff",
-                    fontSize: 0.88 * this.perVw,
-                    fontWeight: 200,
-                  }
-                },
-                emphasis: {
-                  show: true,
-                  position: 'top',
-                  formatter: function(a) {
-                    const val = a.value / total * 100;
-                    return val.toFixed(1) + '%';
-                  },
-                  textStyle: {
-                    color: "#fff",
-                    fontSize: 0.88 * this.perVw,
-                    fontWeight: 200,
-                  }
-                },
-              },
-              data: carDatas
-            },]
+            ]
           })
         }
       }
