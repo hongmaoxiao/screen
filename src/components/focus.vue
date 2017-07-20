@@ -69,6 +69,7 @@
           let category = [];
           let focusData = [];
           let allData = [];
+          console.log("focusNormal: ", listData);
           const len = listData.length;
           _.forEach(listData, (value, key) => {
             if ( key < 4 ) {
@@ -81,33 +82,38 @@
             return sum + n;
           }, 0)
           this.chart.setOption({
-            background: 'rgba(31, 34, 45, 1)',
             title: {
-              text: '用户关注重点占比',
-              left: 0,
-              top: 0,
+              text: '客户关注占比',
+              left: 'center',
+              top: '5%',
               textStyle: {
                 fontWeight: 'normal',
-                fontSize: 1.14 * this.perVw,
-                color: 'rgba(111, 119, 142, 1)',
+                fontSize: 0.7 * this.perVw,
+                color: '#fff',
+              },
+              subtext: '看车零部件时长占比',
+              subtextStyle: {
+                fontWeight: 'normal',
+                fontSize: 0.4 * this.perVw,
+                color: '#7d7f90',
               },
             },
             legend: {
               show: false,
             },
             grid: {
-              left: '0%',
-              right: '10%',
-              bottom: '0%',
+              top: '10%',
+              left: '5%',
+              right: '5%',
+              bottom: '5%',
               containLabel: true
             },
-            xAxis: {
+            yAxis: {
               show: false,
               type: 'value',
               boundaryGap: [0, 0.01]
             },
-            yAxis: {
-              offset: 2.5 * this.perVw,
+            xAxis: {
               type: 'category',
               data: category,
               splitLine: {
@@ -120,13 +126,13 @@
                 show: false
               },
               axisLabel: {
-                margin: 10,
+                margin: 1 * this.perVw,
                 interval: 0,
                 textStyle: {
-                  fontSize: 0.88 * this.perVw,
-                  color: '#fff',
+                  fontSize: 0.6 * this.perVw,
+                  color: '#b8b9c8',
                   baseline: 'middle',
-                  align: 'left',
+                  align: 'center',
                 }
               },
             },
@@ -153,28 +159,27 @@
                 label: {
                   normal: {
                     show: true,
-                    position: 'right',
-                    offset: [0.8 * this.perVw, 0],
+                    position: 'top',
                     formatter: function(a) {
                       const val = a.value / total * 100;
                       return val.toFixed(1) + '%';
                     },
                     textStyle: {
                       color: "#fff",
-                      fontSize: 0.88 * this.perVw,
+                      fontSize: 0.65 * this.perVw,
                       fontWeight: 200,
                     }
                   },
                   emphasis: {
                     show: true,
-                    position: 'right',
+                    position: 'top',
                     formatter: function(a) {
                       const val = a.value / total * 100;
                       return val.toFixed(1) + '%';
                     },
                     textStyle: {
                       color: "#fff",
-                      fontSize: 0.88 * this.perVw,
+                      fontSize: 0.65 * this.perVw,
                       fontWeight: 200,
                     }
                   },

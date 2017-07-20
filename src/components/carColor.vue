@@ -77,9 +77,6 @@
           return val.slice(0, half) + '\n\n' + val.slice(half);
         },
         setCarPreference(listData) {
-          console.log("colors: ", listData);
-          console.log("colorsum: ", this.sum);
-          console.log("colorName: ", this.colorIndex);
           const $this = this;
           let carDatas = [];
           const colors = [listData[this.colorIndex][2], '#545a6c'];

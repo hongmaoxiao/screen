@@ -120,7 +120,17 @@
                   <p class="sub-title">看车时长热力图</p>
                 </div>
               </div>
-              <div class="core-content core-content-top"></div>
+              <div class="core-content core-content-top core-heat">
+                <div class="core-heat-half core-heat-scatter" ref="scatter">
+                  <img class="car" :src="car" alt="car">
+                  <div class="focus-scatter" :style="{ width: scatterWidth }">
+                    <focusScatter :lastTenLook="lastTenLook" :perVw="perVw" :listData="carfoucus" height='100%' :width='scatterWidth' />
+                  </div>
+                </div>
+                <div class="core-heat-half core-heat-normal">
+                  <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' />
+                </div>
+              </div>
             </div>
             <div class="today-look core-map">
               <div class="core-header">
@@ -148,7 +158,29 @@
                   <p class="sub-title">观看总时长和次数</p>
                 </div>
               </div>
-              <div class="core-content core-content-top"></div>
+              <div class="core-content core-content-top core-individuation">
+                <div
+                  class="individuation-item"
+                  v-for="(item, key) in individuationList"
+                >
+                  <div class="individuation-img">
+                    <img :src="item.src">
+                  </div>
+                  <div class="individuation-overview">
+                    <p class="individuation-overview-title">
+                      {{item.name}}
+                    </p>
+                    <p class="individuation-overview-looktime individuation-num">
+                      {{item.lookTime}}
+                       <span>观看总时长（分钟）</span>
+                    </p>
+                    <p class="individuation-overview-lookcount individuation-num">
+                      {{item.lookCount}}
+                       <span>观看总次数</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="purchase-color-chart-wrapper">
               <div class="core-map core-mr purchase">
@@ -161,7 +193,9 @@
                     <p class="sub-title">客户购买意向人数</p>
                   </div>
                 </div>
-                <div class="core-content core-content-btm"></div>
+                <div class="core-content core-content-btm">
+                  <purchase :perVw="perVw" :listData="purchaseList" height='100%' width='100%' />
+                </div>
               </div>
               <div class="core-map color-preference">
                 <div class="core-header">
@@ -226,8 +260,9 @@
     import todayBg from './todayBg.svg';
     import individuation from './individuation.svg';
     import color from './color.svg';
-
-    import car from './car.png';
+    import car from './car.svg';
+    import hub from './hub.png';
+    import glass from './glass.png';
     import conmen from './conmen.png';
 
     axios.defaults.headers.common['Content-type'] = "application/json";
@@ -261,8 +296,8 @@
           todayBg: todayBg,
           individuation: individuation,
           color: color,
+          car: car,
 
-          car: car + '?' + +new Date(),
           conmen: conmen + '?' + +new Date(),
           top: 0,
           today: this.getDate(+new Date()),
@@ -335,6 +370,32 @@
               value: '2',
             },
           ],
+          individuationList: [
+            {
+              name: '19寸轮毂',
+              lookTime: 120,
+              lookCount: 2,
+              src: hub,
+            },
+            {
+              name: '隐身玻璃',
+              lookTime: 120,
+              lookCount: 10,
+              src: glass,
+            },
+            {
+              name: '18寸轮毂',
+              lookTime: 120,
+              lookCount: 5,
+              src: hub,
+            },
+            {
+              name: '隐私玻璃',
+              lookTime: 120,
+              lookCount: 12,
+              src: glass,
+            },
+          ],
           averageLookTime: null,
           mrate: null,
           wrate: null,
@@ -367,11 +428,6 @@
         perVw() {
           return this.windowWidth / 100;
         },
-        // colorSum() {
-        //   return _.reduce(carColorList, (o) => {
-        //     return o[0];
-        //   }, 0)
-        // }
       },
       watch: {
         windowHeight(val) {
@@ -388,7 +444,7 @@
         this.getUrlHash();
         // this.fecthOnlineDatas();
         const $this = this;
-        // this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
+        this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
         this.windowHeight = document.body.clientHeight;
         this.windowWidth = document.body.clientWidth;
         window.addEventListener('resize', this.handleResize);
@@ -751,6 +807,73 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
         @include borderradius('', '', 10px, 10px);
         box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.3);
       }
+      .core-heat {
+        padding: 0.8vw;
+        @include flex('row', 'flex-start', 'center');
+
+        &-half {
+          @include flex('row', 'center', 'center');
+          @include wh(50%, 100%);
+          position: relative;
+        }
+        &-normal {
+          background: #272e3c;
+        }
+        .car {
+          @include wh(auto, 98%);
+        }
+        .focus-scatter {
+          position: absolute;
+          height: 98%;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+      .core-individuation {
+        @include flex('row', 'space-between', 'center');
+        flex-wrap: wrap;
+        align-content: space-between;
+        padding: 0.8vw;
+
+
+        .individuation-item {
+          background: #272e3c;
+          width: 49%;
+          height: 48%;
+          padding: 1vw;
+          @include flex('row', 'center', 'center');
+
+          .individuation-overview-title {
+            font-size: 0.7vw;
+          }
+          .individuation-num {
+            font-size: 0.8vw;
+
+            & > span {
+              font-size: 0.45vw;
+              color: #7d7f90;
+            }
+          }
+          .individuation-overview {
+            @include flex('column', 'center', 'flex-start');
+            @include wh('', 100%);
+
+            p {
+              @include nopaddingmargin;
+              margin: 0.5vw 0;
+            }
+          }
+          .individuation-img {
+            @include wh(31%, auto);
+            margin-right: 5%;
+
+            & > img {
+              @include wh(100%, auto);
+            }
+          }
+        }
+      }
       .core-color {
         @include padding(5vh, 1vw, 3.2vh, 1vw);
         @include flex('column', 'space-between', 'flex-start');
@@ -758,6 +881,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
         &-item {
           @include wh(100%, '');
           @include flex('row', 'flex-start', 'center');
+          border-bottom: 1px solid #57607c;
 
           &-left {
             @include wh(70%, '');
@@ -887,7 +1011,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
     }
     .sex {
       @include wh(42%, auto);
-      font-size: 1.5vw;
+      font-size: 1vw;
     }
     .sex-boy {
       @include flex('row', 'flex-end', 'center');
@@ -937,9 +1061,6 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
     &-title {
       @include flex('column', 'center', 'flex-start');
     }
-  }
-  .core-content {
-
   }
   .core-content-top {
     @include wh(100%, 37.27vh);
