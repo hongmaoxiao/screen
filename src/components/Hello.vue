@@ -229,11 +229,52 @@
         </div>
         <div class="content-right">
           <div class="online-offline">
+            <div class="online-num">
+              <div class="online-top onoff-top">
+                <span class="online-status">
 
+                </span>
+                <span class="online-count">
+                  6
+                </span>
+              </div>
+              <div class="online-btm onoff-title">
+                当前在线人数
+              </div>
+            </div>
+            <div class="offline-num">
+              <div class="offline-top onoff-top">
+                <span class="offline-status">
+
+                </span>
+                <span class="offline-count">
+                  200
+                </span>
+              </div>
+              <div class="offline-btm onoff-title">
+                当日离线人数
+              </div>
+            </div>
           </div>
           <div class="current-online">
 
           </div>
+        </div>
+        <div class="current-user">
+          <swiper :options="swiperOption" ref="mySwiper">
+            <swiper-slide
+              v-for="user in currentUsers"
+              key="user.id"
+              :data-uid="user.id"
+            >
+              <div class="single-user">
+                <p class="single-user-name-box">
+                  <span class="single-user-name">{{ user.username }}</span>
+                </p>
+                <i class="arrow left-arrow"></i>
+              </div>
+            </swiper-slide>
+          </swiper>
         </div>
       </div>
     </div>
@@ -331,7 +372,46 @@
             loop: true,
           },
           currentUsers: [
-
+            {
+              username: '王二',
+              id: 1,
+            },
+            {
+              username: '李四',
+              id: 2,
+            },
+            {
+              username: '王二',
+              id: 1,
+            },
+            {
+              username: '李四',
+              id: 2,
+            },
+            {
+              username: '王二',
+              id: 1,
+            },
+            {
+              username: '李四',
+              id: 2,
+            },
+            {
+              username: '王二',
+              id: 1,
+            },
+            {
+              username: '李四',
+              id: 2,
+            },
+            {
+              username: '王二',
+              id: 1,
+            },
+            {
+              username: '李四',
+              id: 2,
+            },
           ],
           swiperGroup: [],
           currentLook: '',
@@ -954,10 +1034,71 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
         @include wh(6.3vw, 17.3vh);
         border-top: 1px solid #191c24;
         border-bottom: 1px solid #191c24;
+        padding: 1vw 0;
+        @include flex('column', 'space-around', 'center');
+
+        .onoff-title {
+          font-size: 0.5vw;
+          color: #7d7f90;
+        }
+        .onoff-top {
+          @include flex('row', 'flex-start', 'baseline');
+
+          & > span:first-child {
+            @include wh(0.5vw, 0.5vw);
+            border-radius: 50%;
+            margin: 0 1vw 0.5vw 0;
+
+            &.online-status {
+              background-color: #3bcc68;
+            }
+            &.offline-status {
+              background-color: #545a6c;
+            }
+          }
+          & > span:last-child {
+            font-size: 0.8vw;
+          }
+        }
       }
       .current-online {
         @include wh(6.3vw, 74.1vh);
       }
+    }
+    .current-user {
+      @include wh(6.8vw, 74.1vh);
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      @include flex('column', 'flex-start', 'center');
+    }
+    .current-user .single-user {
+      position: relative;
+      @include flex('column', 'center', 'center');
+      @include wh(6.8vw, 6.3vw);
+      margin-left: 0.25vw;
+      margin-bottom: 0.9%;
+    }
+    .current-user .single-user.active {
+      background: #f03635;
+    }
+    .current-user .single-user .single-user-name-box {
+      @include flex('column', 'center', 'center');
+      @include wh(4.3vw, 4.3vw);
+      background: green;
+      border-radius: 50%;
+    }
+    .current-user .single-user .single-user-name-box .single-user-name {
+      font-size: 0.8vw;
+      width: auto;
+      max-width: 90%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .swiper-slide {
+      width: 100%;
     }
   }
 
@@ -1076,6 +1217,21 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
     @include nopaddingmargin;
     font-size: 0.5vw;
     color: #7d7f90;
+  }
+  .arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: transparent;
+  }
+  .left-arrow {
+    top: 50%;
+    margin-top: -0.5vw;
+    left: -0.75vw;
+    border-width: 0.5vw 0.5vw 0.5vw 0.5vw;
+    border-right-color: #353b4d;
+    display: none;
   }
 }
 </style>
