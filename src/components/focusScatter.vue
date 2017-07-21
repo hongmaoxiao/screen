@@ -193,9 +193,6 @@
           return res;
         },
         setFocusScatter(listData, lastTenLook) {
-          console.log("scatter: ", listData);
-          console.log("lastTenLook: ", lastTenLook);
-          console.log("height: ", this.height);
           const $this = this;
           let focusScatterData = [];
           let topFocusScatterData = [];

@@ -14,13 +14,13 @@
               {{scrollText}}
             </div>
             <div class="current-lookcar scroll-style scroll-swiper">
-              <swiper :options="dateSwiperOption" ref="carSwiper">
+              <swiper :options="carSwiperOption" ref="carSwiper">
                 <swiper-slide
                   v-for="car in carList"
-                  key="car.id"
-                  :data-uid="car.id"
+                  key="car[1]"
+                  :data-uid="car[1]"
                 >
-                  {{ car.name }}
+                  {{ car[0] }}
                 </swiper-slide>
                 <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
                 <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
@@ -277,6 +277,125 @@
           </swiper>
         </div>
       </div>
+      <div class="user-detail">
+        <div class="user-detail-header user-detail-line">
+          <div class="user-icon">
+            小希
+          </div>
+          <div class="user-username">
+            宋小希
+          </div>
+          <div class="user-phone">
+            <img :src="popGirl" class="user-sex user-phone-gap">
+            <span class="user-age user-phone-gap">21岁</span>
+            <span class="user-phone-number user-phone-gap">15010223849</span>
+          </div>
+          <div class="user-tags">
+            <span>有车号</span>
+            <span>一周内买车</span>
+            <span>有车号</span>
+            <span>一周内买车</span>
+          </div>
+        </div>
+        <div class="user-detail-phone user-detail-line">
+          <div class="phone-left phone-wrapper">
+            <div class="phone-left-top phone-wrapper-inner">
+              <div class="phone-wrapper-icon phone-wrapper-box">
+                <img :src="popLike">
+                <span>购买意向</span>
+              </div>
+              <div class="phone-wrapper-num phone-wrapper-box">
+                <span class="phone-wrapper-placeholder"></span>
+                <span class="phone-count">80%</span>
+              </div>
+            </div>
+            <div class="phone-left-top phone-wrapper-inner">
+              <div class="phone-wrapper-icon phone-wrapper-box">
+                <img :src="popTel">
+                <span>在线通话</span>
+              </div>
+              <div class="phone-wrapper-num phone-wrapper-box">
+                <span class="phone-wrapper-placeholder"></span>
+                <span class="phone-count">80%</span>
+              </div>
+            </div>
+          </div>
+          <div class="phone-right">
+            <div class="phone-left-top phone-wrapper-inner">
+              <div class="phone-wrapper-icon phone-wrapper-box">
+                <img :src="popCar">
+                <span>关注车系</span>
+              </div>
+              <div class="phone-wrapper-num phone-wrapper-box">
+                <span class="phone-wrapper-placeholder"></span>
+                <span class="phone-count">80%</span>
+              </div>
+            </div>
+            <div class="phone-left-top phone-wrapper-inner">
+              <div class="phone-wrapper-icon phone-wrapper-box">
+                <img :src="popMessage">
+                <span>语音留言</span>
+              </div>
+              <div class="phone-wrapper-num phone-wrapper-box">
+                <span class="phone-wrapper-placeholder"></span>
+                <span class="phone-count">80%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="user-detail-individuation user-detail-line">
+          <div class="user-detail-individuation-top focus-title">
+            <img :src="popEye">
+            <span class="focus-title-name">正在关注的个性化配件</span>
+          </div>
+          <div class="user-detail-individuation-btm">
+            <div class="focus-individuation-item">
+              <img :src="hub">
+              <span>19寸轮毂</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+            <div class="focus-individuation-item">
+              <img :src="glass">
+              <span>无隐私玻璃</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+            <div class="focus-individuation-item">
+              <span class="look-color">
+                <i class="look-color-arrow"></i>
+              </span>
+              <span>车色-翡翠红</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+          </div>
+        </div>
+        <div class="user-detail-fouce">
+          <div class="user-detail-individuation-top focus-title focus-part-title">
+            <img :src="popEye">
+            <span class="focus-title-name">正在关注的车辆局部</span>
+          </div>
+          <div class="focus-part">
+            <div class="focus-now-box">
+              <img :src="popCarbg" class="focus-now-icon">
+              <div class="focus-now-name-wrapper">
+                <span class="focus-now-name">
+                  后备箱
+                </span>
+                <span class="focus-now-title">
+                  客户正在观看
+                </span>
+              </div>
+            </div>
+            <!-- <span>天窗</span>
+            <span>后备箱</span>
+            <span>后备箱</span>
+            <span>后备箱</span>
+            <span>后备箱</span> -->
+          </div>
+        </div>
+      </div>
     </div>
 </template>
 
@@ -294,7 +413,6 @@
     import carColor from './carColor';
     import overviewBg from './overviewBg.svg';
     import logo from './logo.svg';
-    import trend from './trend.png';
     import man from './man.svg';
     import girl from './girl.svg';
     import heat from './heat.svg';
@@ -302,9 +420,16 @@
     import individuation from './individuation.svg';
     import color from './color.svg';
     import car from './car.svg';
+    import popGirl from './pop-girl.svg';
     import hub from './hub.png';
     import glass from './glass.png';
-    import conmen from './conmen.png';
+    import popLike from './pop-like.svg';
+    import popCar from './pop-car.svg';
+    import popTel from './pop-tel.svg';
+    import popMessage from './pop-message.svg';
+    import popEye from './pop-eye.svg';
+    import popCarbg from './pop-carbg.svg';
+
 
     axios.defaults.headers.common['Content-type'] = "application/json";
 
@@ -319,6 +444,7 @@
         IOdometer,
       },
       data() {
+        const $this = this;
         return {
           scrollText: '到南京时，有朋友约去游逛，勾留7了一日；第二日上午便须渡江到浦口，下午上车北去。父亲因为事忙，本已说定不送我，叫旅馆里一个熟识的茶房8陪我同去。他再三嘱咐茶房，甚是仔细。但他终于不放心，怕茶房不妥帖9；颇踌躇10了一会。其实我那年已二十岁，北京已来往过两三次，是没有什么要紧的了。他踌躇了一会，终于决定还是自己送我去。我再三劝他不必去；他只说：“不要紧，他们去不好！',
           carTheme: 'car',
@@ -330,7 +456,6 @@
           showLook: false,
           logo: logo + '?' + +new Date(),
           overviewBg: overviewBg,
-          trend: trend + '?' + +new Date(),
           man: man,
           girl: girl,
           heat: heat,
@@ -338,26 +463,51 @@
           individuation: individuation,
           color: color,
           car: car,
-
-          conmen: conmen + '?' + +new Date(),
+          popGirl: popGirl,
+          popLike: popLike,
+          popCar: popCar,
+          popTel: popTel,
+          popMessage: popMessage,
+          popEye: popEye,
+          hub: hub,
+          glass: glass,
+          popCarbg: popCarbg,
           top: 0,
           today: this.getDate(+new Date()),
           scatterWidth: '0px',
           yestoday: this.getDate(+new Date() - 24 * 60 * 60 * 1000),
           windowHeight: document.body.clientHeight,
           windowWidth: document.body.clientWidth,
+          carSwiperOption: {
+            initialSlide: 0,
+            slidesPerView: 1,
+            centeredSlides: false,
+            autoplayDisableOnInteraction: false,
+            grabCursor: true,
+            paginationClickable: true,
+            nextButton: '.swiper-button-next',
+            prevButton: '.swiper-button-prev',
+            spaceBetween: 30,
+            onSlideChangeEnd(swiper) {
+              const id = $this.carList[swiper.activeIndex][1];
+              let url = window.location.href;
+              window.location.href = url.replace(/car=(\d+)/, "car=" + id);
+            }
+          },
           dateSwiperOption: {
             initialSlide: 0,
             slidesPerView: 1,
             centeredSlides: false,
             autoplayDisableOnInteraction: false,
-            autoplay: 2500,
             grabCursor: true,
-            loop: true,
             paginationClickable: true,
             nextButton: '.swiper-button-next',
             prevButton: '.swiper-button-prev',
             spaceBetween: 30,
+            onSlideChangeEnd(swiper) {
+              console.log("id: ", $this.carList[swiper.activeIndex][1]);
+              console.log("this: ", $this.carList[swiper.activeIndex]);
+            }
           },
           swiperOption: {
             initialSlide: 0,
@@ -372,30 +522,6 @@
             loop: true,
           },
           currentUsers: [
-            {
-              username: '王二',
-              id: 1,
-            },
-            {
-              username: '李四',
-              id: 2,
-            },
-            {
-              username: '王二',
-              id: 1,
-            },
-            {
-              username: '李四',
-              id: 2,
-            },
-            {
-              username: '王二',
-              id: 1,
-            },
-            {
-              username: '李四',
-              id: 2,
-            },
             {
               username: '王二',
               id: 1,
@@ -441,14 +567,7 @@
             },
           ],
           carList: [
-            {
-              name: '长安cs15',
-              value: '1',
-            },
-            {
-              name: '长安cs95',
-              value: '2',
-            },
+
           ],
           individuationList: [
             {
@@ -508,6 +627,9 @@
         perVw() {
           return this.windowWidth / 100;
         },
+        carSwiper() {
+          return this.$refs.carSwiper.swiper;
+        },
       },
       watch: {
         windowHeight(val) {
@@ -522,21 +644,15 @@
       },
       mounted() {
         this.getUrlHash();
-        // this.fecthOnlineDatas();
+        this.fecthOnlineDatas();
         const $this = this;
         this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
         this.windowHeight = document.body.clientHeight;
         this.windowWidth = document.body.clientWidth;
         window.addEventListener('resize', this.handleResize);
-        setInterval(function() {
-          $this.totalUsers = $this.totalUsers + 1;
-          $this.currentOnlineUsers = $this.currentOnlineUsers + 1;
-        }, 2000);
-        setTimeout(() => {
-          $('.current-view').liMarquee({
-            height: 50,
-          });
-        }, 1000)
+        $('.current-view').liMarquee({
+          height: 50,
+        });
         // this.handleShowOverviewInterval();
       },
       beforeDestroy() {
@@ -547,6 +663,12 @@
           const url = window.location.href;
           this.carId = url.match(/car=(\d+)/) ? parseInt(url.match(/car=(\d+)/)[1]) : '';
           this.fetchBasicDatas();
+        },
+        setCarSwiperActive() {
+          const carActiveIndex = _.findIndex(this.carList, (o) => {
+            return o[1] ===  this.carId;
+          })
+          this.carSwiper.slideTo(carActiveIndex, 700, false);
         },
         launchFullscreen(element) {
           if(element.requestFullscreen) {
@@ -607,7 +729,7 @@
           }, 3000);
         },
         handleShowOverview(top, target) {
-          target.querySelector(".single-user").style.background = '#f03635';
+          // target.querySelector(".single-user").style.background = '#f03635';
           const arrow = target.querySelector(".arrow");
           arrow.style.display = "block";
           this.setUserDetailPostion(top, target);
@@ -644,6 +766,7 @@
         },
 
         assignBasicDatas(parsed) {
+          console.log("basicDatas: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
@@ -660,6 +783,8 @@
             this.carfoucus = _.sortBy(parsed.carfoucus, [function(data) {
               return -data[0];
             }]);
+            this.carList = parsed.dealer_car;
+            this.setCarSwiperActive();
             this.orderPurchaseUsers(parsed.car_intention);
           }
         },
@@ -1080,9 +1205,9 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
       margin-left: 0.25vw;
       margin-bottom: 0.9%;
     }
-    .current-user .single-user.active {
-      background: #f03635;
-    }
+    // .current-user .single-user.active {
+    //   background: #f03635;
+    // }
     .current-user .single-user .single-user-name-box {
       @include flex('column', 'center', 'center');
       @include wh(4.3vw, 4.3vw);
@@ -1232,6 +1357,221 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
     border-width: 0.5vw 0.5vw 0.5vw 0.5vw;
     border-right-color: #353b4d;
     display: none;
+  }
+  .user-detail {
+    z-index: -111;
+    position: fixed;
+    right: 6.3vw;
+    top: 25.9vh;
+    z-index: 9998;
+    @include flex('column', 'flex-start', 'flex-start');
+    @include wh(22.3vw, 35vw);
+    padding: 0 1vw;
+    background-color: #f7f7f7;
+
+    &-line {
+      border-bottom: 1px solid #979797;
+    }
+    &-header {
+      @include wh(100%, 20.7%);
+      @include flex('column', 'space-around', 'center');
+      color: #333;
+      padding: 2.15vw 0 0.4vw;
+
+      .user-icon {
+        @include wh(4.3vw, 4.3vw);
+        @include flex('column', 'center', 'center');
+        font-size: 0.8vw;
+        color: #fff;
+        position: absolute;
+        top: 0;
+        background: #6ce7c3;
+        border-radius: 50%;
+        margin-top: -2.15vw;
+      }
+      .user-username {
+        font-size: 0.75vw;
+        color: #22222e;
+      }
+      .user-phone {
+        @include flex('row', 'center', 'center');
+        font-size: 0.65vw;
+        color: #9294a3;
+
+        .user-sex {
+          @include wh(1vw, auto);
+        }
+        .user-phone-gap {
+          margin-right: 0.5vw;
+        }
+      }
+
+      .user-tags {
+        @include flex('row', 'center', 'center');
+
+        span {
+          padding: 0.1vw 0.5vw;
+          background-color: #adb5ce;
+          border-radius: 5px;
+          color: #fff;
+          margin-right: 0.3vw;
+        }
+      }
+    }
+    &-phone {
+      @include wh(100%, 22.4%);
+      @include flex('row', 'center', 'center');
+      padding: 1vw;
+
+      .phone-left {
+        @include wh(50%, 100%);
+      }
+      .phone-right {
+        @include wh(50%, 100%);
+        padding-left: 2vw;
+      }
+      .phone-wrapper {
+        @include flex('column', 'space-around', 'center');
+      }
+      .phone-wrapper-inner {
+        @include flex('column', 'center', 'flex-start');
+        @include wh(100%, auto);
+
+        .phone-wrapper-box {
+          @include flex('row', 'flex-start', 'center');
+          margin-bottom: 0.5vw;
+
+          span {
+            font-size: 0.5vw;
+            color: #999;
+          }
+          img,
+          .phone-wrapper-placeholder {
+            @include wh(1vw, auto);
+            margin-right: 0.5vw;
+          }
+          span.phone-count {
+            font-size: 0.7vw;
+            color: #333;
+          }
+        }
+      }
+    }
+    &-individuation {
+      @include wh(100%, 25.4%);
+      @include flex('column', 'space-between', 'flex-start');
+      padding: 1.5vw 0 0.5vw;
+
+      &-btm {
+        @include flex('row', 'space-between', 'center');
+        @include wh(100%, 100%);
+
+        .focus-individuation-item {
+          @include flex('column', 'space-around', 'center');
+          @include wh(32%, 80%);
+          color: #7d7f90;
+          border: 1px solid #37b8fd;
+          position: relative;
+          padding: 0.3vw 0;
+
+          .look-color {
+            position: relative;
+            @include wh(2vw, 2vw);
+
+            &-arrow {
+              position: absolute;
+              left: 0;
+              top: 0;
+              opacity: 0.2;
+              border-top: 2vw solid #fff;
+              border-right: 2vw solid transparent;
+            }
+          }
+          img {
+            @include wh(35%, auto);
+          }
+        }
+      }
+    }
+    &-fouce {
+      @include wh(100%, 31.5%);
+      padding: 1.5vw 0 0.5vw;
+      @include flex('column', 'flex-start', 'flex-start');
+
+      .focus-part-title {
+        margin-bottom: 5%;
+      }
+      .focus-part {
+        @include flex('row', 'flex-start', 'baseline');
+        flex-wrap: wrap;
+        @include wh(100%, auto);
+
+        .focus-now-box {
+          position: relative;
+          @include flex('row', 'space-between', 'center');
+          border-radius: 5px;
+          background-color: #37b9fd;
+          @include wh(100%, 5vw);
+
+          .focus-now-icon {
+            @include wh(auto, 85%);
+          }
+          .focus-now-name-wrapper {
+            width: auto;
+            position: absolute;
+            right: 1vw;
+            bottom: 0;
+            height: 100%;
+            @include flex('column', 'center', 'flex-end');
+            .focus-now-name {
+              font-size: 1vw;
+            }
+            .focus-now-title {
+              position: absolute;
+              bottom: 0.5vw;
+              font-size: 0.38vw;
+            }
+          }
+        }
+        & > span {
+            padding: 0.1vw;
+            background-color: #37b9fd;
+            border-radius: 5px;
+            color: #fff;
+            width: 23%;
+            margin-right: 2%;
+            text-align: center;
+            margin-bottom: 2%;
+          }
+      }
+    }
+    .focus-title {
+      @include flex('row', 'flex-start', 'center');
+
+      img {
+        @include wh(1vw, auto);
+        margin-right: 0.5vw;
+      }
+      &-name {
+        font-size: 0.5vw;
+        color: #333333;
+      }
+    }
+
+    .arrow-left-top {
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-top: 0.5vw solid #37b8fd;
+      border-right: 0.5vw solid transparent;
+    }
+    .arrow-right-btm {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      border-bottom: 0.5vw solid #37b8fd;
+      border-left: 0.5vw solid transparent;
+    }
   }
 }
 </style>

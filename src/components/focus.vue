@@ -65,11 +65,20 @@
             this.chart.resize();
           }
         },
+        formatPercent(val, total) {
+          let res = isNaN(val) ? 0 : val;
+          if (isNaN(total) || total === 0) {
+            res = 0;
+          } else {
+            res = res / total * 100;
+          }
+          return res === 0 ? 0 : res.toFixed(1) + '%';
+        },
         setFocus(listData) {
+          const $this = this;
           let category = [];
           let focusData = [];
           let allData = [];
-          console.log("focusNormal: ", listData);
           const len = listData.length;
           _.forEach(listData, (value, key) => {
             if ( key < 4 ) {
@@ -161,8 +170,7 @@
                     show: true,
                     position: 'top',
                     formatter: function(a) {
-                      const val = a.value / total * 100;
-                      return val.toFixed(1) + '%';
+                      return $this.formatPercent(a.data, total);
                     },
                     textStyle: {
                       color: "#fff",
@@ -174,8 +182,7 @@
                     show: true,
                     position: 'top',
                     formatter: function(a) {
-                      const val = a.value / total * 100;
-                      return val.toFixed(1) + '%';
+                      return $this.formatPercent(a.data, total);
                     },
                     textStyle: {
                       color: "#fff",
