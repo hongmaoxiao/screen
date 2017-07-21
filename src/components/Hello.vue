@@ -17,10 +17,9 @@
               <swiper :options="carSwiperOption" ref="carSwiper">
                 <swiper-slide
                   v-for="car in carList"
-                  key="car[1]"
-                  :data-uid="car[1]"
+                  key="car.car_id"
                 >
-                  {{ car[0] }}
+                  {{ car.carname }}
                 </swiper-slide>
                 <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
                 <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
@@ -30,10 +29,9 @@
               <swiper :options="dateSwiperOption" ref="dateSwiper">
                 <swiper-slide
                   v-for="date in dateList"
-                  key="date.value"
-                  :data-uid="date.value"
+                  key="date"
                 >
-                  {{ date.name }}
+                  {{ date }}
                 </swiper-slide>
                 <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
                 <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
@@ -168,14 +166,14 @@
                   </div>
                   <div class="individuation-overview">
                     <p class="individuation-overview-title">
-                      {{item.name}}
+                      {{item.part_name}}
                     </p>
                     <p class="individuation-overview-looktime individuation-num">
-                      {{item.lookTime}}
+                      {{item.look_times}}
                        <span>观看总时长（分钟）</span>
                     </p>
                     <p class="individuation-overview-lookcount individuation-num">
-                      {{item.lookCount}}
+                      {{item.time}}
                        <span>观看总次数</span>
                     </p>
                   </div>
@@ -454,6 +452,7 @@
           currentUserId: 0,
           lastTenLook: [],
           showLook: false,
+          activeDate: '',
           logo: logo + '?' + +new Date(),
           overviewBg: overviewBg,
           man: man,
@@ -489,7 +488,7 @@
             prevButton: '.swiper-button-prev',
             spaceBetween: 30,
             onSlideChangeEnd(swiper) {
-              const id = $this.carList[swiper.activeIndex][1];
+              const id = $this.carList[swiper.activeIndex].car_id;
               let url = window.location.href;
               window.location.href = url.replace(/car=(\d+)/, "car=" + id);
             }
@@ -505,8 +504,11 @@
             prevButton: '.swiper-button-prev',
             spaceBetween: 30,
             onSlideChangeEnd(swiper) {
-              console.log("id: ", $this.carList[swiper.activeIndex][1]);
-              console.log("this: ", $this.carList[swiper.activeIndex]);
+              const activeDate = $this.originDateList[swiper.activeIndex];
+              let url = window.location.href;
+              if (url) {}
+              window.location.href = url.replace(/car=(\d+)/, "car=" + id);
+              console.log("date: ", activeDate);
             }
           },
           swiperOption: {
@@ -556,45 +558,10 @@
             communicate_time: 0,
             budget: null,
           },
-          dateList: [
-            {
-              name: '7月12日',
-              value: '20170712',
-            },
-            {
-              name: '7月13日',
-              value: '20170713',
-            },
-          ],
-          carList: [
-
-          ],
-          individuationList: [
-            {
-              name: '19寸轮毂',
-              lookTime: 120,
-              lookCount: 2,
-              src: hub,
-            },
-            {
-              name: '隐身玻璃',
-              lookTime: 120,
-              lookCount: 10,
-              src: glass,
-            },
-            {
-              name: '18寸轮毂',
-              lookTime: 120,
-              lookCount: 5,
-              src: hub,
-            },
-            {
-              name: '隐私玻璃',
-              lookTime: 120,
-              lookCount: 12,
-              src: glass,
-            },
-          ],
+          carList: [],
+          dateList: [],
+          originDateList: [],
+          individuationList: [],
           averageLookTime: null,
           mrate: null,
           wrate: null,
@@ -606,6 +573,8 @@
           purchaseUsers: [],
           carfoucus: [],
           colorSum: 0,
+          carRegExp: 'car=(\d+)',
+
         }
       },
       computed: {
@@ -629,6 +598,9 @@
         },
         carSwiper() {
           return this.$refs.carSwiper.swiper;
+        },
+        dateSwiper() {
+          return this.$refs.dateSwiper.swiper;
         },
       },
       watch: {
@@ -662,13 +634,20 @@
         getUrlHash() {
           const url = window.location.href;
           this.carId = url.match(/car=(\d+)/) ? parseInt(url.match(/car=(\d+)/)[1]) : '';
+          this.activeDate = url.match(/day=(\w+-\w+-\w+)/) ? url.match(/day=(\w+-\w+-\w+)/)[1] : new Date();
           this.fetchBasicDatas();
         },
         setCarSwiperActive() {
           const carActiveIndex = _.findIndex(this.carList, (o) => {
-            return o[1] ===  this.carId;
+            return o.car_id ===  this.carId;
           })
           this.carSwiper.slideTo(carActiveIndex, 700, false);
+        },
+        setDateSwiperActive() {
+          const dateActiveIndex = _.findIndex(this.dateList, (date) => {
+            return date ===  this.getDate(this.activeDate);
+          })
+          this.dateSwiper.slideTo(dateActiveIndex, 700, false);
         },
         launchFullscreen(element) {
           if(element.requestFullscreen) {
@@ -764,7 +743,6 @@
             setTimeout($this.fecthOnlineDatas, 5000);
           });
         },
-
         assignBasicDatas(parsed) {
           console.log("basicDatas: ", parsed);
           if (parsed) {
@@ -777,7 +755,6 @@
             this.colorSum = _.reduce(this.carColorList, (result, value, key) => {
               return result + value[0];
             }, 0);
-            // this.carPreferenceList = parsed.dealer_car;
             this.activeUser = parsed.active_user_num.date;
             this.purchaseList = parsed.car_intention;
             this.carfoucus = _.sortBy(parsed.carfoucus, [function(data) {
@@ -785,8 +762,40 @@
             }]);
             this.carList = parsed.dealer_car;
             this.setCarSwiperActive();
+            this.assignIndividuationList(parsed.selfhood_select);
+            this.originDateList = parsed.date;
+            this.assignDate(parsed.date);
             this.orderPurchaseUsers(parsed.car_intention);
           }
+        },
+        assignIndividuationList(inObj) {
+          let res = [];
+          _.forEach(inObj, (o, key) => {
+            if (key.includes('glass')) {
+              res.push({
+                look_times: o.look_times,
+                part_name: o.part_name,
+                time: o.time,
+                src: glass,
+              })
+            } else if (key.includes('wheelhub')) {
+              res.push({
+                look_times: o.look_times,
+                part_name: o.part_name,
+                time: o.time,
+                src: hub,
+              })
+            }
+          })
+          let orderRes = _.orderBy(res, ['part_name']);
+          orderRes.splice(2, 0, orderRes.splice(1, 1)[0]);
+          this.individuationList = orderRes;
+        },
+        assignDate(date) {
+          this.dateList = _.map(date, (o) => {
+            return this.getDate(o);
+          });
+          this.setDateSwiperActive();
         },
         assignOnlineDatas(parsed) {
           if (parsed && parsed.data) {
@@ -1363,7 +1372,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
     position: fixed;
     right: 6.3vw;
     top: 25.9vh;
-    z-index: 9998;
+    // z-index: 9998;
     @include flex('column', 'flex-start', 'flex-start');
     @include wh(22.3vw, 35vw);
     padding: 0 1vw;
