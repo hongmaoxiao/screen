@@ -490,7 +490,7 @@
             onSlideChangeEnd(swiper) {
               const id = $this.carList[swiper.activeIndex].car_id;
               let url = window.location.href;
-              window.location.href = url.replace(/car=(\d+)/, "car=" + id);
+              window.location.href = url.replace(new RegExp($this.carRegExp), `car=${id}`);
             }
           },
           dateSwiperOption: {
@@ -506,9 +506,13 @@
             onSlideChangeEnd(swiper) {
               const activeDate = $this.originDateList[swiper.activeIndex];
               let url = window.location.href;
-              if (url) {}
-              window.location.href = url.replace(/car=(\d+)/, "car=" + id);
-              console.log("date: ", activeDate);
+              const dayRe = new RegExp($this.dayRegRxp);
+              const dayMatch = url.match(dayRe);
+              if (dayMatch) {
+                window.location.href = url.replace(dayRe, `day=${activeDate}`);
+              } else {
+                window.location.href = `${url}&day=${activeDate}`;
+              }
             }
           },
           swiperOption: {
@@ -573,8 +577,8 @@
           purchaseUsers: [],
           carfoucus: [],
           colorSum: 0,
-          carRegExp: 'car=(\d+)',
-
+          carRegExp: 'car=(\\d+)',
+          dayRegRxp: 'day=(\\w+-\\w+-\\w+)',
         }
       },
       computed: {
@@ -616,7 +620,7 @@
       },
       mounted() {
         this.getUrlHash();
-        this.fecthOnlineDatas();
+        // this.fecthOnlineDatas();
         const $this = this;
         this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
         this.windowHeight = document.body.clientHeight;
@@ -633,8 +637,10 @@
       methods: {
         getUrlHash() {
           const url = window.location.href;
-          this.carId = url.match(/car=(\d+)/) ? parseInt(url.match(/car=(\d+)/)[1]) : '';
-          this.activeDate = url.match(/day=(\w+-\w+-\w+)/) ? url.match(/day=(\w+-\w+-\w+)/)[1] : new Date();
+          const carMatch = url.match(new RegExp(this.carRegExp));
+          const dayMatch = url.match(new RegExp(this.dayRegRxp));
+          this.carId = carMatch ? parseInt(carMatch[1]) : '';
+          this.activeDate = dayMatch ? dayMatch[1] : new Date();
           this.fetchBasicDatas();
         },
         setCarSwiperActive() {
