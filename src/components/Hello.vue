@@ -611,17 +611,16 @@
         }
       },
       mounted() {
+        const $this = this;
         this.getUrlHash();
         this.fecthOnlineDatas();
-        const $this = this;
         this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
         this.windowHeight = document.body.clientHeight;
         this.windowWidth = document.body.clientWidth;
         window.addEventListener('resize', this.handleResize);
-        $('.current-view').liMarquee({
-          loop: -1,
-          circular: true,
-        });
+        window.addEventListener('click', this.handleShowOrHideDetail);
+        this.handleNotHideDetail();
+        this.createTextAutoSlide();
         setTimeout(this.createCurrentLookWs, 1000);
       },
       computed: {
@@ -669,6 +668,7 @@
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
+        window.addEventListener('click', this.handleShowOrHideDetail);
         if (this.focusWs) {
           this.focusWs.close();
         }
@@ -683,6 +683,12 @@
         }
       },
       methods: {
+        createTextAutoSlide() {
+          $('.current-view').liMarquee({
+            loop: -1,
+            circular: true,
+          });
+        },
         getUrlHash() {
           const url = window.location.href;
           const carMatch = url.match(new RegExp(this.carRegExp));
@@ -746,7 +752,6 @@
           }
         },
         parseFocusAndColor(detail) {
-          console.log("detail: ", detail);
           if (_.has(detail, 'body')) {
             this.currentLookBody = _.get(detail, 'body');
           }
@@ -846,7 +851,7 @@
           const $this = this;
           axios.get(`${this.basicUrl}${this.carId}?t=${+new Date()}`)
           .then(response => {
-            // console.log("response: ", response);
+            console.log("response: ", response);
             // console.log("activeDate: ", this.activeDate);
             if (response.status === 200) {
               $this.assignBasicDatas(response.data);
@@ -943,7 +948,6 @@
           }
         },
         assignOnlineDatas(data) {
-          // console.log("data: ", data);
           const $this = this;
           this.onlineCount = data.online && data.online.num;
           this.offlineCount = data.offline && data.offline.num;
@@ -1078,7 +1082,11 @@
         },
         handleSummaryFocusAndColor(user, parsed) {
           if (!user.online) {
-            this.summary.focus = parsed.focus;
+            if (parsed.focus.length >= 5) {
+              this.summary.focus = parsed.focus.slice(0, 5);
+            } else {
+              this.summary.focus = parsed.focus;
+            }
             if (parsed.color.length > 0) {
               this.summary.color = parsed.color[0];
             }
@@ -1121,6 +1129,7 @@
           this.getUserDetailIconBg(user);
           this.fecthUserDetailInfo(user);
           this.calculateTopHeight(event.target);
+          event.stopPropagation();
         },
         getUserDetailIconBg(user) {
           this.userDetailHeaderBg = user.iconBg;
@@ -1151,14 +1160,20 @@
             }
           }
           this.showUserOverview = true;
-          setTimeout(() => {
-            this.handleHideOverview(target);
-          }, 10000);
         },
-        handleHideOverview(target) {
-          const $arrow = target.find(".arrow");
-          $arrow.hide();
+        handleHideOverview() {
+          $(".arrow").hide();
           this.showUserOverview = false;
+        },
+        handleShowOrHideDetail() {
+          if (this.showUserOverview) {
+            this.handleHideOverview();
+          }
+        },
+        handleNotHideDetail() {
+          $(".user-detail").on('click', (e) => {
+            e.stopPropagation();
+          });
         },
       },
     }
