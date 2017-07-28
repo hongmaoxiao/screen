@@ -834,8 +834,6 @@
         handleResize() {
           this.windowHeight = document.body.clientHeight;
           this.windowWidth = document.body.clientWidth;
-          console.log("this.windowHeight: ", this.windowHeight);
-          console.log("this.windowWidth: ", this.windowWidth);
           this.scatterWidth = (this.$refs.scatter.offsetHeight * 0.98 * 408 / 895 + 25) + 'px';
           console.log("scatterWidth", this.scatterWidth);
         },
