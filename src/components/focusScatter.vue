@@ -198,7 +198,7 @@
           let topFocusScatterData = [];
           const max = listData[0] ? listData[0][0] : 100;
           topFocusScatterData = this.mapTenLook(_.uniq(lastTenLook), max);
-          const labelSize = 0.88 * this.perVw;
+          const labelSize = 0.7 * this.perVw;
           _.forEach(listData, (value, key) => {
             const pos = $this.positionMap[value[1]];
             if (pos && pos.x && pos.y) {

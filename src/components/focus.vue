@@ -149,10 +149,10 @@
               {
                 name: '用户重点关注',
                 type: 'bar',
-                barWidth: 10,
+                barWidth: 15,
                 itemStyle: {
                   normal: {
-                    barBorderRadius: 10,
+                    barBorderRadius: 2,
                     color: new echarts.graphic.LinearGradient(
                       0, 0, 1, 0,
                       [

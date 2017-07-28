@@ -1,5 +1,5 @@
 <template>
-    <div :class="className" :id="id" :colorIndex="colorIndex" :perVw="perVw" :sum="sum" :listData="listData" :style="{height: height, width: width}"></div>
+    <div :class="className" :id="id" :colorIndex="colorIndex" :perVw="perVw" :listData="listData" :style="{height: height, width: width}"></div>
 </template>
 <script>
     import _ from 'lodash';
@@ -33,10 +33,6 @@
           require: true
         },
         perVw: {
-          type: Number,
-          require: true
-        },
-        sum: {
           type: Number,
           require: true
         },
@@ -86,7 +82,7 @@
           });
           carDatas.push({
             name: '其它',
-            value: this.sum - listData[this.colorIndex][0] >= 0 ? this.sum - listData[this.colorIndex][0] : 0,
+            value: 100 - listData[this.colorIndex][0],
           });
           this.chart.setOption({
             color: colors,

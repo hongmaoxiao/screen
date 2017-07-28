@@ -139,7 +139,7 @@
                   show: true,
                   interval: 'auto',
                   lineStyle: {
-                    color: ['#fff'],
+                    color: ['#353b4c'],
                     width: 1,
                   },
                 },

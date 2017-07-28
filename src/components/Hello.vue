@@ -5,7 +5,7 @@
           <img :src="logo" class="logo-img" alt="logo">
         </div>
         <div class="title">
-          <div class="company-message">
+          <div class="company-message"  @click="fullScreen()">
             <h2>车势科技</h2>
             <h3 class="sub-title">汽车行业智能销售专家</h3>
           </div>
@@ -57,7 +57,6 @@
                 <i-odometer
                   class="iOdometer"
                   :value="totalUsers"
-                  :theme="carTheme"
                   :duration="2500"
                 ></i-odometer>
               </p>
@@ -68,7 +67,6 @@
               <p class="info-number info-mb">
                 <i-odometer
                   :value="currentOnlineUsers"
-                  :theme="digitalTheme"
                 ></i-odometer>
               </p>
               <p class="divide-line divide-line-yellow info-mb"></p>
@@ -78,7 +76,7 @@
               <p class="info-number info-mb">
                 <i-odometer
                   :value="averageLookTime"
-                  :theme="carTheme"
+
                 ></i-odometer>
               </p>
               <p class="divide-line divide-line-purple info-mb"></p>
@@ -90,7 +88,6 @@
                   <img class="man sex-icon" :src="man" alt="man">
                   <i-odometer
                     :value="mrate"
-                    :theme="carTheme"
                   ></i-odometer>
                   %
                 </span>
@@ -98,7 +95,6 @@
                   <img class="girl sex-icon" :src="girl" alt="girl">
                   <i-odometer
                     :value="wrate"
-                    :theme="carTheme"
                   ></i-odometer>
                   %
                 </span>
@@ -169,12 +165,12 @@
                       {{item.part_name}}
                     </p>
                     <p class="individuation-overview-looktime individuation-num">
-                      {{item.look_times}}
-                       <span>观看总时长（分钟）</span>
+                      <span>{{item.look_times}}</span>
+                      <span>观看总时长（分钟）</span>
                     </p>
                     <p class="individuation-overview-lookcount individuation-num">
-                      {{item.time}}
-                       <span>观看总次数</span>
+                      <span>{{item.time}}</span>
+                      <span>观看总次数</span>
                     </p>
                   </div>
                 </div>
@@ -184,7 +180,7 @@
               <div class="core-map core-mr purchase">
                 <div class="core-header">
                   <div class="core-header-icon">
-                    <img :src="individuation" alt="purchase">
+                    <img :src="like" alt="purchase">
                   </div>
                   <div class="core-header-title">
                     <p class="main-title">购买意向统计</p>
@@ -216,7 +212,7 @@
                     <div class="core-color-item-right">
                       <span class="color-rate-num">{{color[0]}}%</span>
                       <div class="color-chart">
-                        <carColor :perVw="perVw" :colorIndex="key" :id="'car-preference-chart' + key" :sum="colorSum" :listData="carColorList" height='100%' width='100%' />
+                        <carColor :perVw="perVw" :colorIndex="key" :id="'car-preference-chart' + key" :listData="carColorList" height='100%' width='100%' />
                       </div>
                     </div>
                   </div>
@@ -233,7 +229,7 @@
 
                 </span>
                 <span class="online-count">
-                  6
+                  {{onlineCount}}
                 </span>
               </div>
               <div class="online-btm onoff-title">
@@ -246,7 +242,7 @@
 
                 </span>
                 <span class="offline-count">
-                  200
+                  {{offlineCount}}
                 </span>
               </div>
               <div class="offline-btm onoff-title">
@@ -265,9 +261,9 @@
               key="user.id"
               :data-uid="user.id"
             >
-              <div class="single-user">
-                <p class="single-user-name-box">
-                  <span class="single-user-name">{{ user.username }}</span>
+              <div class="single-user" @click="showDetailUserInfo(user, $event)">
+                <p class="single-user-name-box" :style="{background: user.online ? '#6ce7c3' : '#535a6c'}">
+                  <span class="single-user-name">{{ user.name }}</span>
                 </p>
                 <i class="arrow left-arrow"></i>
               </div>
@@ -275,24 +271,21 @@
           </swiper>
         </div>
       </div>
-      <div class="user-detail">
+      <div class="user-detail" ref="userDetail" v-show="showUserOverview">
         <div class="user-detail-header user-detail-line">
-          <div class="user-icon">
-            小希
+          <div class="user-icon" :style="{background: userDetailHeaderBg}">
+            <span>{{summary.username}}</span>
           </div>
           <div class="user-username">
-            宋小希
+            {{summary.username}}
           </div>
           <div class="user-phone">
-            <img :src="popGirl" class="user-sex user-phone-gap">
-            <span class="user-age user-phone-gap">21岁</span>
-            <span class="user-phone-number user-phone-gap">15010223849</span>
+            <img :src="summary.sex === '男' ? popMan : popGirl" class="user-sex user-phone-gap">
+            <span class="user-age user-phone-gap">{{userAge}}</span>
+            <span class="user-phone-number user-phone-gap">{{summary.phone}}</span>
           </div>
           <div class="user-tags">
-            <span>有车号</span>
-            <span>一周内买车</span>
-            <span>有车号</span>
-            <span>一周内买车</span>
+            <span v-for="feature in summary.features">{{feature}}</span>
           </div>
         </div>
         <div class="user-detail-phone user-detail-line">
@@ -304,7 +297,7 @@
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span class="phone-count">80%</span>
+                <span class="phone-count">{{summary.intention}}%</span>
               </div>
             </div>
             <div class="phone-left-top phone-wrapper-inner">
@@ -314,7 +307,7 @@
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span class="phone-count">80%</span>
+                <span class="phone-count">{{communicate}}</span>
               </div>
             </div>
           </div>
@@ -326,7 +319,7 @@
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span class="phone-count">80%</span>
+                <span class="phone-count">{{summary.lookcar}}</span>
               </div>
             </div>
             <div class="phone-left-top phone-wrapper-inner">
@@ -336,7 +329,7 @@
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span class="phone-count">80%</span>
+                <span class="phone-count">{{voiceTime}}</span>
               </div>
             </div>
           </div>
@@ -344,26 +337,26 @@
         <div class="user-detail-individuation user-detail-line">
           <div class="user-detail-individuation-top focus-title">
             <img :src="popEye">
-            <span class="focus-title-name">正在关注的个性化配件</span>
+            <span class="focus-title-name">{{userDetailIndividuaName}}</span>
           </div>
-          <div class="user-detail-individuation-btm">
+          <div class="user-detail-individuation-btm" v-if="currentLookWheelhub">
             <div class="focus-individuation-item">
               <img :src="hub">
-              <span>19寸轮毂</span>
+              <span>{{currentLookWheelhub}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
-            <div class="focus-individuation-item">
+            <div class="focus-individuation-item" v-if="currentLookGlass">
               <img :src="glass">
-              <span>无隐私玻璃</span>
+              <span>{{currentLookGlass}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
-            <div class="focus-individuation-item">
-              <span class="look-color">
-                <i class="look-color-arrow"></i>
+            <div class="focus-individuation-item" v-if="currentLookColor.name">
+              <span class="look-color" :style="{background: currentLookColor.value}">
+                <i class="look-color-arrow" :style="{background: currentLookColor.value}"></i>
               </span>
-              <span>车色-翡翠红</span>
+              <span>车色-{{currentLookColor.name}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
@@ -372,25 +365,23 @@
         <div class="user-detail-fouce">
           <div class="user-detail-individuation-top focus-title focus-part-title">
             <img :src="popEye">
-            <span class="focus-title-name">正在关注的车辆局部</span>
+            <span class="focus-title-name">{{userDetailCarBodyName}}</span>
           </div>
-          <div class="focus-part">
-            <div class="focus-now-box">
+          <div class="focus-part" v-if="summary.online">
+            <div class="focus-now-box" v-if="currentLookBody">
               <img :src="popCarbg" class="focus-now-icon">
               <div class="focus-now-name-wrapper">
                 <span class="focus-now-name">
-                  后备箱
+                  {{currentLookBody}}
                 </span>
                 <span class="focus-now-title">
                   客户正在观看
                 </span>
               </div>
             </div>
-            <!-- <span>天窗</span>
-            <span>后备箱</span>
-            <span>后备箱</span>
-            <span>后备箱</span>
-            <span>后备箱</span> -->
+          </div>
+          <div class="focus-part" v-else>
+            <span v-for="focus in summary.focus">{{focus}}</span>
           </div>
         </div>
       </div>
@@ -416,9 +407,11 @@
     import heat from './heat.svg';
     import todayBg from './todayBg.svg';
     import individuation from './individuation.svg';
+    import like from './like.svg';
     import color from './color.svg';
     import car from './car.svg';
     import popGirl from './pop-girl.svg';
+    import popMan from './pop-man.svg';
     import hub from './hub.png';
     import glass from './glass.png';
     import popLike from './pop-like.svg';
@@ -444,7 +437,7 @@
       data() {
         const $this = this;
         return {
-          scrollText: '到南京时，有朋友约去游逛，勾留7了一日；第二日上午便须渡江到浦口，下午上车北去。父亲因为事忙，本已说定不送我，叫旅馆里一个熟识的茶房8陪我同去。他再三嘱咐茶房，甚是仔细。但他终于不放心，怕茶房不妥帖9；颇踌躇10了一会。其实我那年已二十岁，北京已来往过两三次，是没有什么要紧的了。他踌躇了一会，终于决定还是自己送我去。我再三劝他不必去；他只说：“不要紧，他们去不好！',
+          scrollTextList: [],
           carTheme: 'car',
           digitalTheme: 'digital',
           carId: 0,
@@ -460,9 +453,11 @@
           heat: heat,
           todayBg: todayBg,
           individuation: individuation,
+          like: like,
           color: color,
           car: car,
           popGirl: popGirl,
+          popMan: popMan,
           popLike: popLike,
           popCar: popCar,
           popTel: popTel,
@@ -472,9 +467,7 @@
           glass: glass,
           popCarbg: popCarbg,
           top: 0,
-          today: this.getDate(+new Date()),
           scatterWidth: '0px',
-          yestoday: this.getDate(+new Date() - 24 * 60 * 60 * 1000),
           windowHeight: document.body.clientHeight,
           windowWidth: document.body.clientWidth,
           carSwiperOption: {
@@ -528,25 +521,9 @@
             loop: true,
           },
           currentUsers: [
-            {
-              username: '王二',
-              id: 1,
-            },
-            {
-              username: '李四',
-              id: 2,
-            },
-            {
-              username: '王二',
-              id: 1,
-            },
-            {
-              username: '李四',
-              id: 2,
-            },
+
           ],
           swiperGroup: [],
-          currentLook: '',
           activeBg: 'activeBg',
           showUserOverview: false,
           UserOverviewHeight: 0,
@@ -556,11 +533,14 @@
             lookcar: null,
             intention: null,
             sex: null,
+            age: null,
             focus: [],
             color: [],
-            voice_time: null,
+            voice_time: 0,
             communicate_time: 0,
             budget: null,
+            online: false,
+            features: [],
           },
           carList: [],
           dateList: [],
@@ -571,40 +551,83 @@
           wrate: null,
           totalUsers: null,
           currentOnlineUsers: null,
+          currentLookBody: null,
+          currentLookColor: {
+            name: null,
+            value: null,
+          },
+          currentLookGlass: null,
+          currentLookWheelhub: null,
           carColorList: [],
           activeUser: [],
           purchaseList: [],
-          purchaseUsers: [],
           carfoucus: [],
-          colorSum: 0,
           carRegExp: 'car=(\\d+)',
           dayRegRxp: 'day=(\\w+-\\w+-\\w+)',
+          basicUrl: '/dealer/factory/overview/',
+          focusUrl: '/dealer/users/experience/report/',
+          onlineUrl: '/dealer/screen/online/users',
+          userDetailUrl: '/dealer/users/online/',
+          wsBaseUrl: 'wss://dms.autoforce.net/ws',
+          focusWsUrl: '/dealer/screen/dynamic/focus',
+          onlineWsUrl: '/dealer/screen/dynamic/users',
+          currentLookWsUrl: '/dealer/screen/dynamic/look',
+          focusWs: null,
+          onlineWs: null,
+          userDetailWs: null,
+          currentLookWs: null,
+          onlineCount: 0,
+          offlineCount: 0,
         }
+      },
+      mounted() {
+        this.getUrlHash();
+        this.fecthOnlineDatas();
+        const $this = this;
+        this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
+        this.windowHeight = document.body.clientHeight;
+        this.windowWidth = document.body.clientWidth;
+        window.addEventListener('resize', this.handleResize);
+        $('.current-view').liMarquee({
+          loop: -1,
+          circular: true,
+        });
+        setTimeout(this.createCurrentLookWs, 1000);
+        // this.handleShowOverviewInterval();
       },
       computed: {
         communicate() {
-          return this.summary.communicate_time > 0 ? this.secondsToMinutes(this.summary.communicate_time) : '--';
+          return this.summary.communicate_time > 0 ? `${this.secondsToMinutes(this.summary.communicate_time)}min` : '0min';
         },
         voiceTime() {
-          return this.secondsToMinutes(this.summary.voice_time);
-        },
-        focusMostColor() {
-          return this.summary.color.length > 0 ? this.summary.color[0] : '';
-        },
-        mostFocus() {
-          return this.summary.focus.slice(0, 4);
-        },
-        sexTag() {
-          return this.summary.sex === '男' ? '他' : '她';
+          return `${this.summary.voice_time}s`;
         },
         perVw() {
           return this.windowWidth / 100;
+        },
+        perVh() {
+          return this.windowHeight / 100;
         },
         carSwiper() {
           return this.$refs.carSwiper.swiper;
         },
         dateSwiper() {
           return this.$refs.dateSwiper.swiper;
+        },
+        scrollText() {
+          return this.scrollTextList.join("\xa0\xa0\xa0\xa0\xa0");
+        },
+        userAge() {
+          return this.summary.age ? `${this.summary.age}岁` : '';
+        },
+        userDetailHeaderBg() {
+          return this.summary.online ? '#6ce7c3' : '#adb5cd';
+        },
+        userDetailIndividuaName() {
+          return this.summary.online ? '正在关注的个性化配件' : '重点关注的个性化配件';
+        },
+        userDetailCarBodyName() {
+          return this.summary.online ? '正在关注的车辆局部' : '重点关注的个性化配件';
         },
       },
       watch: {
@@ -616,23 +639,22 @@
         },
         currentUsers(val) {
           this.swiperGroup = val;
-        }
-      },
-      mounted() {
-        this.getUrlHash();
-        // this.fecthOnlineDatas();
-        const $this = this;
-        this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
-        this.windowHeight = document.body.clientHeight;
-        this.windowWidth = document.body.clientWidth;
-        window.addEventListener('resize', this.handleResize);
-        $('.current-view').liMarquee({
-          height: 50,
-        });
-        // this.handleShowOverviewInterval();
+        },
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
+        if (this.focusWs) {
+          this.focusWs.close();
+        }
+        if (this.onlineWs) {
+          this.onlineWs.close();
+        }
+        if (this.userDetailWs) {
+          this.userDetailWs.close();
+        }
+        if (this.currentLookWs) {
+          this.currentLookWs.close();
+        }
       },
       methods: {
         getUrlHash() {
@@ -640,8 +662,95 @@
           const carMatch = url.match(new RegExp(this.carRegExp));
           const dayMatch = url.match(new RegExp(this.dayRegRxp));
           this.carId = carMatch ? parseInt(carMatch[1]) : '';
-          this.activeDate = dayMatch ? dayMatch[1] : new Date();
+          this.creatfocusWs(this.carId);
+          this.activeDate = dayMatch ? dayMatch[1] : this.parseSelectDay(new Date());
           this.fetchBasicDatas();
+        },
+        creatfocusWs(carid) {
+          if (!carid) {
+            return;
+          }
+
+          this.focusWs = new WebSocket(`${this.wsBaseUrl}${this.focusWsUrl}?car_id=${carid}`);
+
+          this.focusWs.onmessage = (msg) => {
+            console.log("onmessage: ", msg.data);
+            this.scrollTextList.push(msg.data);
+          }
+
+          this.focusWs.onopen = (msg) => {
+            console.log("open: ", msg);
+          }
+
+          this.focusWs.onclose = (msg) => {
+            console.log("close: ", msg);
+          }
+        },
+        createOnlineWs() {
+          this.onlineWs = new WebSocket(`${this.wsBaseUrl}${this.onlineWsUrl}`);
+
+          this.onlineWs.onmessage = (msg) => {
+            const online = msg.data && JSON.parse(msg.data);
+            this.handleOnlineList(online);
+          }
+
+          this.onlineWs.onopen = (msg) => {
+            console.log("onlineWsopen: ", msg);
+          }
+
+          this.onlineWs.onclose = (msg) => {
+            console.log("onlineWclose: ", msg);
+          }
+        },
+        createUserDetailWs(uid) {
+          this.userDetailWs = new WebSocket(`${this.wsBaseUrl}${this.focusWsUrl}?user_id=${uid}`);
+
+          this.userDetailWs.onmessage = (msg) => {
+            console.log("userDetailWsMsg: ", msg.data);
+            const detail = msg.data && JSON.parse(msg.data);
+            this.parseFocusAndColor(detail);
+          }
+
+          this.userDetailWs.onopen = (msg) => {
+            console.log("userDetailWsopen: ", msg);
+          }
+
+          this.userDetailWs.onclose = (msg) => {
+            console.log("userDetailWsclose: ", msg);
+          }
+        },
+        parseFocusAndColor(detail) {
+          console.log("detail: ", detail);
+          if (_.has(detail, 'body')) {
+            this.currentLookBody = _.get(detail, 'body');
+          }
+          if (_.has(detail, 'color')) {
+            this.currentLookColor.name = _.get(detail, 'color').name;
+            this.currentLookColor.value = _.get(detail, 'color').value;
+          }
+          if (_.has(detail, 'glass')) {
+            this.currentLookGlass = _.get(detail, 'glass');
+          }
+          if (_.has(detail, 'wheelhub')) {
+            this.currentLookWheelhub = _.get(detail, 'wheelhub');
+          }
+        },
+        createCurrentLookWs() {
+          this.CurrentLookWs = new WebSocket(`${this.wsBaseUrl}${this.currentLookWsUrl}?car_id=${this.carId}`);
+
+          this.CurrentLookWs.onmessage = (msg) => {
+            console.log("CurrentLookWsMsg: ", msg.data);
+            this.lastTenLook = [];
+            this.lastTenLook = [msg.data];
+          }
+
+          this.CurrentLookWs.onopen = (msg) => {
+            console.log("CurrentLookWsopen: ", msg);
+          }
+
+          this.CurrentLookWs.onclose = (msg) => {
+            console.log("CurrentLookWsclose: ", msg);
+          }
         },
         setCarSwiperActive() {
           const carActiveIndex = _.findIndex(this.carList, (o) => {
@@ -651,7 +760,7 @@
         },
         setDateSwiperActive() {
           const dateActiveIndex = _.findIndex(this.dateList, (date) => {
-            return date ===  this.getDate(this.activeDate);
+            return date ===  this.parseShowDate(this.activeDate);
           })
           this.dateSwiper.slideTo(dateActiveIndex, 700, false);
         },
@@ -699,58 +808,46 @@
           const {top, height} = target.getBoundingClientRect();
           this.handleShowOverview(top + height / 2, target);
         },
-        setUserDetailPostion(top, target) {
-          const height = $(".user-detail").height();
-          if (top + height / 2 >= this.windowHeight) {
-            this.$refs.userDetail.style.top = (this.windowHeight - height) / this.perVw + 'vw';
-          } else if (top <= height / 2) {
-            this.$refs.userDetail.style.top = 0;
-          } else {
-            this.$refs.userDetail.style.top = (top - height / 2) / this.perVw + 'vw';
-          }
-          this.showUserOverview = true;
-          setTimeout(() => {
-            this.handleHideOverview(target);
-          }, 3000);
-        },
-        handleShowOverview(top, target) {
-          // target.querySelector(".single-user").style.background = '#f03635';
-          const arrow = target.querySelector(".arrow");
-          arrow.style.display = "block";
-          this.setUserDetailPostion(top, target);
-        },
-        handleHideOverview(target) {
-          target.querySelector(".single-user").style.background = '';
-          const arrow = target.querySelector(".arrow");
-          arrow.style.display = "none";
-          this.showUserOverview = false;
-        },
         fetchBasicDatas() {
           const $this = this;
-          axios.get(`/dealer/factory/overview/${this.carId}?t=${+new Date()}`)
+          axios.get(`${this.basicUrl}${this.carId}?t=${+new Date()}`)
           .then(response => {
-            $this.assignBasicDatas(response.data);
-            setTimeout($this.fetchBasicDatas, 500000);
+            // console.log("response: ", response);
+            // console.log("activeDate: ", this.activeDate);
+            if (response.status === 200) {
+              $this.assignBasicDatas(response.data);
+            }
+            setTimeout($this.fetchBasicDatas, 5000);
           })
           .catch(error => {
             console.log(error);
             setTimeout($this.fetchBasicDatas, 5000);
           });
         },
-        fecthOnlineDatas() {
+        fecthFocusDatas() {
           const $this = this;
-          axios.get(`/dealer/users/experience/report/${this.lookId}?t=${+new Date()}`)
+          axios.get(`${this.focusUrl}${this.lookId}?t=${+new Date()}`)
           .then(response => {
-            $this.assignOnlineDatas(response.data)
-            setTimeout($this.fecthOnlineDatas, 5000);
+            $this.assignFocusDatas(response.data)
+            setTimeout($this.fecthFocusDatas, 5000);
           })
           .catch(error => {
             console.log(error);
-            setTimeout($this.fecthOnlineDatas, 5000);
+            setTimeout($this.fecthFocusDatas, 5000);
+          });
+        },
+        fecthOnlineDatas() {
+          const $this = this;
+          axios.get(`${this.onlineUrl}?car_id=${this.carId}&day=${this.activeDate}`)
+          .then(response => {
+            $this.assignOnlineDatas(response.data.data)
+          })
+          .catch(error => {
+            console.log(error);
           });
         },
         assignBasicDatas(parsed) {
-          console.log("basicDatas: ", parsed);
+          // console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
@@ -758,9 +855,6 @@
             this.currentOnlineUsers = parsed.vr_num + Math.random * 100;
             this.totalUsers = parsed.total_users_num;
             this.carColorList = parsed.look_colors;
-            this.colorSum = _.reduce(this.carColorList, (result, value, key) => {
-              return result + value[0];
-            }, 0);
             this.activeUser = parsed.active_user_num.date;
             this.purchaseList = parsed.car_intention;
             this.carfoucus = _.sortBy(parsed.carfoucus, [function(data) {
@@ -771,7 +865,6 @@
             this.assignIndividuationList(parsed.selfhood_select);
             this.originDateList = parsed.date;
             this.assignDate(parsed.date);
-            this.orderPurchaseUsers(parsed.car_intention);
           }
         },
         assignIndividuationList(inObj) {
@@ -799,11 +892,12 @@
         },
         assignDate(date) {
           this.dateList = _.map(date, (o) => {
-            return this.getDate(o);
+            return this.parseShowDate(o);
           });
           this.setDateSwiperActive();
         },
-        assignOnlineDatas(parsed) {
+        assignFocusDatas(parsed) {
+          console.log("parsed: ", parsed);
           if (parsed && parsed.data) {
             if (parsed.data.latest) {
               this.randerCurrentLook(parsed.data.latest);
@@ -812,6 +906,40 @@
             if (parsed.data.user) {
               this.ifNewOnlineUser(parsed.data);
               this.ifHasUsers(parsed.data.user);
+            }
+          }
+        },
+        assignOnlineDatas(data) {
+          // console.log("data: ", data);
+          this.onlineCount = data.online && data.online.num;
+          this.offlineCount = data.offline && data.offline.num;
+          this.currentUsers = [];
+          if (data.online) {
+            _.forEach(data.online.users, (online) => {
+              this.currentUsers.push(online);
+            })
+          }
+          if (data.offline) {
+            _.forEach(data.offline.users, (offline) => {
+              this.currentUsers.push(offline);
+            })
+          }
+          this.createOnlineWs();
+        },
+        handleOnlineList(online) {
+          if (!_.keys(online).length) {
+            return;
+          }
+          const exist = _.findIndex(this.currentUsers, (o) => {
+            return o.id === online.id;
+          });
+          if (exist > -1) {
+            this.currentUsers.splice(exist, 1, online);
+          } else {
+            if (online.online) {
+              this.currentUsers.unshift(online);
+            } else {
+              this.currentUsers.push(online);
             }
           }
         },
@@ -860,15 +988,117 @@
           this.summary.budget = user.budget;
           this.summary.communicate_time = user.communicate_time;
         },
-        orderPurchaseUsers(purchase) {
-          this.purchaseUsers = _.reverse(_.map(purchase, (purchaseObj) => {
-            return _.join(_.values(purchaseObj), '')
-          }));
+        fecthUserDetailInfo(user) {
+          const $this = this;
+          axios.get(`${this.userDetailUrl}${user.id}`)
+          .then(response => {
+            // console.log("online: ", response.data.data)
+            const parsed = response.data && response.data.data;
+            if (parsed) {
+              $this.summary.username = parsed.username;
+              $this.summary.phone = parsed.phone;
+              $this.summary.lookcar = parsed.lookcar;
+              $this.summary.intention = parsed.intention;
+              $this.summary.sex = parsed.sex;
+              $this.summary.voice_time = isNaN(parsed.voice_time) ? 0 : parsed.voice_time;
+              $this.summary.budget = parsed.budget;
+              $this.summary.communicate_time = parsed.communicate_time;
+              $this.summary.age = parsed.age;
+              $this.summary.online = user.online;
+              this.handleSummaryFeature(parsed.feature);
+              this.handleSummaryFocusAndColor(user, parsed);
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
         },
-        getDate(val) {
+        handleSummaryFeature(feature) {
+          this.summary.features = [];
+          if (feature.has_plate) {
+            this.summary.features.push(feature.has_plate);
+          }
+          if (feature.buy_in) {
+            this.summary.features.push(`${feature.buy_in}买车`);
+          }
+          if (feature.budget) {
+            this.summary.features.push(`预算${feature.budget}万`);
+          }
+          if (feature.method) {
+            this.summary.features.push(feature.method);
+          }
+        },
+        handleSummaryFocusAndColor(user, parsed) {
+          if (!user.online) {
+            this.summary.focus = parsed.focus;
+            this.summary.color = parsed.color;
+            return;
+          }
+          if (this.userDetailWs) {
+            this.userDetailWs.close();
+          }
+          this.resetCurrentLookDetail();
+          this.createUserDetailWs(user.id);
+        },
+        resetCurrentLookDetail() {
+          this.currentLookBody = null;
+          this.currentLookColor = {
+            name: null,
+            value: null,
+          };
+          this.currentLookGlass =  null;
+          this.currentLookWheelhub = null;
+        },
+        parseShowDate(val) {
           const date = new Date(val);
           return (date.getMonth() + 1) + '月' + date.getDate() + '日';
-        }
+        },
+        parseSelectDay(val) {
+          const date = new Date(val);
+          const year = date.getFullYear();
+          const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+          const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+          return `${year}-${month}-${day}`
+        },
+        showDetailUserInfo(user, event) {
+          this.fecthUserDetailInfo(user);
+          this.calculateTopHeight(event.target);
+        },
+        calculateTopHeight(target) {
+          const $singleUser = $(target).parents(".single-user");
+          const top = $singleUser.offset().top;
+          const height = $singleUser.height();
+          this.handleShowOverview(top + height / 2, $singleUser);
+        },
+        handleShowOverview(top, target) {
+          $(".arrow").hide();
+          const $arrow = target.find(".arrow");
+          $arrow.show();
+          this.setUserDetailPostion(top, target);
+        },
+        setUserDetailPostion(top, target) {
+          const height = $(".user-detail").height();
+          if (top + height / 2 >= this.windowHeight) {
+            this.$refs.userDetail.style.top = (this.windowHeight - height) / this.perVw + 'vw';
+          } else if (top <= height / 2) {
+            this.$refs.userDetail.style.top = '25.9vh';
+          } else {
+            if ((top - height / 2) <= 25.9 * this.perVh) {
+              this.$refs.userDetail.style.top = '25.9vh';
+              return;
+            }
+            this.$refs.userDetail.style.top = (top - height / 2) / this.perVw + 'vw';
+          }
+          this.showUserOverview = true;
+          setTimeout(() => {
+            this.handleHideOverview(target);
+          }, 300000);
+        },
+        handleHideOverview(target) {
+          const $arrow = target.find(".arrow");
+          $arrow.hide();
+          this.showUserOverview = false;
+        },
       },
     }
 </script>
@@ -909,7 +1139,7 @@
 }
 
 $mainBg: '#353b4c';
-$mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
+$mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
 @mixin flex($direction, $justify, $align) {
   display: flex;
@@ -933,7 +1163,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
       @include wh(13.9vw, 8.6vh);
       @include bg('#b52f25');
       .logo-img {
-        @include wh(7.6vw, auto);
+        @include wh(auto, 6vh);
       }
     }
     .title {
@@ -963,7 +1193,12 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
           font-size: 0.7vw;
           margin-right: 0.77vw;
           background: #272e3c;
+          .scroll-text {
+            margin-right: 10px;
+            display: inline-block;
+          }
         }
+
         .current-lookcar {
           @include wh(14.4vw, 4.3vh);
           margin-right: 0.77vw;
@@ -991,13 +1226,14 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
         @include flex('column', 'flex-start', 'center');
 
         &-title {
-          @include wh(12.3vw, 7.3vh);
+          @include wh(12.3vw, 6.2vh);
           @include flex('row', 'flex-start', 'center');
           @include bg('#353b4d');
+          margin-bottom: 1px;
           box-shadow: $mainShadows;
 
           &-bg {
-            @include wh(3vw, 7.3vh);
+            @include wh(3vw, 6.2vh);
             @include flex('row', 'center', 'center');
           }
           &-name {
@@ -1006,9 +1242,11 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
         }
         &-four-part {
           @include flex('column', 'center', 'center');
-          @include wh(12.3vw, 17.7vh);
+          @include wh(12.3vw, 18vh);
           @include bg('#2e3342');
-          border-radius: 10px;
+          border-radius: 3px;
+          border-top-left-radius: 0;
+          border-top-right-radius: 0;
           box-shadow: $mainShadows;
           & > p {
             @include nopaddingmargin;
@@ -1024,7 +1262,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
       .core-map {
         @include flex('column', 'flex-start', 'flex-start');
         @include bg('#2e3342');
-        @include borderradius('', '', 10px, 10px);
+        @include borderradius(0, 0, 3px, 3px);
         box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.3);
       }
       .core-heat {
@@ -1062,15 +1300,21 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
           width: 49%;
           height: 48%;
           padding: 1vw;
-          @include flex('row', 'center', 'center');
+          @include flex('row', 'flex-start', 'center');
 
           .individuation-overview-title {
             font-size: 0.7vw;
           }
           .individuation-num {
-            font-size: 0.8vw;
 
-            & > span {
+            & > span:first-child {
+              font-size: 0.8vw;
+              width: auto;
+              min-width: 1.5vw;
+              display: inline-block;
+              text-align: center;
+            }
+            & > span:last-child {
               font-size: 0.45vw;
               color: #7d7f90;
             }
@@ -1086,7 +1330,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
           }
           .individuation-img {
             @include wh(31%, auto);
-            margin-right: 5%;
+            margin: 0 5% 0 10%;
 
             & > img {
               @include wh(100%, auto);
@@ -1095,13 +1339,13 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
         }
       }
       .core-color {
-        @include padding(5vh, 1vw, 3.2vh, 1vw);
+        @include padding(2vh, 1vw, 2vh, 1vw);
         @include flex('column', 'space-between', 'flex-start');
 
         &-item {
           @include wh(100%, '');
           @include flex('row', 'flex-start', 'center');
-          border-bottom: 1px solid #57607c;
+          border-bottom: 1px solid #353b4c;
 
           &-left {
             @include wh(70%, '');
@@ -1147,7 +1391,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
         @include wh(36.8vw, 44.6vh);
       }
       .today-look {
-        @include wh(36.8vw, 37.5vh);
+        @include wh(36.8vw, 38.4vh);
       }
 
       .purchase-color-chart-wrapper {
@@ -1157,11 +1401,9 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
       .individuation {
         @include wh(38.8vw, 44.6vh);
       }
-      .purchase {
-        @include wh(18.8vw, 37.5vh);
-      }
+      .purchase,
       .color-preference {
-        @include wh(18.8vw, 37.5vh);
+        @include wh(18.8vw, 38.4vh);
       }
     }
 
@@ -1226,7 +1468,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
     .current-user .single-user .single-user-name-box {
       @include flex('column', 'center', 'center');
       @include wh(4.3vw, 4.3vw);
-      background: green;
+      // background: green;
       border-radius: 50%;
     }
     .current-user .single-user .single-user-name-box .single-user-name {
@@ -1243,7 +1485,7 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
   }
 
   .core-mb {
-    @include margin('', '', 1.9vh, '');
+    @include margin('', '', 2.4vh, '');
   }
   .core-mr {
     @include margin('', 1.1vw, '', '');
@@ -1327,8 +1569,9 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
   }
   .core-header {
     @include flex('row', 'flex-start', 'center');
-    @include wh(100%, 7.33vh);
+    @include wh(100%, 6.2vh);
     @include bg('#353b4c');
+    @include borderradius(3px, 3px, 0, 0);
     box-shadow: $mainShadows;
 
     &-icon {
@@ -1374,15 +1617,16 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
     display: none;
   }
   .user-detail {
-    z-index: -111;
     position: fixed;
     right: 6.3vw;
     top: 25.9vh;
-    // z-index: 9998;
+    z-index: 9998;
     @include flex('column', 'flex-start', 'flex-start');
-    @include wh(22.3vw, 35vw);
+    @include wh(21vw, 35vw);
     padding: 0 1vw;
     background-color: #f7f7f7;
+    box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
 
     &-line {
       border-bottom: 1px solid #979797;
@@ -1396,13 +1640,21 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
       .user-icon {
         @include wh(4.3vw, 4.3vw);
         @include flex('column', 'center', 'center');
-        font-size: 0.8vw;
-        color: #fff;
         position: absolute;
         top: 0;
-        background: #6ce7c3;
+        // background: #6ce7c3;
         border-radius: 50%;
         margin-top: -2.15vw;
+        span {
+          display: inline-block;
+          max-width: 90%;
+          width: auto;
+          font-size: 0.8vw;
+          color: #fff;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
       }
       .user-username {
         font-size: 0.75vw;
@@ -1450,11 +1702,10 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
       }
       .phone-wrapper-inner {
         @include flex('column', 'center', 'flex-start');
-        @include wh(100%, auto);
+        @include wh(100%, 3vw);
 
         .phone-wrapper-box {
           @include flex('row', 'flex-start', 'center');
-          margin-bottom: 0.5vw;
 
           span {
             font-size: 0.5vw;
@@ -1537,7 +1788,9 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
             right: 1vw;
             bottom: 0;
             height: 100%;
+            min-width: 3vw;
             @include flex('column', 'center', 'flex-end');
+
             .focus-now-name {
               font-size: 1vw;
             }
@@ -1586,6 +1839,9 @@ $mainShadows: 0 2px 0 0 rgba(0, 0, 0, 0.3);
       bottom: 0;
       border-bottom: 0.5vw solid #37b8fd;
       border-left: 0.5vw solid transparent;
+    }
+    .str_move > span {
+      display: inline-block;
     }
   }
 }
