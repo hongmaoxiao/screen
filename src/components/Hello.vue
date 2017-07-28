@@ -19,7 +19,7 @@
                   v-for="car in carList"
                   key="car.car_id"
                 >
-                  {{ car.carname }}
+                  <span class="slide-inner-text">{{ car.carname }}</span>
                 </swiper-slide>
                 <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
                 <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
@@ -31,7 +31,7 @@
                   v-for="date in dateList"
                   key="date"
                 >
-                  {{ date }}
+                  <span class="slide-inner-text">{{ date }}</span>
                 </swiper-slide>
                 <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
                 <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
@@ -104,25 +104,46 @@
             </div>
           </div>
           <div class="core-mid core-mr">
-            <div class="heat core-map core-mb">
-              <div class="core-header">
-                <div class="core-header-icon">
-                  <img :src="heat" class="heat-img" alt="heat">
-                </div>
-                <div class="core-header-title">
-                  <p class="main-title">客户关注点热力图</p>
-                  <p class="sub-title">看车时长热力图</p>
-                </div>
-              </div>
-              <div class="core-content core-content-top core-heat">
-                <div class="core-heat-half core-heat-scatter" ref="scatter">
-                  <img class="car" :src="car" alt="car">
-                  <div class="focus-scatter" :style="{ width: scatterWidth }">
-                    <focusScatter :lastTenLook="lastTenLook" :perVw="perVw" :listData="carfoucus" height='100%' :width='scatterWidth' />
+            <div class="color-purchase-wrapper core-mb">
+              <div class="core-map core-mr purchase">
+                <div class="core-header">
+                  <div class="core-header-icon">
+                    <img :src="like" alt="purchase">
+                  </div>
+                  <div class="core-header-title">
+                    <p class="main-title">购买意向统计</p>
+                    <p class="sub-title">客户购买意向人数</p>
                   </div>
                 </div>
-                <div class="core-heat-half core-heat-normal">
-                  <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' />
+                <div class="core-content color-purchase-content">
+                  <purchase :perVw="perVw" :listData="purchaseList" height='100%' width='100%' />
+                </div>
+              </div>
+              <div class="core-map color-preference">
+                <div class="core-header">
+                  <div class="core-header-icon">
+                    <img :src="color" alt="color">
+                  </div>
+                  <div class="core-header-title">
+                    <p class="main-title">颜色偏好统计</p>
+                    <p class="sub-title">看车颜色时长占比</p>
+                  </div>
+                </div>
+                <div class="core-content color-purchase-content core-color">
+                  <div class="core-color-item" v-for="(color, key) in carColorList">
+                    <div class="core-color-item-left">
+                      <span class="color-bg" :style="{ background: color[2] }">
+                        <i class="color-bg-arrow"></i>
+                      </span>
+                      <span class="color-name">{{color[1]}}</span>
+                    </div>
+                    <div class="core-color-item-right">
+                      <span class="color-rate-num">{{color[0]}}%</span>
+                      <div class="color-chart">
+                        <carColor :perVw="perVw" :colorIndex="key" :id="'car-preference-chart' + key" :listData="carColorList" height='100%' width='100%' />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -177,7 +198,7 @@
               </div>
             </div>
             <div class="purchase-color-chart-wrapper">
-              <div class="core-map core-mr purchase">
+              <!-- <div class="core-map core-mr purchase">
                 <div class="core-header">
                   <div class="core-header-icon">
                     <img :src="like" alt="purchase">
@@ -216,6 +237,26 @@
                       </div>
                     </div>
                   </div>
+                </div>
+              </div> -->
+              <div class="core-header">
+                <div class="core-header-icon">
+                  <img :src="heat" class="heat-img" alt="heat">
+                </div>
+                <div class="core-header-title">
+                  <p class="main-title">客户关注点热力图</p>
+                  <p class="sub-title">看车时长热力图</p>
+                </div>
+              </div>
+              <div class="core-content core-content-btm core-heat">
+                <div class="core-heat-half core-heat-scatter" ref="scatter">
+                  <img class="car" :src="car" alt="car">
+                  <div class="focus-scatter" :style="{ width: scatterWidth }">
+                    <focusScatter :lastTenLook="lastTenLook" :perVw="perVw" :listData="carfoucus" height='100%' :width='scatterWidth' />
+                  </div>
+                </div>
+                <div class="core-heat-half core-heat-normal">
+                  <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' />
                 </div>
               </div>
             </div>
@@ -271,144 +312,142 @@
           </swiper>
         </div>
       </div>
-      <transition name="slide-fade">
-        <div class="user-detail" ref="userDetail" v-show="showUserOverview">
-          <div class="user-detail-header user-detail-line">
-            <div class="user-icon" :style="{background: userDetailHeaderBg}">
-              <span>{{summary.username}}</span>
-            </div>
-            <div class="user-username">
-              {{summary.username}}
-            </div>
-            <div class="user-phone">
-              <img :src="summary.sex === '男' ? popMan : popGirl" class="user-sex user-phone-gap">
-              <span class="user-age user-phone-gap">{{userAge}}</span>
-              <span class="user-phone-number user-phone-gap">{{summary.phone}}</span>
-            </div>
-            <div class="user-tags">
-              <span v-for="feature in summary.features">{{feature}}</span>
-            </div>
+      <div class="user-detail" ref="userDetail" v-show="showUserOverview">
+        <div class="user-detail-header user-detail-line">
+          <div class="user-icon" :style="{background: userDetailHeaderBg}">
+            <span>{{summary.username}}</span>
           </div>
-          <div class="user-detail-phone user-detail-line">
-            <div class="phone-left phone-wrapper">
-              <div class="phone-left-top phone-wrapper-inner">
-                <div class="phone-wrapper-icon phone-wrapper-box">
-                  <img :src="popLike">
-                  <span>购买意向</span>
-                </div>
-                <div class="phone-wrapper-num phone-wrapper-box">
-                  <span class="phone-wrapper-placeholder"></span>
-                  <span class="phone-count">{{summary.intention}}%</span>
-                </div>
+          <div class="user-username">
+            {{summary.username}}
+          </div>
+          <div class="user-phone">
+            <img :src="summary.sex === '男' ? popMan : popGirl" class="user-sex user-phone-gap">
+            <span class="user-age user-phone-gap">{{userAge}}</span>
+            <span class="user-phone-number user-phone-gap">{{summary.phone}}</span>
+          </div>
+          <div class="user-tags">
+            <span v-for="feature in summary.features">{{feature}}</span>
+          </div>
+        </div>
+        <div class="user-detail-phone user-detail-line">
+          <div class="phone-left phone-wrapper">
+            <div class="phone-left-top phone-wrapper-inner">
+              <div class="phone-wrapper-icon phone-wrapper-box">
+                <img :src="popLike">
+                <span>购买意向</span>
               </div>
-              <div class="phone-left-top phone-wrapper-inner">
-                <div class="phone-wrapper-icon phone-wrapper-box">
-                  <img :src="popTel">
-                  <span>在线通话</span>
-                </div>
-                <div class="phone-wrapper-num phone-wrapper-box">
-                  <span class="phone-wrapper-placeholder"></span>
-                  <span class="phone-count">{{communicate}}</span>
-                </div>
+              <div class="phone-wrapper-num phone-wrapper-box">
+                <span class="phone-wrapper-placeholder"></span>
+                <span class="phone-count">{{summary.intention}}%</span>
               </div>
             </div>
-            <div class="phone-right">
-              <div class="phone-left-top phone-wrapper-inner">
-                <div class="phone-wrapper-icon phone-wrapper-box">
-                  <img :src="popCar">
-                  <span>关注车系</span>
-                </div>
-                <div class="phone-wrapper-num phone-wrapper-box">
-                  <span class="phone-wrapper-placeholder"></span>
-                  <span class="phone-count">{{summary.lookcar}}</span>
-                </div>
+            <div class="phone-left-top phone-wrapper-inner">
+              <div class="phone-wrapper-icon phone-wrapper-box">
+                <img :src="popTel">
+                <span>在线通话</span>
               </div>
-              <div class="phone-left-top phone-wrapper-inner">
-                <div class="phone-wrapper-icon phone-wrapper-box">
-                  <img :src="popMessage">
-                  <span>语音留言</span>
-                </div>
-                <div class="phone-wrapper-num phone-wrapper-box">
-                  <span class="phone-wrapper-placeholder"></span>
-                  <span class="phone-count">{{voiceTime}}</span>
-                </div>
+              <div class="phone-wrapper-num phone-wrapper-box">
+                <span class="phone-wrapper-placeholder"></span>
+                <span class="phone-count">{{communicate}}</span>
               </div>
             </div>
           </div>
-          <div class="user-detail-individuation user-detail-line">
-            <div class="user-detail-individuation-top focus-title">
-              <img :src="popEye">
-              <span class="focus-title-name">{{userDetailIndividuaName}}</span>
-            </div>
-            <div class="user-detail-individuation-btm" v-if="summary.online">
-              <div class="focus-individuation-item" v-if="currentLookWheelhub">
-                <img :src="hub">
-                <span>{{currentLookWheelhub}}</span>
-                <i class="arrow-left-top"></i>
-                <i class="arrow-right-btm"></i>
+          <div class="phone-right">
+            <div class="phone-left-top phone-wrapper-inner">
+              <div class="phone-wrapper-icon phone-wrapper-box">
+                <img :src="popCar">
+                <span>关注车系</span>
               </div>
-              <div class="focus-individuation-item" v-if="currentLookGlass">
-                <img :src="glass">
-                <span>{{currentLookGlass}}</span>
-                <i class="arrow-left-top"></i>
-                <i class="arrow-right-btm"></i>
-              </div>
-              <div class="focus-individuation-item" v-if="currentLookColor.name">
-                <span class="look-color" :style="{background: currentLookColor.value}">
-                  <i class="look-color-arrow" :style="{background: currentLookColor.value}"></i>
-                </span>
-                <span>车色-{{currentLookColor.name}}</span>
-                <i class="arrow-left-top"></i>
-                <i class="arrow-right-btm"></i>
+              <div class="phone-wrapper-num phone-wrapper-box">
+                <span class="phone-wrapper-placeholder"></span>
+                <span class="phone-count">{{summary.lookcar}}</span>
               </div>
             </div>
-            <div class="user-detail-individuation-btm" v-else>
-              <div class="focus-individuation-item" v-if="summary.wheel">
-                <img :src="hub">
-                <span>{{summary.wheel}}</span>
-                <i class="arrow-left-top"></i>
-                <i class="arrow-right-btm"></i>
+            <div class="phone-left-top phone-wrapper-inner">
+              <div class="phone-wrapper-icon phone-wrapper-box">
+                <img :src="popMessage">
+                <span>语音留言</span>
               </div>
-              <div class="focus-individuation-item" v-if="summary.glass">
-                <img :src="glass">
-                <span>{{summary.glass}}</span>
-                <i class="arrow-left-top"></i>
-                <i class="arrow-right-btm"></i>
+              <div class="phone-wrapper-num phone-wrapper-box">
+                <span class="phone-wrapper-placeholder"></span>
+                <span class="phone-count">{{voiceTime}}</span>
               </div>
-              <div class="focus-individuation-item" v-if="summary.color">
-                <span class="look-color" :style="{background: summary.color.value}">
-                  <i class="look-color-arrow" :style="{background: summary.color.value}"></i>
-                </span>
-                <span>车色-{{summary.color.name}}</span>
-                <i class="arrow-left-top"></i>
-                <i class="arrow-right-btm"></i>
-              </div>
-            </div>
-          </div>
-          <div class="user-detail-fouce">
-            <div class="user-detail-individuation-top focus-title focus-part-title">
-              <img :src="popEye">
-              <span class="focus-title-name">{{userDetailCarBodyName}}</span>
-            </div>
-            <div class="focus-part" v-if="summary.online">
-              <div class="focus-now-box" v-if="currentLookBody">
-                <img :src="popCarbg" class="focus-now-icon">
-                <div class="focus-now-name-wrapper">
-                  <span class="focus-now-name">
-                    {{currentLookBody}}
-                  </span>
-                  <span class="focus-now-title">
-                    客户正在观看
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div class="focus-part" v-else>
-              <span v-for="focus in summary.focus">{{focus}}</span>
             </div>
           </div>
         </div>
-      </transition>
+        <div class="user-detail-individuation user-detail-line">
+          <div class="user-detail-individuation-top focus-title">
+            <img :src="popEye">
+            <span class="focus-title-name">{{userDetailIndividuaName}}</span>
+          </div>
+          <div class="user-detail-individuation-btm" v-if="summary.online">
+            <div class="focus-individuation-item" v-if="currentLookWheelhub">
+              <img :src="hub">
+              <span>{{currentLookWheelhub}}</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+            <div class="focus-individuation-item" v-if="currentLookGlass">
+              <img :src="glass">
+              <span>{{currentLookGlass}}</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+            <div class="focus-individuation-item" v-if="currentLookColor.name">
+              <span class="look-color" :style="{background: currentLookColor.value}">
+                <i class="look-color-arrow" :style="{background: currentLookColor.value}"></i>
+              </span>
+              <span>车色-{{currentLookColor.name}}</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+          </div>
+          <div class="user-detail-individuation-btm" v-else>
+            <div class="focus-individuation-item" v-if="summary.wheel">
+              <img :src="hub">
+              <span>{{summary.wheel}}</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+            <div class="focus-individuation-item" v-if="summary.glass">
+              <img :src="glass">
+              <span>{{summary.glass}}</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+            <div class="focus-individuation-item" v-if="summary.color">
+              <span class="look-color" :style="{background: summary.color.value}">
+                <i class="look-color-arrow" :style="{background: summary.color.value}"></i>
+              </span>
+              <span>车色-{{summary.color.name}}</span>
+              <i class="arrow-left-top"></i>
+              <i class="arrow-right-btm"></i>
+            </div>
+          </div>
+        </div>
+        <div class="user-detail-fouce">
+          <div class="user-detail-individuation-top focus-title focus-part-title">
+            <img :src="popEye">
+            <span class="focus-title-name">{{userDetailCarBodyName}}</span>
+          </div>
+          <div class="focus-part" v-if="summary.online">
+            <div class="focus-now-box" v-if="currentLookBody">
+              <img :src="popCarbg" class="focus-now-icon">
+              <div class="focus-now-name-wrapper">
+                <span class="focus-now-name">
+                  {{currentLookBody}}
+                </span>
+                <span class="focus-now-title">
+                  客户正在观看
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="focus-part" v-else>
+            <span v-for="focus in summary.focus">{{focus}}</span>
+          </div>
+        </div>
+      </div>
     </div>
 </template>
 
@@ -436,8 +475,10 @@
     import car from './car.svg';
     import popGirl from './pop-girl.svg';
     import popMan from './pop-man.svg';
-    import hub from './hub.png';
-    import glass from './glass.png';
+    import hub18 from './hub18.jpg';
+    import hub19 from './hub19.jpg';
+    import glass_no_privacy from './glass_no_privacy.jpg';
+    import glass_has_privacy from './glass_has_privacy.jpg';
     import popLike from './pop-like.svg';
     import popCar from './pop-car.svg';
     import popTel from './pop-tel.svg';
@@ -487,8 +528,10 @@
           popTel: popTel,
           popMessage: popMessage,
           popEye: popEye,
-          hub: hub,
-          glass: glass,
+          hub18: hub18,
+          hub19: hub19,
+          glass_no_privacy: glass_no_privacy,
+          glass_has_privacy: glass_has_privacy,
           popCarbg: popCarbg,
           top: 0,
           scatterWidth: '0px',
@@ -668,7 +711,7 @@
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
-        window.addEventListener('click', this.handleShowOrHideDetail);
+        window.removeEventListener('click', this.handleShowOrHideDetail);
         if (this.focusWs) {
           this.focusWs.close();
         }
@@ -886,7 +929,7 @@
           });
         },
         assignBasicDatas(parsed) {
-          // console.log("parsed: ", parsed);
+          console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
@@ -906,21 +949,36 @@
           }
         },
         assignIndividuationList(inObj) {
+          console.log("innnn: ", inObj);
           let res = [];
           _.forEach(inObj, (o, key) => {
-            if (key.includes('glass')) {
+            if (key.includes('glass_0')) {
               res.push({
                 look_times: o.look_times,
                 part_name: o.part_name,
                 time: o.time,
-                src: glass,
+                src: glass_no_privacy,
               })
-            } else if (key.includes('wheelhub')) {
+            } else if (key.includes('glass_1')) {
               res.push({
                 look_times: o.look_times,
                 part_name: o.part_name,
                 time: o.time,
-                src: hub,
+                src: glass_has_privacy,
+              })
+            } else if (key.includes('wheelhub_A')) {
+              res.push({
+                look_times: o.look_times,
+                part_name: o.part_name,
+                time: o.time,
+                src: hub18,
+              })
+            } else if (key.includes('wheelhub_B')) {
+              res.push({
+                look_times: o.look_times,
+                part_name: o.part_name,
+                time: o.time,
+                src: hub19,
               })
             }
           })
@@ -1240,6 +1298,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       @include bg('#b52f25');
       .logo-img {
         @include wh(auto, 6vh);
+        max-width: 90%;
       }
     }
     .title {
@@ -1375,7 +1434,6 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           background: #272e3c;
           width: 49%;
           height: 48%;
-          padding: 1vw;
           @include flex('row', 'flex-start', 'center');
 
           .individuation-overview-title {
@@ -1396,17 +1454,21 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             }
           }
           .individuation-overview {
-            @include flex('column', 'center', 'flex-start');
-            @include wh('', 100%);
+            @include flex('column', 'space-around', 'flex-start');
+            @include wh(50%, 85%);
 
             p {
               @include nopaddingmargin;
               margin: 0.5vw 0;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
           }
           .individuation-img {
-            @include wh(31%, auto);
-            margin: 0 5% 0 10%;
+            @include wh(40%, 100%);
+            @include flex('column', 'center', 'center');
+            margin: 0 5% 0 5%;
 
             & > img {
               @include wh(100%, auto);
@@ -1463,15 +1525,18 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           }
         }
       }
-      .heat {
+      .color-purchase-wrapper {
         @include wh(36.8vw, 44.6vh);
+        @include flex('row', 'flex-start', 'flex-start');
       }
       .today-look {
         @include wh(36.8vw, 38.4vh);
       }
 
       .purchase-color-chart-wrapper {
-        @include flex('row', 'flex-start', 'flex-start');
+        @include flex('column', 'flex-start', 'flex-start');
+        background: #2e3342;
+        @include wh(38.8vw, 38.4vh);
       }
 
       .individuation {
@@ -1479,7 +1544,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       }
       .purchase,
       .color-preference {
-        @include wh(18.8vw, 38.4vh);
+        @include wh(18.8vw, 44.6vh);
       }
     }
 
@@ -1494,6 +1559,13 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
         border-bottom: 1px solid #191c24;
         padding: 1vw 0;
         @include flex('column', 'space-around', 'center');
+
+        & > div {
+          max-width: 80%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
 
         .onoff-title {
           font-size: 0.5vw;
@@ -1534,7 +1606,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     .current-user .single-user {
       position: relative;
       @include flex('column', 'center', 'center');
-      @include wh(6.8vw, 6.3vw);
+      @include wh(6.8vw, 6.8vw);
       margin-left: 0.25vw;
       margin-bottom: 0.9%;
     }
@@ -1583,6 +1655,16 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
     & > div {
       width: 100%;
+    }
+    .slide-inner-text {
+      display: inline-block;
+      max-width: 60%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .swiper-slide {
+      line-height: 1em;
     }
   }
 
@@ -1683,6 +1765,10 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     @include wh(100%, 30.17vh);
   }
 
+  .color-purchase-content {
+    @include wh(100%, 36.37vh);
+  }
+
   .main-title {
     @include nopaddingmargin;
     font-size: 0.75vw;
@@ -1732,6 +1818,10 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       color: #333;
       padding: 2.15vw 0 0.4vw;
 
+      & > div {
+        @include flex('row', 'center', 'center');
+      }
+
       .user-icon {
         @include wh(4.3vw, 4.3vw);
         @include flex('column', 'center', 'center');
@@ -1770,13 +1860,18 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
       .user-tags {
         @include flex('row', 'center', 'center');
+        @include wh(100%, auto);
 
         span {
-          padding: 0.1vw 0.5vw;
+          padding: 0.01vw 0.5vw;
           background-color: #adb5ce;
           border-radius: 5px;
           color: #fff;
           margin-right: 0.3vw;
+          width: auto;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
     }
@@ -1940,27 +2035,6 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
   .str_move > span {
     display: inline-block;
-  }
-
-  .slide-fade-enter {
-    opacity: 0;
-  }
-
-  .slide-fade-enter-active {
-    opacity: 1;
-  }
-
-  .slide-fade-enter-active {
-    transition: all 1s linear;
-  }
-
-  .slide-fade-leave-active {
-    transition: all 1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-  }
-
-  .slide-fade-leave-active {
-    transform: translateX(21vw);
-    opacity: 0;
   }
 
   .odometer.odometer-auto-theme, .odometer.odometer-theme-default {

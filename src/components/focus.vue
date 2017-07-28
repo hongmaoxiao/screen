@@ -94,7 +94,7 @@
             title: {
               text: '客户关注占比',
               left: 'center',
-              top: '5%',
+              top: '3%',
               textStyle: {
                 fontWeight: 'normal',
                 fontSize: 0.7 * this.perVw,
@@ -103,7 +103,7 @@
               subtext: '看车零部件时长占比',
               subtextStyle: {
                 fontWeight: 'normal',
-                fontSize: 0.4 * this.perVw,
+                fontSize: 0.2 * this.perVw,
                 color: '#7d7f90',
               },
             },
@@ -111,7 +111,7 @@
               show: false,
             },
             grid: {
-              top: '10%',
+              top: '20%',
               left: '5%',
               right: '5%',
               bottom: '5%',
