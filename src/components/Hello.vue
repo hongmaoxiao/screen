@@ -198,47 +198,6 @@
               </div>
             </div>
             <div class="purchase-color-chart-wrapper">
-              <!-- <div class="core-map core-mr purchase">
-                <div class="core-header">
-                  <div class="core-header-icon">
-                    <img :src="like" alt="purchase">
-                  </div>
-                  <div class="core-header-title">
-                    <p class="main-title">购买意向统计</p>
-                    <p class="sub-title">客户购买意向人数</p>
-                  </div>
-                </div>
-                <div class="core-content core-content-btm">
-                  <purchase :perVw="perVw" :listData="purchaseList" height='100%' width='100%' />
-                </div>
-              </div>
-              <div class="core-map color-preference">
-                <div class="core-header">
-                  <div class="core-header-icon">
-                    <img :src="color" alt="color">
-                  </div>
-                  <div class="core-header-title">
-                    <p class="main-title">颜色偏好统计</p>
-                    <p class="sub-title">看车颜色时长占比</p>
-                  </div>
-                </div>
-                <div class="core-content core-content-btm core-color">
-                  <div class="core-color-item" v-for="(color, key) in carColorList">
-                    <div class="core-color-item-left">
-                      <span class="color-bg" :style="{ background: color[2] }">
-                        <i class="color-bg-arrow"></i>
-                      </span>
-                      <span class="color-name">{{color[1]}}</span>
-                    </div>
-                    <div class="core-color-item-right">
-                      <span class="color-rate-num">{{color[0]}}%</span>
-                      <div class="color-chart">
-                        <carColor :perVw="perVw" :colorIndex="key" :id="'car-preference-chart' + key" :listData="carColorList" height='100%' width='100%' />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div> -->
               <div class="core-header">
                 <div class="core-header-icon">
                   <img :src="heat" class="heat-img" alt="heat">
@@ -382,13 +341,13 @@
           </div>
           <div class="user-detail-individuation-btm" v-if="summary.online">
             <div class="focus-individuation-item" v-if="currentLookWheelhub">
-              <img :src="hub">
+              <img :src="onlineHub">
               <span>{{currentLookWheelhub}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
             <div class="focus-individuation-item" v-if="currentLookGlass">
-              <img :src="glass">
+              <img :src="onlineGlass">
               <span>{{currentLookGlass}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
@@ -404,13 +363,13 @@
           </div>
           <div class="user-detail-individuation-btm" v-else>
             <div class="focus-individuation-item" v-if="summary.wheel">
-              <img :src="hub">
+              <img :src="offlineHub">
               <span>{{summary.wheel}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
             <div class="focus-individuation-item" v-if="summary.glass">
-              <img :src="glass">
+              <img :src="offlineGlass">
               <span>{{summary.glass}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
@@ -697,6 +656,18 @@
         userDetailCarBodyName() {
           return this.summary.online ? '正在关注的车辆局部' : '重点关注的个性化配件';
         },
+        offlineHub() {
+          return this.summary.wheel == "18寸轮毂" ? hub18 : hub19;
+        },
+        offlineGlass() {
+          return this.summary.wheel == "黑色隐私玻璃" ? glass_has_privacy : glass_no_privacy;
+        },
+        onlineHub() {
+          return this.currentLookWheelhub == "18寸轮毂" ? hub18 : hub19;
+        },
+        onlineGlass() {
+          return this.currentLookGlass == "黑色隐私玻璃" ? glass_has_privacy : glass_no_privacy;
+        },
       },
       watch: {
         windowHeight(val) {
@@ -863,7 +834,10 @@
         handleResize() {
           this.windowHeight = document.body.clientHeight;
           this.windowWidth = document.body.clientWidth;
-          this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
+          console.log("this.windowHeight: ", this.windowHeight);
+          console.log("this.windowWidth: ", this.windowWidth);
+          this.scatterWidth = (this.$refs.scatter.offsetHeight * 0.98 * 408 / 895 + 25) + 'px';
+          console.log("scatterWidth", this.scatterWidth);
         },
         secondsToMinutes(seconds) {
           return Math.round(seconds / 60);
@@ -949,7 +923,6 @@
           }
         },
         assignIndividuationList(inObj) {
-          console.log("innnn: ", inObj);
           let res = [];
           _.forEach(inObj, (o, key) => {
             if (key.includes('glass_0')) {
@@ -1458,8 +1431,8 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             @include wh(50%, 85%);
 
             p {
+              @include wh(100%, '');
               @include nopaddingmargin;
-              margin: 0.5vw 0;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
@@ -1944,7 +1917,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             }
           }
           img {
-            @include wh(35%, auto);
+            @include wh(auto, 70%);
           }
         }
       }

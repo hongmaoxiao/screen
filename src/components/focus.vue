@@ -95,6 +95,8 @@
               text: '客户关注占比',
               left: 'center',
               top: '3%',
+              padding: 0,
+              itemGap: 5,
               textStyle: {
                 fontWeight: 'normal',
                 fontSize: 0.7 * this.perVw,
@@ -105,6 +107,7 @@
                 fontWeight: 'normal',
                 fontSize: 0.2 * this.perVw,
                 color: '#7d7f90',
+                marginTop: -100,
               },
             },
             legend: {
