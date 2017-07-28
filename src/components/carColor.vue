@@ -90,8 +90,8 @@
               {
                 name: '颜色偏好统计',
                 type: 'pie',
-                radius : '55%',
-                center: ['50%', '60%'],
+                radius : '65%',
+                center: ['50%', '50%'],
                 silent: true,
                 data: carDatas,
                 labelLine: {
