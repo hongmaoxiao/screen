@@ -82,8 +82,10 @@
           const len = listData.length;
           _.forEach(listData, (value, key) => {
             if ( key < 5 ) {
-              category.push(value[1]);
-              focusData.push(value[0]);
+              if (value[0]) {
+                category.push(value[1]);
+                focusData.push(value[0]);
+              }
             }
             allData.push(value[0]);
           })

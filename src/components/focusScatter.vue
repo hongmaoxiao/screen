@@ -270,7 +270,7 @@
                 name: '用户关注重点',
                 type: 'scatter',
                 symbolSize: function (val) {
-                  return val[2] / 3;
+                  return val[2] / 4;
                 },
                 itemStyle: itemStyle,
                 data: focusScatterData
@@ -280,7 +280,7 @@
                 type: 'effectScatter',
                 showEffectOn: 'render',
                 symbolSize: function (val) {
-                  return val[2] / 3;
+                  return val[2] / 4;
                 },
                 rippleEffect: {
                   brushType: 'stroke'

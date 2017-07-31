@@ -720,16 +720,16 @@
           this.focusWs = new WebSocket(`${this.wsBaseUrl}${this.focusWsUrl}?car_id=${carid}`);
 
           this.focusWs.onmessage = (msg) => {
-            console.log("onmessage: ", msg.data);
+            console.log("focusWsMsg: ", msg.data);
             this.scrollTextList.push(msg.data);
           }
 
           this.focusWs.onopen = (msg) => {
-            console.log("open: ", msg);
+            console.log("focusWsopen: ", msg);
           }
 
           this.focusWs.onclose = (msg) => {
-            console.log("close: ", msg);
+            console.log("focusWsclose: ", msg);
           }
         },
         createOnlineWs() {
@@ -835,7 +835,7 @@
           this.windowHeight = document.body.clientHeight;
           this.windowWidth = document.body.clientWidth;
           this.scatterWidth = (this.$refs.scatter.offsetHeight * 0.98 * 408 / 895 + 25) + 'px';
-          console.log("scatterWidth", this.scatterWidth);
+          // console.log("scatterWidth", this.scatterWidth);
         },
         secondsToMinutes(seconds) {
           return Math.round(seconds / 60);
@@ -866,7 +866,7 @@
           const $this = this;
           axios.get(`${this.basicUrl}${this.carId}?t=${+new Date()}`)
           .then(response => {
-            console.log("response: ", response);
+            // console.log("response: ", response);
             // console.log("activeDate: ", this.activeDate);
             if (response.status === 200) {
               $this.assignBasicDatas(response.data);
@@ -901,7 +901,7 @@
           });
         },
         assignBasicDatas(parsed) {
-          console.log("parsed: ", parsed);
+          // console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
@@ -981,25 +981,14 @@
           this.onlineCount = data.online && data.online.num;
           this.offlineCount = data.offline && data.offline.num;
           this.currentUsers = [];
-          console.log("datasss: ", data);
           if (data.online) {
             _.forEach(data.online.users, (online) => {
-              this.currentUsers.push({
-                id: online.id,
-                name: online.name,
-                online: online.online,
-                iconBg: $this.getRandomIconBg(),
-              });
+              this.currentUsers.push(this.formatOnlineUser(online));
             })
           }
           if (data.offline) {
             _.forEach(data.offline.users, (offline) => {
-              this.currentUsers.push({
-                id: offline.id,
-                name: offline.name,
-                online: offline.online,
-                iconBg: '#535a6c',
-              });
+              this.currentUsers.push(this.formatOfflineUser(offline));
             })
           }
           this.createOnlineWs();
@@ -1015,14 +1004,37 @@
             return o.id === online.id;
           });
           if (exist > -1) {
-            this.currentUsers.splice(exist, 1, online);
+            console.log("online: ", online);
+            const oldOnline = this.currentUsers[exist];
+            this.currentUsers.splice(exist, 1, {
+              id: online.id,
+              name: online.name,
+              online: online.online,
+              iconBg: oldOnline.iconBg,
+            });
           } else {
             if (online.online) {
-              this.currentUsers.unshift(online);
+              this.currentUsers.unshift(this.formatOnlineUser(online));
             } else {
-              this.currentUsers.push(online);
+              this.currentUsers.push(this.formatOfflineUser(online));
             }
           }
+        },
+        formatOnlineUser(online) {
+          return {
+                id: online.id,
+                name: online.name,
+                online: online.online,
+                iconBg: this.getRandomIconBg(),
+              };
+        },
+        formatOfflineUser(offline) {
+          return {
+                id: offline.id,
+                name: offline.name,
+                online: offline.online,
+                iconBg: '#535a6c',
+              };
         },
         ifHasUsers(user) {
           const index = _.findIndex(this.currentUsers, function(o) {
@@ -1073,7 +1085,7 @@
           const $this = this;
           axios.get(`${this.userDetailUrl}${user.id}`)
           .then(response => {
-            console.log("online: ", response.data.data)
+            // console.log("online: ", response.data.data)
             const parsed = response.data && response.data.data;
             if (parsed) {
               $this.summary.username = parsed.username;
@@ -1103,7 +1115,7 @@
             this.summary.features.push(`${feature.buy_in}买车`);
           }
           if (feature.budget) {
-            this.summary.features.push(`预算${feature.budget}万`);
+            this.summary.features.push(`预算${feature.budget}`);
           }
           if (feature.method) {
             this.summary.features.push(feature.method);
@@ -1541,6 +1553,9 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
         .onoff-title {
           font-size: 0.5vw;
           color: #7d7f90;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
         .onoff-top {
           @include flex('row', 'flex-start', 'baseline');
@@ -1798,9 +1813,9 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
         @include flex('column', 'center', 'center');
         position: absolute;
         top: 0;
-        // background: #6ce7c3;
         border-radius: 50%;
         margin-top: -2.15vw;
+
         span {
           display: inline-block;
           max-width: 90%;
@@ -1835,6 +1850,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
         span {
           padding: 0.01vw 0.5vw;
+          font-size: 0.5vw;
           background-color: #adb5ce;
           border-radius: 5px;
           color: #fff;
@@ -1890,13 +1906,14 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       padding: 1.5vw 0 0.5vw;
 
       &-btm {
-        @include flex('row', 'space-between', 'center');
+        @include flex('row', 'flex-start', 'center');
         @include wh(100%, 100%);
 
         .focus-individuation-item {
           @include flex('column', 'space-around', 'center');
           @include wh(32%, 80%);
           color: #7d7f90;
+          margin-right: 0.3vw;
           border: 1px solid #37b8fd;
           position: relative;
           padding: 0.3vw 0;
