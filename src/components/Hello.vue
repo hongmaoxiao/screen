@@ -1085,7 +1085,7 @@
           const $this = this;
           axios.get(`${this.userDetailUrl}${user.id}`)
           .then(response => {
-            // console.log("online: ", response.data.data)
+            console.log("online: ", response.data.data)
             const parsed = response.data && response.data.data;
             if (parsed) {
               $this.summary.username = parsed.username;
@@ -1137,7 +1137,6 @@
             if (parsed.wheel.length > 0) {
               this.summary.wheel = parsed.wheel[0];
             }
-            console.log("this.summary: ", this.summary);
             return;
           }
           if (this.userDetailWs) {
@@ -1883,6 +1882,10 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
         .phone-wrapper-box {
           @include flex('row', 'flex-start', 'center');
+          width: 100%;
+          // overflow: hidden;
+          // text-overflow: ellipsis;
+          // white-space: nowrap;
 
           span {
             font-size: 0.5vw;
@@ -1894,8 +1897,12 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             margin-right: 0.5vw;
           }
           span.phone-count {
-            font-size: 0.7vw;
+            font-size: 0.65vw;
             color: #333;
+            line-height: 1.0em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
         }
       }
@@ -1933,6 +1940,15 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           }
           img {
             @include wh(auto, 70%);
+          }
+          span {
+            display: inline-block;
+            width: 100%;
+            min-height: 1.4vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
           }
         }
       }
@@ -1988,6 +2004,9 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             margin-right: 2%;
             text-align: center;
             margin-bottom: 2%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
       }
     }
