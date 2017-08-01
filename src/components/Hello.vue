@@ -229,11 +229,11 @@
 
                 </span>
                 <span class="online-count">
-                  {{onlineCount}}
+                  {{onlineCount}}<span class="people-unit">人</span>
                 </span>
               </div>
               <div class="online-btm onoff-title">
-                当前在线人数
+                当前在线
               </div>
             </div>
             <div class="offline-num">
@@ -242,11 +242,11 @@
 
                 </span>
                 <span class="offline-count">
-                  {{offlineCount}}
+                  {{offlineCount}}<span class="people-unit">人</span>
                 </span>
               </div>
               <div class="offline-btm onoff-title">
-                当日离线人数
+                当日离线
               </div>
             </div>
           </div>
@@ -290,7 +290,7 @@
         </div>
         <div class="user-detail-phone user-detail-line">
           <div class="phone-left phone-wrapper">
-            <div class="phone-left-top phone-wrapper-inner">
+            <div class="phone-left-top phone-wrapper-inner phone-mb phone-wrapper-inner-top">
               <div class="phone-wrapper-icon phone-wrapper-box">
                 <img :src="popLike">
                 <span>购买意向</span>
@@ -300,7 +300,7 @@
                 <span class="phone-count">{{summary.intention}}%</span>
               </div>
             </div>
-            <div class="phone-left-top phone-wrapper-inner">
+            <div class="phone-left-top phone-wrapper-inner phone-wrapper-inner-btm">
               <div class="phone-wrapper-icon phone-wrapper-box">
                 <img :src="popTel">
                 <span>在线通话</span>
@@ -312,17 +312,17 @@
             </div>
           </div>
           <div class="phone-right">
-            <div class="phone-left-top phone-wrapper-inner">
+            <div class="phone-left-top phone-wrapper-inner phone-mb phone-wrapper-inner-top">
               <div class="phone-wrapper-icon phone-wrapper-box">
                 <img :src="popCar">
                 <span>关注车系</span>
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span class="phone-count">{{summary.lookcar}}</span>
+                <span class="phone-count focus-car">{{summary.lookcar}}</span>
               </div>
             </div>
-            <div class="phone-left-top phone-wrapper-inner">
+            <div class="phone-left-top phone-wrapper-inner phone-wrapper-inner-btm">
               <div class="phone-wrapper-icon phone-wrapper-box">
                 <img :src="popMessage">
                 <span>语音留言</span>
@@ -353,9 +353,11 @@
               <i class="arrow-right-btm"></i>
             </div>
             <div class="focus-individuation-item" v-if="currentLookColor.name">
-              <span class="look-color" :style="{background: currentLookColor.value}">
-                <i class="look-color-arrow" :style="{background: currentLookColor.value}"></i>
-              </span>
+              <div class="color-wrapper">
+                <span class="look-color" :style="{background: currentLookColor.value}">
+                  <i class="look-color-arrow" :style="{background: currentLookColor.value}"></i>
+                </span>
+              </div>
               <span>车色-{{currentLookColor.name}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
@@ -375,9 +377,11 @@
               <i class="arrow-right-btm"></i>
             </div>
             <div class="focus-individuation-item" v-if="summary.color">
-              <span class="look-color" :style="{background: summary.color.value}">
-                <i class="look-color-arrow" :style="{background: summary.color.value}"></i>
-              </span>
+              <div class="color-wrapper">
+                <span class="look-color" :style="{background: summary.color.value}">
+                  <i class="look-color-arrow" :style="{background: summary.color.value}"></i>
+                </span>
+              </div>
               <span>车色-{{summary.color.name}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
@@ -608,7 +612,7 @@
           offlineCount: 0,
           currentSlideDateIndex: 0,
           currentSlideCarIndex: 0,
-          userDetailHeaderBg: '#535a6c',
+          userDetailHeaderBg: '#adb5cd',
           userIconColors: ['#6ce7c3', '#e9d547', '#6ce7c3', '#dc4c5c', '#37b8fd', '#e9d547'],
         }
       },
@@ -866,7 +870,7 @@
           const $this = this;
           axios.get(`${this.basicUrl}${this.carId}?t=${+new Date()}`)
           .then(response => {
-            // console.log("response: ", response);
+            console.log("response: ", response);
             // console.log("activeDate: ", this.activeDate);
             if (response.status === 200) {
               $this.assignBasicDatas(response.data);
@@ -901,7 +905,7 @@
           });
         },
         assignBasicDatas(parsed) {
-          // console.log("parsed: ", parsed);
+          console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
@@ -991,7 +995,17 @@
               this.currentUsers.push(this.formatOfflineUser(offline));
             })
           }
-          this.createOnlineWs();
+          if (this.ifIsToday(this.activeDate)) {
+            this.createOnlineWs();
+          }
+        },
+        ifIsToday(activeDate) {
+          const now = +new Date(this.parseSelectDay(new Date()));
+          const active = +new Date(activeDate);
+          if (active < now) {
+            return false;
+          }
+          return true;
         },
         getRandomIconBg() {
           return this.userIconColors[Math.floor(Math.random() * this.userIconColors.length)];
@@ -1172,7 +1186,11 @@
           event.stopPropagation();
         },
         getUserDetailIconBg(user) {
-          this.userDetailHeaderBg = user.iconBg;
+          if (user.online) {
+            this.userDetailHeaderBg = user.iconBg;
+          } else {
+            this.userDetailHeaderBg = '#adb5cd';
+          }
         },
         calculateTopHeight(target) {
           const $singleUser = $(target).parents(".single-user");
@@ -1291,12 +1309,14 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
         @include wh(41vw, 8.6vh);
         @include flex('row', 'flex-start', 'center');
         padding-left: 1.1vw;
-        font-size: 0.8vw;
+        // font-size: 0.8vw;
+        font-size: calc(12px + 0.25vw);
 
         .sub-title {
           margin-left: 0.6vw;
-          font-size: 0.6vw;
           color: #7d7f90;
+          // font-size: 0.6vw;
+          font-size: calc(12px + 0.15vw);
         }
       }
       .scroll-message {
@@ -1419,19 +1439,22 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           @include flex('row', 'flex-start', 'center');
 
           .individuation-overview-title {
-            font-size: 0.7vw;
+            // font-size: 0.7vw;
+            font-size: calc(12px + 0.15vw);
           }
           .individuation-num {
 
             & > span:first-child {
-              font-size: 0.8vw;
               width: auto;
               min-width: 1.5vw;
               display: inline-block;
               text-align: center;
+              // font-size: 0.8vw;
+              font-size: calc(12px + 0.25vw);
             }
             & > span:last-child {
-              font-size: 0.45vw;
+              // font-size: 0.45vw;
+              font-size: 12px;
               color: #7d7f90;
             }
           }
@@ -1468,7 +1491,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           border-bottom: 1px solid #353b4c;
 
           &-left {
-            @include wh(70%, '');
+            @include wh(60%, '');
             @include flex('row', 'flex-start', 'center');
 
             .color-bg {
@@ -1489,16 +1512,18 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
               }
             }
             .color-name {
-              font-size: 0.7vw;
+              // font-size: 0.7vw;
+              font-size: calc(12px + 0.15vw);
             }
 
           }
           &-right {
-            @include wh(30%, '');
+            @include wh(40%, '');
             @include flex('row', 'flex-end', 'center');
 
             .color-rate-num {
-              font-size: 0.8vw;
+              // font-size: 0.8vw;
+              font-size: calc(12px + 0.25vw);
               margin-right: 0.5vw;
             }
             .color-chart {
@@ -1550,11 +1575,12 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
         }
 
         .onoff-title {
-          font-size: 0.5vw;
           color: #7d7f90;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          font-size: 0.5vw;
+          font-size: calc(12px + 0.01vw);
         }
         .onoff-top {
           @include flex('row', 'flex-start', 'baseline');
@@ -1572,7 +1598,8 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             }
           }
           & > span:last-child {
-            font-size: 0.8vw;
+            // font-size: 0.8vw;
+            font-size: calc(12px + 0.25vw);
           }
         }
       }
@@ -1605,12 +1632,13 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       border-radius: 50%;
     }
     .current-user .single-user .single-user-name-box .single-user-name {
-      font-size: 0.8vw;
       width: auto;
       max-width: 90%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      // font-size: 0.8vw;
+      font-size: calc(12px + 0.25vw);
     }
     .swiper-slide {
       width: 100%;
@@ -1636,7 +1664,8 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     border: 1px solid #ff4b4c;
     border: 1px solid #ff4b4c;
     text-align: center;
-    font-size: 0.7vw;
+    // font-size: 0.7vw;
+    font-size: calc(12px + 0.15vw);
 
     & > div {
       width: 100%;
@@ -1678,7 +1707,8 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
   }
 
   .info-number {
-    font-size: 2vw;
+    // font-size: 2vw;
+    font-size: calc(12px + 1.5vw);
 
     &-sex {
       @include flex('row', 'space-between', 'center');
@@ -1686,7 +1716,8 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     }
     .sex {
       @include wh(42%, auto);
-      font-size: 1vw;
+      // font-size: 1vw;
+      font-size: calc(12px + 0.3vw);
     }
     .sex-boy {
       @include flex('row', 'flex-end', 'center');
@@ -1719,7 +1750,8 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
   .info-title {
     color: #7d7f90;
-    font-size: 0.7vw;
+    // font-size: 0.7vw;
+    font-size: calc(12px + 0.15vw);
   }
 
   .core-header {
@@ -1756,13 +1788,15 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
   .main-title {
     @include nopaddingmargin;
-    font-size: 0.75vw;
+    // font-size: 0.75vw;
+    font-size: calc(12px + 0.2vw);
   }
 
   .sub-title {
     @include nopaddingmargin;
-    font-size: 0.5vw;
     color: #7d7f90;
+    // font-size: 0.5vw;
+    font-size: calc(12px + 0.01vw);
   }
 
   .arrow {
@@ -1788,20 +1822,20 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     top: 25.9vh;
     z-index: 9998;
     @include flex('column', 'flex-start', 'flex-start');
-    @include wh(21vw, 35vw);
+    @include wh(21vw, 36.6vw);
     padding: 0 1vw;
     background-color: #f7f7f7;
     box-shadow: 0 0 40px 0 rgba(0, 0, 0, 0.3);
     border-radius: 3px;
 
     &-line {
-      border-bottom: 1px solid #979797;
+      border-bottom: 1px solid #ddd;
     }
     &-header {
-      @include wh(100%, 20.7%);
+      @include wh(100%, 22.7%);
       @include flex('column', 'space-around', 'center');
       color: #333;
-      padding: 2.15vw 0 0.4vw;
+      padding: 2.15vw 0 0.8vw;
 
       & > div {
         @include flex('row', 'center', 'center');
@@ -1819,21 +1853,24 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           display: inline-block;
           max-width: 90%;
           width: auto;
-          font-size: 0.8vw;
           color: #fff;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          // font-size: 0.8vw;
+          font-size: calc(12px + 0.25vw);
         }
       }
       .user-username {
-        font-size: 0.75vw;
         color: #22222e;
+        // font-size: 0.75vw;
+        font-size: calc(12px + 0.2vw);
       }
       .user-phone {
         @include flex('row', 'center', 'center');
-        font-size: 0.65vw;
         color: #9294a3;
+        font-size: 0.65vw;
+        font-size: calc(12px + 0.01vw);
 
         .user-sex {
           @include wh(1vw, auto);
@@ -1849,20 +1886,21 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
         span {
           padding: 0.01vw 0.5vw;
-          font-size: 0.5vw;
           background-color: #adb5ce;
-          border-radius: 5px;
+          border-radius: 1px;
           color: #fff;
           margin-right: 0.3vw;
           width: auto;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
+          // font-size: 0.5vw;
+          font-size: calc(12px + 0.01vw);
         }
       }
     }
     &-phone {
-      @include wh(100%, 22.4%);
+      @include wh(100%, 24.5%);
       @include flex('row', 'center', 'center');
       padding: 1vw;
 
@@ -1871,25 +1909,23 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       }
       .phone-right {
         @include wh(50%, 100%);
-        padding-left: 2vw;
+        padding-left: 1vw;
       }
       .phone-wrapper {
         @include flex('column', 'space-around', 'center');
       }
       .phone-wrapper-inner {
-        @include flex('column', 'flex-start', 'flex-start');
-        @include wh(100%, 3vw);
+        @include wh(100%, 50%);
 
         .phone-wrapper-box {
           @include flex('row', 'flex-start', 'center');
+          margin-bottom: 0.2vw;
           width: 100%;
-          // overflow: hidden;
-          // text-overflow: ellipsis;
-          // white-space: nowrap;
 
           span {
-            font-size: 0.5vw;
             color: #999;
+            // font-size: 0.5vw;
+            font-size: calc(12px + 0.01vw);
           }
           img,
           .phone-wrapper-placeholder {
@@ -1897,18 +1933,29 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             margin-right: 0.5vw;
           }
           span.phone-count {
-            font-size: 0.65vw;
             color: #333;
-            line-height: 1.0em;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            line-height: 1.1em;
+            overflow: scroll;
+            // text-overflow: ellipsis;
+            // white-space: nowrap;
+            // font-size: 0.65vw;
+            font-size: calc(12px + 0.15vw);
+
+            &.focus-car {
+              font-size: calc(12px + 0.01vw);
+            }
           }
         }
       }
+      .phone-wrapper-inner-top {
+        @include flex('column', 'flex-start', 'flex-start');
+      }
+      .phone-wrapper-inner-btm {
+        @include flex('column', 'flex-end', 'flex-start');
+      }
     }
     &-individuation {
-      @include wh(100%, 25.4%);
+      @include wh(100%, 27.8%);
       @include flex('column', 'space-between', 'flex-start');
       padding: 1.5vw 0 0.5vw;
 
@@ -1924,6 +1971,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           border: 1px solid #37b8fd;
           position: relative;
           padding: 0.3vw 0;
+          font-size: calc(12px + 0.01vw);
 
           .look-color {
             position: relative;
@@ -1938,8 +1986,13 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
               border-right: 2vw solid transparent;
             }
           }
+
+          .color-wrapper {
+            height: 60%;
+            @include flex('column', 'center', 'center');
+          }
           img {
-            @include wh(auto, 70%);
+            @include wh(auto, 60%);
           }
           span {
             display: inline-block;
@@ -1954,7 +2007,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       }
     }
     &-fouce {
-      @include wh(100%, 31.5%);
+      @include wh(100%, 25%);
       padding: 1.5vw 0 0.5vw;
       @include flex('column', 'flex-start', 'flex-start');
 
@@ -1996,9 +2049,9 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           }
         }
         & > span {
-            padding: 0.1vw;
+            padding: 0.06vw;
             background-color: #37b9fd;
-            border-radius: 5px;
+            border-radius: 1px;
             color: #fff;
             width: 23%;
             margin-right: 2%;
@@ -2007,6 +2060,8 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            line-height: 1.5em;
+            font-size: calc(12px + 0.01vw);
           }
       }
     }
@@ -2018,8 +2073,9 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
         margin-right: 0.5vw;
       }
       &-name {
-        font-size: 0.5vw;
         color: #333333;
+        // font-size: 0.5vw;
+        font-size: calc(12px + 0.01vw);
       }
     }
 
@@ -2048,5 +2104,11 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     font-family: "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
     font-weight: 200;
   }
+  .people-unit {
+    font-size: calc(12px + 0.01vw);
+  }
+  // .phone-mb {
+  //   margin-bottom: 1.1vw;
+  // }
 }
 </style>

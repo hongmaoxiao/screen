@@ -85,6 +85,7 @@
           let max = 0;
           let min = 0;
           let split = 5;
+          const nameSize = 12 + 0.01 * this.perVw;
           _.forEach(listData, function(userObj) {
             _.forEach(userObj, function(user, time) {
               userCategory.push(time + ":00");
@@ -116,7 +117,7 @@
                   axisLabel: {
                     margin: 10,
                     textStyle: {
-                      fontSize: 0.6 * this.perVw,
+                      fontSize: nameSize,
                       color: '#6f778e',
                     }
                   },
@@ -152,7 +153,7 @@
                 axisLabel: {
                   margin: 10,
                   textStyle: {
-                    fontSize: 0.6 * this.perVw,
+                    fontSize: nameSize,
                     color: '#6f778e',
                   }
                 },

@@ -80,6 +80,10 @@
           let focusData = [];
           let allData = [];
           const len = listData.length;
+          const valueSize = 12 + 0.15 * this.perVw;
+          const xAxisSize = 12 + 0.01 * this.perVw;
+          const titleSize = 12 + 0.12 * this.perVw;
+          const subTitleSize = 12 + 0.01 * this.perVw;
           _.forEach(listData, (value, key) => {
             if ( key < 5 ) {
               if (value[0]) {
@@ -96,18 +100,18 @@
             title: {
               text: '客户关注占比',
               left: 'center',
-              top: '3%',
+              top: '8%',
               padding: 0,
               itemGap: 5,
               textStyle: {
                 fontWeight: 'normal',
-                fontSize: 0.7 * this.perVw,
+                fontSize: titleSize,
                 color: '#fff',
               },
               subtext: '看车零部件时长占比',
               subtextStyle: {
                 fontWeight: 'normal',
-                fontSize: 0.2 * this.perVw,
+                fontSize: subTitleSize,
                 color: '#7d7f90',
                 marginTop: -100,
               },
@@ -116,9 +120,9 @@
               show: false,
             },
             grid: {
-              top: '20%',
-              left: '5%',
-              right: '5%',
+              top: '25%',
+              left: '0%',
+              right: '0%',
               bottom: '5%',
               containLabel: true
             },
@@ -143,7 +147,7 @@
                 margin: 1 * this.perVw,
                 interval: 0,
                 textStyle: {
-                  fontSize: 0.6 * this.perVw,
+                  fontSize: xAxisSize,
                   color: '#b8b9c8',
                   baseline: 'middle',
                   align: 'center',
@@ -154,7 +158,7 @@
               {
                 name: '用户重点关注',
                 type: 'bar',
-                barWidth: 15,
+                barWidth: 12,
                 itemStyle: {
                   normal: {
                     barBorderRadius: 2,
@@ -179,7 +183,7 @@
                     },
                     textStyle: {
                       color: "#fff",
-                      fontSize: 0.65 * this.perVw,
+                      fontSize: valueSize,
                       fontWeight: 200,
                     }
                   },
@@ -191,7 +195,7 @@
                     },
                     textStyle: {
                       color: "#fff",
-                      fontSize: 0.65 * this.perVw,
+                      fontSize: valueSize,
                       fontWeight: 200,
                     }
                   },

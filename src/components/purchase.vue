@@ -75,12 +75,14 @@
           };
         },
         setPunnel(listData) {
+          const nameSize = 12 + 0.01 * this.perVw;
+          const detailSize = 12 + 0.25 * this.perVw;
           const titleOption = {
             show: true,
             offsetCenter: [0, "25%"],
             textStyle: {
               color: "#7d7f90",
-              fontSize: 0.65 * this.perVw,
+              fontSize: nameSize,
               fontFamily: "微软雅黑",
               fontWeight: "200"
             }
@@ -90,7 +92,7 @@
             offsetCenter: [0, "-25%"],
             textStyle: {
               color: "#fff",
-              fontSize: 0.9 * this.perVw,
+              fontSize: detailSize,
               fontFamily: "微软雅黑",
               fontWeight: "600"
             }
