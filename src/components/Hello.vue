@@ -1692,6 +1692,9 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    .swiper-slide {
+      line-height: 1em;
+    }
   }
 
   .current-lookcar .slide-inner-text {
@@ -1711,7 +1714,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
   .swiper-button-next {
     height: 4.3vh !important;
     line-height: 4.3vh !important;
-    font-size: 0.9vw;
+    font-size: 1vw;
     margin-top: -2.15vh;
   }
 
