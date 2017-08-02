@@ -32,8 +32,8 @@ body {
   text-rendering: optimizeLegibility;
   font-family: "Helvetica Neue", "Helvetica Neue", Helvetica, Arial, "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
   margin: 0;
-  min-width: 1280px;
-  min-height: 800px;
-  overflow: scroll;
+  /*min-width: 1280px;*/
+  /*min-height: 800px;*/
+  /*overflow: scroll;*/
 }
 </style>

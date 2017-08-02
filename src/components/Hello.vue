@@ -7,7 +7,7 @@
         <div class="title">
           <div class="company-message"  @click="fullScreen()">
             <h2>车势科技</h2>
-            <h3 class="sub-title">汽车行业智能销售专家</h3>
+            <h3 class="company-sub-title">汽车行业智能销售专家</h3>
           </div>
           <div class="scroll-message">
             <div class="current-view scroll-style">
@@ -187,11 +187,11 @@
                     </p>
                     <p class="individuation-overview-looktime individuation-num">
                       <span>{{item.look_times}}</span>
-                      <span>观看总时长（分钟）</span>
+                      <span title="观看总时长(分钟)">观看总时长(分钟)</span>
                     </p>
                     <p class="individuation-overview-lookcount individuation-num">
                       <span>{{item.time}}</span>
-                      <span>观看总次数</span>
+                      <span title="观看总次数">观看总次数</span>
                     </p>
                   </div>
                 </div>
@@ -285,12 +285,12 @@
             <span class="user-phone-number user-phone-gap">{{summary.phone}}</span>
           </div>
           <div class="user-tags">
-            <span v-for="feature in summary.features">{{feature}}</span>
+            <span v-for="feature in summary.features" :title="feature">{{feature}}</span>
           </div>
         </div>
         <div class="user-detail-phone user-detail-line">
           <div class="phone-left phone-wrapper">
-            <div class="phone-left-top phone-wrapper-inner phone-mb phone-wrapper-inner-top">
+            <div class="phone-left-top phone-wrapper-inner phone-wrapper-inner-top">
               <div class="phone-wrapper-icon phone-wrapper-box">
                 <img :src="popLike">
                 <span>购买意向</span>
@@ -312,14 +312,14 @@
             </div>
           </div>
           <div class="phone-right">
-            <div class="phone-left-top phone-wrapper-inner phone-mb phone-wrapper-inner-top">
+            <div class="phone-left-top phone-wrapper-inner phone-wrapper-inner-top focus-car-outer">
               <div class="phone-wrapper-icon phone-wrapper-box">
                 <img :src="popCar">
                 <span>关注车系</span>
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span class="phone-count focus-car">{{summary.lookcar}}</span>
+                <span class="phone-count focus-car" :title="summary.lookcar">{{summary.lookcar}}</span>
               </div>
             </div>
             <div class="phone-left-top phone-wrapper-inner phone-wrapper-inner-btm">
@@ -342,13 +342,13 @@
           <div class="user-detail-individuation-btm" v-if="summary.online">
             <div class="focus-individuation-item" v-if="currentLookWheelhub">
               <img :src="onlineHub">
-              <span>{{currentLookWheelhub}}</span>
+              <span :title="currentLookWheelhub">{{currentLookWheelhub}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
             <div class="focus-individuation-item" v-if="currentLookGlass">
               <img :src="onlineGlass">
-              <span>{{currentLookGlass}}</span>
+              <span :title="currentLookGlass">{{currentLookGlass}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
@@ -358,7 +358,7 @@
                   <i class="look-color-arrow" :style="{background: currentLookColor.value}"></i>
                 </span>
               </div>
-              <span>车色-{{currentLookColor.name}}</span>
+              <span :title="'车色-' + currentLookColor.name">车色-{{currentLookColor.name}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
@@ -366,13 +366,13 @@
           <div class="user-detail-individuation-btm" v-else>
             <div class="focus-individuation-item" v-if="summary.wheel">
               <img :src="offlineHub">
-              <span>{{summary.wheel}}</span>
+              <span :title="summary.wheel">{{summary.wheel}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
             <div class="focus-individuation-item" v-if="summary.glass">
               <img :src="offlineGlass">
-              <span>{{summary.glass}}</span>
+              <span :title="summary.glass">{{summary.glass}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
@@ -382,7 +382,7 @@
                   <i class="look-color-arrow" :style="{background: summary.color.value}"></i>
                 </span>
               </div>
-              <span>车色-{{summary.color.name}}</span>
+              <span :title="'车色-' + summary.color.name">车色-{{summary.color.name}}</span>
               <i class="arrow-left-top"></i>
               <i class="arrow-right-btm"></i>
             </div>
@@ -627,7 +627,10 @@
         window.addEventListener('click', this.handleShowOrHideDetail);
         this.handleNotHideDetail();
         this.createTextAutoSlide();
-        setTimeout(this.createCurrentLookWs, 1000);
+        setTimeout(() => {
+          this.createCurrentLookWs();
+          this.addElementAttrTitle();
+        }, 700);
       },
       computed: {
         communicate() {
@@ -701,6 +704,14 @@
         }
       },
       methods: {
+        addElementAttrTitle() {
+          const $element = $(".slide-inner-text");
+          const len = $element.length;
+          for (var i = 0; i < len; i++) {
+            const $singleEle = $($element[i]);
+            $singleEle.attr("title", $singleEle.text());
+          }
+        },
         createTextAutoSlide() {
           $('.current-view').liMarquee({
             loop: -1,
@@ -1312,7 +1323,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
         // font-size: 0.8vw;
         font-size: calc(12px + 0.25vw);
 
-        .sub-title {
+        .company-sub-title {
           margin-left: 0.6vw;
           color: #7d7f90;
           // font-size: 0.6vw;
@@ -1327,9 +1338,11 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           @include wh(17vw, 4.3vh);
           height: 4.3vh !important;
           line-height: 4.3vh !important;
-          font-size: 0.7vw;
           margin-right: 0.77vw;
           background: #272e3c;
+          // font-size: 0.7vw;
+          font-size: calc(12px + 0.15vw);
+
           .scroll-text {
             margin-right: 10px;
             display: inline-block;
@@ -1579,7 +1592,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          font-size: 0.5vw;
+          // font-size: 0.5vw;
           font-size: calc(12px + 0.01vw);
         }
         .onoff-top {
@@ -1628,7 +1641,6 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     .current-user .single-user .single-user-name-box {
       @include flex('column', 'center', 'center');
       @include wh(4.3vw, 4.3vw);
-      // background: green;
       border-radius: 50%;
     }
     .current-user .single-user .single-user-name-box .single-user-name {
@@ -1715,7 +1727,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       @include wh(100%, auto);
     }
     .sex {
-      @include wh(42%, auto);
+      @include wh(45%, auto);
       // font-size: 1vw;
       font-size: calc(12px + 0.3vw);
     }
@@ -1869,7 +1881,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       .user-phone {
         @include flex('row', 'center', 'center');
         color: #9294a3;
-        font-size: 0.65vw;
+        // font-size: 0.65vw;
         font-size: calc(12px + 0.01vw);
 
         .user-sex {
@@ -1902,7 +1914,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     &-phone {
       @include wh(100%, 24.5%);
       @include flex('row', 'center', 'center');
-      padding: 1vw;
+      padding: 0.7vw 1vw;
 
       .phone-left {
         @include wh(50%, 100%);
@@ -1915,11 +1927,10 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
         @include flex('column', 'space-around', 'center');
       }
       .phone-wrapper-inner {
-        @include wh(100%, 50%);
 
         .phone-wrapper-box {
           @include flex('row', 'flex-start', 'center');
-          margin-bottom: 0.2vw;
+          // margin-bottom: 0.2vw;
           width: 100%;
 
           span {
@@ -1942,16 +1953,21 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             font-size: calc(12px + 0.15vw);
 
             &.focus-car {
-              font-size: calc(12px + 0.01vw);
+              font-size: 12px;
             }
           }
         }
       }
       .phone-wrapper-inner-top {
         @include flex('column', 'flex-start', 'flex-start');
+        @include wh(100%, 60%);
       }
+      // .focus-car-outer {
+      //   @include flex('column', 'space-between', 'flex-start');
+      // }
       .phone-wrapper-inner-btm {
         @include flex('column', 'flex-end', 'flex-start');
+        @include wh(100%, 40%);
       }
     }
     &-individuation {
@@ -1997,7 +2013,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           span {
             display: inline-block;
             width: 100%;
-            min-height: 1.4vw;
+            // min-height: 1.4vw;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -2035,16 +2051,18 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             right: 1vw;
             bottom: 0;
             height: 100%;
-            min-width: 3vw;
+            min-width: 6vw;
             @include flex('column', 'center', 'flex-end');
 
             .focus-now-name {
-              font-size: 1vw;
+              // font-size: 1vw;
+              font-size: calc(12px + 0.25vw);
             }
             .focus-now-title {
               position: absolute;
-              bottom: 0.5vw;
-              font-size: 0.38vw;
+              bottom: 0.3vw;
+              // font-size: 0.38vw;
+              font-size: 12px;
             }
           }
         }
@@ -2107,8 +2125,166 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
   .people-unit {
     font-size: calc(12px + 0.01vw);
   }
-  // .phone-mb {
-  //   margin-bottom: 1.1vw;
-  // }
+
+  @media (min-width: 1700px) {
+    .company-message {
+      font-size: 0.8vw !important;
+    }
+
+    .company-sub-title {
+      font-size: 0.6vw !important;
+    }
+
+    .current-view {
+      font-size: 0.7vw !important;
+    }
+
+    .individuation-overview-title {
+      font-size: 0.7vw !important;
+    }
+
+    .individuation-num {
+
+      & > span:first-child {
+        font-size: 0.8vw !important;
+      }
+      & > span:last-child {
+        font-size: 0.45vw !important;
+      }
+    }
+
+    .color-name {
+      font-size: 0.7vw !important;
+    }
+
+    .color-rate-num {
+      font-size: 0.8vw !important;
+    }
+
+    .onoff-title {
+      font-size: 0.5vw !important;
+    }
+
+    .onoff-top {
+      & > span:last-child {
+        font-size: 0.8vw !important;
+      }
+    }
+
+    .current-user .single-user .single-user-name-box .single-user-name {
+      font-size: 0.8vw !important;
+    }
+
+    .scroll-swiper {
+      font-size: 0.7vw !important;
+    }
+
+    .info-number {
+      font-size: 2vw !important;
+
+      .sex {
+        font-size: 1vw !important;
+      }
+    }
+
+    .info-title {
+      font-size: 0.7vw !important;
+    }
+
+    .main-title {
+      font-size: 0.75vw !important;
+    }
+
+    .sub-title {
+      font-size: 0.5vw !important;
+    }
+
+    .user-icon {
+
+      span {
+        font-size: 0.8vw !important;
+      }
+    }
+
+    .user-username {
+      font-size: 0.75vw !important;
+    }
+
+    .user-phone {
+      font-size: 0.65vw !important;
+    }
+
+    .user-tags {
+      span {
+        font-size: 0.5vw !important;
+        padding: 0.1vw 0.5vw !important;
+      }
+    }
+
+    .phone-wrapper-box {
+      span {
+        font-size: 0.5vw !important;
+      }
+
+      span.phone-count {
+        font-size: 0.65vw !important;
+      }
+    }
+
+    .focus-now-name {
+      font-size: 1vw !important;
+    }
+
+    .focus-now-title {
+      font-size: 0.38vw !important;
+    }
+
+    .focus-title {
+      &-name {
+        font-size: 0.5vw !important;
+      }
+    }
+
+    .focus-part > span {
+      padding: 0.1vw !important;
+    }
+
+    .phone-wrapper-inner-top,
+    .phone-wrapper-inner-btm {
+      height: 50% !important;
+    }
+
+    .user-detail-phone {
+      padding: 1.5vw !important;
+    }
+
+    .screen-container .info-number .sex {
+      width: 42% !important;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .individuation-overview {
+      height: 48% !important;
+    }
+  }
+
+  @media (min-width: 1201px) and (max-width: 1400px) {
+    .individuation-overview {
+      height: 54% !important;
+    }
+  }
+
+  @media (min-width: 1401px) and (max-width: 1650px) {
+    .individuation-overview {
+      height: 62% !important;
+    }
+  }
+
+  @media (min-width: 1651px) and (max-width: 1900px) {
+    .individuation-overview {
+      height: 75% !important;
+    }
+  }
 }
 </style>
