@@ -629,7 +629,7 @@
         this.createTextAutoSlide();
         setTimeout(() => {
           this.createCurrentLookWs();
-          this.addElementAttrTitle();
+          this.swiperHoverListener();
         }, 700);
       },
       computed: {
@@ -704,13 +704,16 @@
         }
       },
       methods: {
-        addElementAttrTitle() {
-          const $element = $(".slide-inner-text");
-          const len = $element.length;
-          for (var i = 0; i < len; i++) {
-            const $singleEle = $($element[i]);
-            $singleEle.attr("title", $singleEle.text());
-          }
+        swiperHoverListener() {
+          const $slideInner = $(".current-lookcar .swiper-slide-active .slide-inner-text");
+          $(".current-lookcar").hover((e) => {
+            const $this = $($slideInner);
+            const innerWidth = $this.width();
+            const parentWidth = $($this.parent()).width();
+            $slideInner.css("margin-left", - parentWidth * 1.5);
+          }, () => {
+            $slideInner.css("margin-left", 0);
+          });
         },
         createTextAutoSlide() {
           $('.current-view').liMarquee({
@@ -881,7 +884,7 @@
           const $this = this;
           axios.get(`${this.basicUrl}${this.carId}?t=${+new Date()}`)
           .then(response => {
-            console.log("response: ", response);
+            // console.log("response: ", response);
             // console.log("activeDate: ", this.activeDate);
             if (response.status === 200) {
               $this.assignBasicDatas(response.data);
@@ -916,7 +919,7 @@
           });
         },
         assignBasicDatas(parsed) {
-          console.log("parsed: ", parsed);
+          // console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
@@ -1029,7 +1032,7 @@
             return o.id === online.id;
           });
           if (exist > -1) {
-            console.log("online: ", online);
+            // console.log("online: ", online);
             const oldOnline = this.currentUsers[exist];
             this.currentUsers.splice(exist, 1, {
               id: online.id,
@@ -1047,19 +1050,19 @@
         },
         formatOnlineUser(online) {
           return {
-                id: online.id,
-                name: online.name,
-                online: online.online,
-                iconBg: this.getRandomIconBg(),
-              };
+            id: online.id,
+            name: online.name,
+            online: online.online,
+            iconBg: this.getRandomIconBg(),
+          };
         },
         formatOfflineUser(offline) {
           return {
-                id: offline.id,
-                name: offline.name,
-                online: offline.online,
-                iconBg: '#535a6c',
-              };
+            id: offline.id,
+            name: offline.name,
+            online: offline.online,
+            iconBg: '#535a6c',
+          };
         },
         ifHasUsers(user) {
           const index = _.findIndex(this.currentUsers, function(o) {
@@ -1110,7 +1113,7 @@
           const $this = this;
           axios.get(`${this.userDetailUrl}${user.id}`)
           .then(response => {
-            console.log("online: ", response.data.data)
+            // console.log("online: ", response.data.data)
             const parsed = response.data && response.data.data;
             if (parsed) {
               $this.summary.username = parsed.username;
@@ -1689,9 +1692,15 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .swiper-slide {
-      line-height: 1em;
-    }
+  }
+
+  .current-lookcar .slide-inner-text {
+    transition: margin-left 1.5s linear 0.5s;
+  }
+
+  .current-lookcar:hover .swiper-slide-active .slide-inner-text {
+    overflow: visible;
+    text-overflow: inherit;
   }
 
   .swiper-button-red {
