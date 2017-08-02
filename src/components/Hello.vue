@@ -725,10 +725,26 @@
           const url = window.location.href;
           const carMatch = url.match(new RegExp(this.carRegExp));
           const dayMatch = url.match(new RegExp(this.dayRegRxp));
-          this.carId = carMatch ? parseInt(carMatch[1]) : '';
+          this.carId = carMatch ? parseInt(carMatch[1]) : this.getCarId();
           this.creatfocusWs(this.carId);
           this.activeDate = dayMatch ? dayMatch[1] : this.parseSelectDay(new Date());
           this.fetchBasicDatas();
+          setTimeout(() => {
+            this.saveCarId(this.carId);
+          }, 500)
+        },
+        getCarId() {
+          if (!window.localStorage) {
+            return 29524;
+          }
+          const carId = window.localStorage.getItem('carid');
+          return carId ? carId : 29524;
+        },
+        saveCarId(carid) {
+          if (!window.localStorage) {
+            return;
+          }
+          window.localStorage.setItem('carid', carid);
         },
         creatfocusWs(carid) {
           if (!carid) {
