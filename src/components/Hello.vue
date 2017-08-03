@@ -755,7 +755,17 @@
 
           this.focusWs.onmessage = (msg) => {
             console.log("focusWsMsg: ", msg.data);
-            this.scrollTextList.push(msg.data);
+            if (!msg.data) {
+              const data = JSON.parse(msg.data);
+              if (data.scree_all_look) {
+                this.scrollTextList.push(data.scree_all_look);
+              } else if (data.screen_user_look) {
+                console.log("screen_user_look", data.screen_user_look);
+              } else if (data.screen_part_look) {
+                console.log("screen_part_look", data.screen_part_look);
+              }
+            }
+            // this.scrollTextList.push(msg.data);
           }
 
           this.focusWs.onopen = (msg) => {
@@ -1026,7 +1036,7 @@
             })
           }
           if (this.ifIsToday(this.activeDate)) {
-            this.createOnlineWs();
+            // this.createOnlineWs();
           }
         },
         ifIsToday(activeDate) {
@@ -1183,11 +1193,12 @@
             }
             return;
           }
-          if (this.userDetailWs) {
-            this.userDetailWs.close();
-          }
+          // if (this.userDetailWs) {
+          //   this.userDetailWs.close();
+          // }
           this.resetCurrentLookDetail();
-          this.createUserDetailWs(user.id);
+          this.focusWs.send(JSON.stringify({'user_id': user.id}));
+          // this.createUserDetailWs(user.id);
         },
         resetCurrentLookDetail() {
           this.currentLookBody = null;
