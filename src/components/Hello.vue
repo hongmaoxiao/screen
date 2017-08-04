@@ -319,7 +319,7 @@
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span class="phone-count focus-car" :title="summary.lookcar">{{summary.lookcar}}</span>
+                <span :class="'focus-car' + summary.id" class="phone-count focus-car" :title="summary.lookcar">{{summary.lookcar}}</span>
               </div>
             </div>
             <div class="phone-left-top phone-wrapper-inner phone-wrapper-inner-btm">
@@ -426,6 +426,7 @@
     import 'odometer/themes/odometer-theme-digital.css';
     import './liMarquee.css';
     import './jquery.liMarquee.js';
+    import './clamp.min.js';
     import focus from './focus';
     import focusScatter from './focusScatter';
     import purchase from './purchase';
@@ -563,6 +564,7 @@
           showUserOverview: false,
           UserOverviewHeight: 0,
           summary: {
+            id: 0,
             username: null,
             phone: null,
             lookcar: null,
@@ -1101,6 +1103,7 @@
           cb();
         },
         fecthOnlineUsersInfo(user) {
+          this.summary.id = user.id;
           this.summary.username = user.username;
           this.summary.phone = user.phone;
           this.summary.lookcar = user.lookcar;
@@ -1116,9 +1119,10 @@
           const $this = this;
           axios.get(`${this.userDetailUrl}${user.id}`)
           .then(response => {
-            // console.log("online: ", response.data.data)
+            console.log("online: ", response.data.data)
             const parsed = response.data && response.data.data;
             if (parsed) {
+              $this.summary.id = parsed.id;
               $this.summary.username = parsed.username;
               $this.summary.phone = parsed.phone;
               $this.summary.lookcar = parsed.lookcar;
@@ -1222,6 +1226,8 @@
           const $arrow = target.find(".arrow");
           $arrow.show();
           this.setUserDetailPostion(top, target);
+          const $focusCar = document.getElementsByClassName('focus-car');
+          $clamp($focusCar[0], {clamp: 2, useNativeClamp: false, animate: true});
         },
         setUserDetailPostion(top, target) {
           const height = $(".user-detail").height();
@@ -1974,6 +1980,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
             &.focus-car {
               font-size: 12px;
+              margin-left: 0.5vw;
             }
           }
         }
@@ -2315,6 +2322,33 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
   @media (min-width: 1651px) and (max-width: 1900px) {
     .individuation-overview {
       height: 75% !important;
+    }
+  }
+  @media (min-width: 1300px) and (max-width: 1579px) {
+    .phone-wrapper-box {
+      margin-bottom: 0.15vw !important;
+    }
+  }
+  @media (min-width: 1580px) {
+    .user-detail-phone {
+      padding: 1vw 1vw !important;
+    }
+    .phone-wrapper-inner-top,
+    .phone-wrapper-inner-btm {
+      height: 50% !important;
+    }
+    .phone-wrapper-box {
+      margin-bottom: 0.3vw !important;
+    }
+  }
+  @media (min-width: 1350px) and (max-width: 1600px) {
+    .user-detail {
+      height: 34.5vw !important;
+    }
+  }
+  @media (min-width: 1600px) {
+    .user-detail {
+      height: 33vw !important;
     }
   }
 }
