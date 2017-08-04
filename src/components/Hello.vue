@@ -1226,8 +1226,8 @@
           const $arrow = target.find(".arrow");
           $arrow.show();
           this.setUserDetailPostion(top, target);
-          const $focusCar = document.getElementsByClassName('focus-car');
-          $clamp($focusCar[0], {clamp: 2, useNativeClamp: false, animate: true});
+          // const $focusCar = document.getElementsByClassName('focus-car');
+          // $clamp($focusCar[0], {clamp: 2, useNativeClamp: false, animate: true});
         },
         setUserDetailPostion(top, target) {
           const height = $(".user-detail").height();
