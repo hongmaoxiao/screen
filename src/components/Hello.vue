@@ -340,27 +340,32 @@
             <span class="focus-title-name">{{userDetailIndividuaName}}</span>
           </div>
           <div class="user-detail-individuation-btm" v-if="summary.online">
-            <div class="focus-individuation-item" v-if="currentLookWheelhub">
-              <img :src="onlineHub">
-              <span :title="currentLookWheelhub">{{currentLookWheelhub}}</span>
-              <i class="arrow-left-top"></i>
-              <i class="arrow-right-btm"></i>
+            <div class="current-look-individuation" v-if="noCurrentLookIndividuation">
+              暂无正在关注
             </div>
-            <div class="focus-individuation-item" v-if="currentLookGlass">
-              <img :src="onlineGlass">
-              <span :title="currentLookGlass">{{currentLookGlass}}</span>
-              <i class="arrow-left-top"></i>
-              <i class="arrow-right-btm"></i>
-            </div>
-            <div class="focus-individuation-item" v-if="currentLookColor.name">
-              <div class="color-wrapper">
-                <span class="look-color" :style="{background: currentLookColor.value}">
-                  <i class="look-color-arrow" :style="{background: currentLookColor.value}"></i>
-                </span>
+            <div class="current-has-look-individuation" v-else>
+              <div class="focus-individuation-item" v-if="currentLookWheelhub">
+                <img :src="onlineHub">
+                <span :title="currentLookWheelhub">{{currentLookWheelhub}}</span>
+                <i class="arrow-left-top"></i>
+                <i class="arrow-right-btm"></i>
               </div>
-              <span :title="'车色-' + currentLookColor.name">车色-{{currentLookColor.name}}</span>
-              <i class="arrow-left-top"></i>
-              <i class="arrow-right-btm"></i>
+              <div class="focus-individuation-item" v-if="currentLookGlass">
+                <img :src="onlineGlass">
+                <span :title="currentLookGlass">{{currentLookGlass}}</span>
+                <i class="arrow-left-top"></i>
+                <i class="arrow-right-btm"></i>
+              </div>
+              <div class="focus-individuation-item" v-if="currentLookColor.name">
+                <div class="color-wrapper">
+                  <span class="look-color" :style="{background: currentLookColor.value}">
+                    <i class="look-color-arrow" :style="{background: currentLookColor.value}"></i>
+                  </span>
+                </div>
+                <span :title="'车色-' + currentLookColor.name">车色-{{currentLookColor.name}}</span>
+                <i class="arrow-left-top"></i>
+                <i class="arrow-right-btm"></i>
+              </div>
             </div>
           </div>
           <div class="user-detail-individuation-btm" v-else>
@@ -394,11 +399,11 @@
             <span class="focus-title-name">{{userDetailCarBodyName}}</span>
           </div>
           <div class="focus-part" v-if="summary.online">
-            <div class="focus-now-box" v-if="currentLookBody">
+            <div class="focus-now-box">
               <img :src="popCarbg" class="focus-now-icon">
               <div class="focus-now-name-wrapper">
                 <span class="focus-now-name">
-                  {{currentLookBody}}
+                  {{currentOnlineBodyLook}}
                 </span>
                 <span class="focus-now-title">
                   客户正在观看
@@ -592,6 +597,7 @@
           currentLookWheelhub: null,
           carColorList: [],
           activeUser: [],
+          activeUid: 0,
           purchaseList: [],
           carfoucus: [],
           carRegExp: 'car=(\\d+)',
@@ -623,7 +629,6 @@
         this.handleNotHideDetail();
         this.createTextAutoSlide();
         setTimeout(() => {
-          // this.createCurrentLookWs();
           this.swiperHoverListener();
         }, 700);
       },
@@ -669,6 +674,13 @@
         },
         onlineGlass() {
           return this.currentLookGlass == "黑色隐私玻璃" ? glass_has_privacy : glass_no_privacy;
+        },
+        currentOnlineBodyLook() {
+          return this.currentLookBody ? this.currentLookBody : "暂未观看";
+        },
+        noCurrentLookIndividuation() {
+          console.log("!(this.currentLookWheelhub || this.currentLookGlass || this.currentLookColor.name): ", !(this.currentLookWheelhub || this.currentLookGlass || this.currentLookColor.name))
+          return !(this.currentLookWheelhub || this.currentLookGlass || this.currentLookColor.name);
         },
       },
       watch: {
@@ -746,17 +758,13 @@
             if (this.ifIsToday(this.activeDate)) {
               if (msg.data) {
                 const data = JSON.parse(msg.data);
-                console.log("data: ", data);
                 if (data.screen_all_look) {
-                  console.log("screen_user_look", data.screen_all_look);
                   this.handleScrollText(data.screen_all_look);
                 } else if (data.screen_user_look) {
-                  console.log("screen_user_look", data.screen_user_look);
+                  this.parseFocusAndColor(data.screen_user_look);
                 } else if (data.screen_part_look) {
                   this.handleColorPartLook(data.screen_part_look);
-                  console.log("screen_part_look", data.screen_part_look);
                 } else if (data.on_off_line) {
-                  console.log("on_off_line", data.on_off_line);
                   this.handleOnlineList(data.on_off_line);
                 }
               }
@@ -905,7 +913,7 @@
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
             this.mrate = parsed.mrate;
-            this.currentOnlineUsers = parsed.vr_num + Math.random * 100;
+            this.handleCurrentOnlineUsers(parsed.vr_num);
             this.totalUsers = parsed.total_users_num;
             this.carColorList = parsed.look_colors;
             this.activeUser = parsed.active_user_num.date;
@@ -917,6 +925,13 @@
             this.setCarSwiperActive();
             this.assignIndividuationList(parsed.selfhood_select);
             this.assignDate(parsed.date);
+          }
+        },
+        handleCurrentOnlineUsers(users) {
+          if (this.ifIsToday(this.activeDate)) {
+            this.currentOnlineUsers = users;
+          } else {
+            this.currentOnlineUsers = 0;
           }
         },
         assignIndividuationList(inObj) {
@@ -1156,7 +1171,7 @@
             return;
           }
           this.resetCurrentLookDetail();
-          this.focusWs.send(JSON.stringify({'user_id': user.id}));
+          this.focusWs.send(JSON.stringify({'uid': user.id}));
         },
         resetCurrentLookDetail() {
           this.currentLookBody = null;
@@ -1182,6 +1197,11 @@
           this.getUserDetailIconBg(user);
           this.fecthUserDetailInfo(user);
           this.calculateTopHeight(event.target);
+          if (user.online && user.id) {
+            this.activeUid = user.id;
+          } else {
+            this.activeUid = 0;
+          }
           event.stopPropagation();
         },
         getUserDetailIconBg(user) {
@@ -1218,13 +1238,16 @@
           }
           this.showUserOverview = true;
         },
-        handleHideOverview() {
+        handleHideOverview(uid) {
           $(".arrow").hide();
           this.showUserOverview = false;
+          if (uid) {
+            this.focusWs.send(JSON.stringify({'close_uid': uid}));
+          }
         },
         handleShowOrHideDetail() {
           if (this.showUserOverview) {
-            this.handleHideOverview();
+            this.handleHideOverview(this.activeUid);
           }
         },
         handleNotHideDetail() {
@@ -2121,6 +2144,17 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
   }
   .people-unit {
     font-size: calc(12px + 0.01vw);
+  }
+
+  .current-look-individuation {
+    color: #999;
+    @include wh(100%, auto);
+    @include flex('row', 'center', 'center');
+  }
+
+  .current-has-look-individuation {
+    @include flex('row', 'flex-start', 'center');
+    @include wh(100%, 100%);
   }
 
   @media (min-width: 1700px) {
