@@ -602,12 +602,7 @@
           userDetailUrl: '/dealer/users/online/',
           wsBaseUrl: 'wss://dms.autoforce.net/ws',
           focusWsUrl: '/dealer/screen/dynamic/focus',
-          onlineWsUrl: '/dealer/screen/dynamic/users',
-          currentLookWsUrl: '/dealer/screen/dynamic/look',
           focusWs: null,
-          onlineWs: null,
-          userDetailWs: null,
-          currentLookWs: null,
           onlineCount: 0,
           offlineCount: 0,
           currentSlideDateIndex: 0,
@@ -628,7 +623,7 @@
         this.handleNotHideDetail();
         this.createTextAutoSlide();
         setTimeout(() => {
-          this.createCurrentLookWs();
+          // this.createCurrentLookWs();
           this.swiperHoverListener();
         }, 700);
       },
@@ -693,15 +688,6 @@
         if (this.focusWs) {
           this.focusWs.close();
         }
-        if (this.onlineWs) {
-          this.onlineWs.close();
-        }
-        if (this.userDetailWs) {
-          this.userDetailWs.close();
-        }
-        if (this.currentLookWs) {
-          this.currentLookWs.close();
-        }
       },
       methods: {
         swiperHoverListener() {
@@ -726,7 +712,9 @@
           const carMatch = url.match(new RegExp(this.carRegExp));
           const dayMatch = url.match(new RegExp(this.dayRegRxp));
           this.carId = carMatch ? parseInt(carMatch[1]) : this.getCarId();
-          this.creatfocusWs(this.carId);
+          if (this.ifIsToday(this.activeDate)) {
+            this.createfocusWs(this.carId);
+          }
           this.activeDate = dayMatch ? dayMatch[1] : this.parseSelectDay(new Date());
           this.fetchBasicDatas();
           setTimeout(() => {
@@ -746,7 +734,7 @@
           }
           window.localStorage.setItem('carid', carid);
         },
-        creatfocusWs(carid) {
+        createfocusWs(carid) {
           if (!carid) {
             return;
           }
@@ -755,17 +743,24 @@
 
           this.focusWs.onmessage = (msg) => {
             console.log("focusWsMsg: ", msg.data);
-            if (!msg.data) {
-              const data = JSON.parse(msg.data);
-              if (data.scree_all_look) {
-                this.scrollTextList.push(data.scree_all_look);
-              } else if (data.screen_user_look) {
-                console.log("screen_user_look", data.screen_user_look);
-              } else if (data.screen_part_look) {
-                console.log("screen_part_look", data.screen_part_look);
+            if (this.ifIsToday(this.activeDate)) {
+              if (msg.data) {
+                const data = JSON.parse(msg.data);
+                console.log("data: ", data);
+                if (data.screen_all_look) {
+                  console.log("screen_user_look", data.screen_all_look);
+                  this.handleScrollText(data.screen_all_look);
+                } else if (data.screen_user_look) {
+                  console.log("screen_user_look", data.screen_user_look);
+                } else if (data.screen_part_look) {
+                  this.handleColorPartLook(data.screen_part_look);
+                  console.log("screen_part_look", data.screen_part_look);
+                } else if (data.on_off_line) {
+                  console.log("on_off_line", data.on_off_line);
+                  this.handleOnlineList(data.on_off_line);
+                }
               }
             }
-            // this.scrollTextList.push(msg.data);
           }
 
           this.focusWs.onopen = (msg) => {
@@ -776,38 +771,15 @@
             console.log("focusWsclose: ", msg);
           }
         },
-        createOnlineWs() {
-          this.onlineWs = new WebSocket(`${this.wsBaseUrl}${this.onlineWsUrl}`);
-
-          this.onlineWs.onmessage = (msg) => {
-            const online = msg.data && JSON.parse(msg.data);
-            this.handleOnlineList(online);
+        handleScrollText(data) {
+          if (this.scrollTextList.length > 10) {
+            this.scrollTextList.splice(0, 1);
           }
-
-          this.onlineWs.onopen = (msg) => {
-            console.log("onlineWsopen: ", msg);
-          }
-
-          this.onlineWs.onclose = (msg) => {
-            console.log("onlineWclose: ", msg);
-          }
+          this.scrollTextList.push(data);
         },
-        createUserDetailWs(uid) {
-          this.userDetailWs = new WebSocket(`${this.wsBaseUrl}${this.focusWsUrl}?user_id=${uid}`);
-
-          this.userDetailWs.onmessage = (msg) => {
-            console.log("userDetailWsMsg: ", msg.data);
-            const detail = msg.data && JSON.parse(msg.data);
-            this.parseFocusAndColor(detail);
-          }
-
-          this.userDetailWs.onopen = (msg) => {
-            console.log("userDetailWsopen: ", msg);
-          }
-
-          this.userDetailWs.onclose = (msg) => {
-            console.log("userDetailWsclose: ", msg);
-          }
+        handleColorPartLook(data) {
+          this.lastTenLook = [];
+          this.lastTenLook = [data];
         },
         parseFocusAndColor(detail) {
           if (_.has(detail, 'body')) {
@@ -822,23 +794,6 @@
           }
           if (_.has(detail, 'wheelhub')) {
             this.currentLookWheelhub = _.get(detail, 'wheelhub');
-          }
-        },
-        createCurrentLookWs() {
-          this.CurrentLookWs = new WebSocket(`${this.wsBaseUrl}${this.currentLookWsUrl}?car_id=${this.carId}`);
-
-          this.CurrentLookWs.onmessage = (msg) => {
-            console.log("CurrentLookWsMsg: ", msg.data);
-            this.lastTenLook = [];
-            this.lastTenLook = [msg.data];
-          }
-
-          this.CurrentLookWs.onopen = (msg) => {
-            console.log("CurrentLookWsopen: ", msg);
-          }
-
-          this.CurrentLookWs.onclose = (msg) => {
-            console.log("CurrentLookWsclose: ", msg);
           }
         },
         setCarSwiperActive() {
@@ -908,7 +863,7 @@
         },
         fetchBasicDatas() {
           const $this = this;
-          axios.get(`${this.basicUrl}${this.carId}?t=${+new Date()}`)
+          axios.get(`${this.basicUrl}${this.carId}?day=${this.activeDate}`)
           .then(response => {
             // console.log("response: ", response);
             // console.log("activeDate: ", this.activeDate);
@@ -1025,6 +980,7 @@
           this.onlineCount = data.online && data.online.num;
           this.offlineCount = data.offline && data.offline.num;
           this.currentUsers = [];
+          console.log("first online: ", data);
           if (data.online) {
             _.forEach(data.online.users, (online) => {
               this.currentUsers.push(this.formatOnlineUser(online));
@@ -1034,9 +990,6 @@
             _.forEach(data.offline.users, (offline) => {
               this.currentUsers.push(this.formatOfflineUser(offline));
             })
-          }
-          if (this.ifIsToday(this.activeDate)) {
-            // this.createOnlineWs();
           }
         },
         ifIsToday(activeDate) {
@@ -1051,6 +1004,7 @@
           return this.userIconColors[Math.floor(Math.random() * this.userIconColors.length)];
         },
         handleOnlineList(online) {
+          console.log("online change: ", online);
           if (!_.keys(online).length) {
             return;
           }
@@ -1058,18 +1012,26 @@
             return o.id === online.id;
           });
           if (exist > -1) {
-            // console.log("online: ", online);
             const oldOnline = this.currentUsers[exist];
-            this.currentUsers.splice(exist, 1, {
-              id: online.id,
-              name: online.name,
-              online: online.online,
-              iconBg: oldOnline.iconBg,
-            });
+            if (oldOnline.online === online.online) {
+              return;
+            }
+            if (online.online) {
+              this.onlineCount++;
+              this.offlineCount--;
+              this.currentUsers.splice(exist, 1, this.formatOnlineUser(online));
+            } else {
+              this.offlineCount++;
+              this.onlineCount--;
+              this.currentUsers.splice(exist, 1, this.formatOfflineUser(online));
+            }
+
           } else {
             if (online.online) {
+              this.onlineCount++;
               this.currentUsers.unshift(this.formatOnlineUser(online));
             } else {
+              this.offlineCount++;
               this.currentUsers.push(this.formatOfflineUser(online));
             }
           }
@@ -1193,12 +1155,8 @@
             }
             return;
           }
-          // if (this.userDetailWs) {
-          //   this.userDetailWs.close();
-          // }
           this.resetCurrentLookDetail();
           this.focusWs.send(JSON.stringify({'user_id': user.id}));
-          // this.createUserDetailWs(user.id);
         },
         resetCurrentLookDetail() {
           this.currentLookBody = null;
