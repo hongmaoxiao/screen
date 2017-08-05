@@ -519,7 +519,17 @@
             onSlideChangeEnd(swiper) {
               const id = $this.carList[swiper.activeIndex].car_id;
               let url = window.location.href;
-              window.location.href = url.replace(new RegExp($this.carRegExp), `car=${id}`);
+              const carRge = new RegExp($this.carRegExp);
+              const carMatch = url.match(carRge);
+              if (carMatch) {
+                window.location.href = url.replace(carRge, `car=${id}`);
+              } else {
+                if (url.indexOf("?") > -1) {
+                  window.location.href = `${url}&car=${id}`;
+                } else {
+                  window.location.href = `${url}?car=${id}`;
+                }
+              }
             }
           },
           dateSwiperOption: {
@@ -540,7 +550,11 @@
               if (dayMatch) {
                 window.location.href = url.replace(dayRe, `day=${activeDate}`);
               } else {
-                window.location.href = `${url}&day=${activeDate}`;
+                if (url.indexOf("?") > -1) {
+                  window.location.href = `${url}&day=${activeDate}`;
+                } else {
+                  window.location.href = `${url}?day=${activeDate}`;
+                }
               }
             }
           },
