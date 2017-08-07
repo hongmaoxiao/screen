@@ -426,7 +426,6 @@
     import 'odometer/themes/odometer-theme-digital.css';
     import './liMarquee.css';
     import './jquery.liMarquee.js';
-    import './clamp.min.js';
     import focus from './focus';
     import focusScatter from './focusScatter';
     import purchase from './purchase';
@@ -644,9 +643,6 @@
         window.addEventListener('click', this.handleShowOrHideDetail);
         this.handleNotHideDetail();
         this.createTextAutoSlide();
-        setTimeout(() => {
-          this.swiperHoverListener();
-        }, 700);
       },
       computed: {
         communicate() {
@@ -718,17 +714,6 @@
         }
       },
       methods: {
-        swiperHoverListener() {
-          const $slideInner = $(".current-lookcar .swiper-slide-active .slide-inner-text");
-          $(".current-lookcar").hover((e) => {
-            const $this = $($slideInner);
-            const innerWidth = $this.width();
-            const parentWidth = $($this.parent()).width();
-            $slideInner.css("margin-left", - parentWidth * 1.5);
-          }, () => {
-            $slideInner.css("margin-left", 0);
-          });
-        },
         createTextAutoSlide() {
           $('.current-view').liMarquee({
             loop: -1,
@@ -1240,8 +1225,6 @@
           const $arrow = target.find(".arrow");
           $arrow.show();
           this.setUserDetailPostion(top, target);
-          // const $focusCar = document.getElementsByClassName('focus-car');
-          // $clamp($focusCar[0], {clamp: 2, useNativeClamp: false, animate: true});
         },
         setUserDetailPostion(top, target) {
           const height = $(".user-detail").height();
@@ -1715,7 +1698,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     }
     .slide-inner-text {
       display: inline-block;
-      max-width: 60%;
+      max-width: 70%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -1723,15 +1706,6 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     .swiper-slide {
       line-height: 1em;
     }
-  }
-
-  .current-lookcar .slide-inner-text {
-    transition: margin-left 1.5s linear 0.5s;
-  }
-
-  .current-lookcar:hover .swiper-slide-active .slide-inner-text {
-    overflow: visible;
-    text-overflow: inherit;
   }
 
   .swiper-button-red {
@@ -1954,7 +1928,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     &-phone {
       @include wh(100%, 24.5%);
       @include flex('row', 'center', 'center');
-      padding: 0.7vw 1vw;
+      padding: 1vw;
 
       .phone-left {
         @include wh(50%, 100%);
@@ -1985,16 +1959,18 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           }
           span.phone-count {
             color: #333;
-            line-height: 1.1em;
             overflow: scroll;
             // text-overflow: ellipsis;
             // white-space: nowrap;
             // font-size: 0.65vw;
+            border-radius: 2px;
             font-size: calc(12px + 0.15vw);
+            background-color: #ff5f60;
+            color: #fff;
+            padding: 0 10px;
 
             &.focus-car {
               font-size: 12px;
-              margin-left: 0.5vw;
             }
           }
         }
@@ -2014,7 +1990,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     &-individuation {
       @include wh(100%, 27.8%);
       @include flex('column', 'space-between', 'flex-start');
-      padding: 1.5vw 0 0.5vw;
+      padding: 1vw 0 0.5vw;
 
       &-btm {
         @include flex('row', 'flex-start', 'center');
@@ -2065,7 +2041,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     }
     &-fouce {
       @include wh(100%, 25%);
-      padding: 1.5vw 0 0.5vw;
+      padding: 1vw 0 0.5vw;
       @include flex('column', 'flex-start', 'flex-start');
 
       .focus-part-title {
@@ -2279,7 +2255,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       }
 
       span.phone-count {
-        font-size: 0.65vw !important;
+        font-size: 0.7vw !important;
       }
     }
 
@@ -2330,6 +2306,12 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
   @media (min-width: 1401px) and (max-width: 1650px) {
     .individuation-overview {
       height: 62% !important;
+    }
+  }
+
+  @media (min-width: 1401px) and (max-width: 1700px) {
+    .focus-car {
+      font-size: calc(12px + 0.15vw) !important;
     }
   }
 

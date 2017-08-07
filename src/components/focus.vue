@@ -65,6 +65,10 @@
             this.chart.resize();
           }
         },
+        half(val) {
+          const half = Math.floor(val.length / 2);
+          return val.slice(0, half) + '\n\n' + val.slice(half);
+        },
         formatPercent(val, total) {
           let res = isNaN(val) ? 0 : val;
           if (isNaN(total) || total === 0) {
@@ -86,7 +90,7 @@
           const subTitleSize = 12 + 0.01 * this.perVw;
           _.forEach(listData, (value, key) => {
             if ( key < 5 ) {
-              if (value[0]) {
+              if (value[0] >= 0) {
                 category.push(value[1]);
                 focusData.push(value[0]);
               }
@@ -134,6 +138,7 @@
             xAxis: {
               type: 'category',
               data: category,
+              offset: $this.chart._dom.offsetWidth < 250 ? 15 : 3,
               splitLine: {
                 show: false
               },
@@ -151,7 +156,13 @@
                   color: '#b8b9c8',
                   baseline: 'middle',
                   align: 'center',
-                }
+                },
+                formatter: function(a) {
+                  if ($this.chart._dom.offsetWidth < 250) {
+                    return $this.half(a);
+                  }
+                  return a;
+                },
               },
             },
             series: [
