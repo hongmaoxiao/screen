@@ -405,7 +405,7 @@
                 <span class="focus-now-name">
                   {{currentOnlineBodyLook}}
                 </span>
-                <span class="focus-now-title">
+                <span class="focus-now-title" v-if="currentOnlineBodyLook !== '暂未关注'">
                   客户正在观看
                 </span>
               </div>
@@ -688,7 +688,7 @@
           return this.currentLookGlass == "黑色隐私玻璃" ? glass_has_privacy : glass_no_privacy;
         },
         currentOnlineBodyLook() {
-          return this.currentLookBody ? this.currentLookBody : "暂未观看";
+          return this.currentLookBody ? this.currentLookBody : "暂未关注";
         },
         noCurrentLookIndividuation() {
           console.log("!(this.currentLookWheelhub || this.currentLookGlass || this.currentLookColor.name): ", !(this.currentLookWheelhub || this.currentLookGlass || this.currentLookColor.name))
@@ -1959,7 +1959,6 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
           }
           span.phone-count {
             color: #333;
-            overflow: scroll;
             // text-overflow: ellipsis;
             // white-space: nowrap;
             // font-size: 0.65vw;
