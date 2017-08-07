@@ -67,7 +67,7 @@
         },
         half(val) {
           const half = Math.floor(val.length / 2);
-          return val.slice(0, half) + '\n\n' + val.slice(half);
+          return val.slice(0, half) + '\n' + val.slice(half);
         },
         formatPercent(val, total) {
           let res = isNaN(val) ? 0 : val;

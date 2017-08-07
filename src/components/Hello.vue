@@ -341,7 +341,7 @@
           </div>
           <div class="user-detail-individuation-btm" v-if="summary.online">
             <div class="current-look-individuation" v-if="noCurrentLookIndividuation">
-              暂无正在关注
+              暂未关注
             </div>
             <div class="current-has-look-individuation" v-else>
               <div class="focus-individuation-item" v-if="currentLookWheelhub">
