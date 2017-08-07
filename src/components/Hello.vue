@@ -297,7 +297,7 @@
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span class="phone-count">{{summary.intention}}%</span>
+                <span class="phone-count purchase-count">{{summary.intention}}%</span>
               </div>
             </div>
             <div class="phone-left-top phone-wrapper-inner phone-wrapper-inner-btm">
@@ -1965,12 +1965,14 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             // font-size: 0.65vw;
             border-radius: 2px;
             font-size: calc(12px + 0.15vw);
-            background-color: #ff5f60;
-            color: #fff;
-            padding: 0 10px;
 
             &.focus-car {
               font-size: 12px;
+            }
+            &.purchase-count {
+              background-color: #ff5f60;
+              color: #fff;
+              padding: 0 10px;
             }
           }
         }

@@ -158,7 +158,7 @@
                   align: 'center',
                 },
                 formatter: function(a) {
-                  if ($this.chart._dom.offsetWidth < 250) {
+                  if ($this.chart._dom.offsetWidth < 250 && a.length >= 3) {
                     return $this.half(a);
                   }
                   return a;
