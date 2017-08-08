@@ -215,7 +215,14 @@
                   </div>
                 </div>
                 <div class="core-heat-half core-heat-normal">
-                  <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' />
+                  <focus :perVw="perVw" :listData="carfoucus" height='100%' width='100%' v-if="hasCarFocus" />
+                  <div class="no-carfocus" v-else>
+                    <p class="no-carfocus-title">
+                      客户关注占比<br>
+                      <span class="no-carfocus-subtitle">看车零部件时长占比</span>
+                    </p>
+                    暂无数据
+                  </div>
                 </div>
               </div>
             </div>
@@ -710,6 +717,12 @@
           const nameLen = this.summary.username ? this.summary.username.length : 0;
           const userName = this.summary.username;
           return nameLen > 2 ? userName.slice(-2) : userName;
+        },
+        hasCarFocus() {
+          return _.some(this.carfoucus, (o) => {
+            console.log(o);
+            return o[0] > 0;
+          })
         },
       },
       watch: {
@@ -2185,6 +2198,26 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
   .current-has-look-individuation {
     @include flex('row', 'flex-start', 'center');
     @include wh(100%, 100%);
+  }
+
+  .no-carfocus {
+    @include wh(100%, 100%);
+    @include flex('row', 'center', 'center');
+    color: #999;
+    font-size: calc(12px + 0.2vw);
+  }
+
+  .no-carfocus-title {
+    position: absolute;
+    top: 0.3vw;
+    text-align: center;
+    font-size: calc(12px + 0.2vw);
+    color: #fff;
+  }
+
+  .no-carfocus-subtitle {
+    font-size: 12px;
+    color: #7d7f90;
   }
 
   @media (min-width: 1700px) {
