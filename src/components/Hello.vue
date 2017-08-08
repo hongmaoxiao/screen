@@ -264,7 +264,7 @@
         <div class="current-user">
           <swiper :options="swiperOption" ref="mySwiper">
             <swiper-slide
-              v-for="user in currentUsers"
+              v-for="user in formatCurrentUsers"
               key="user.id"
               :data-uid="user.id"
             >
@@ -714,14 +714,19 @@
           return !(this.summary.wheel || this.summary.glass || this.summary.color);
         },
         lastTwoName() {
-          const nameLen = this.summary.username ? this.summary.username.length : 0;
-          const userName = this.summary.username;
-          return nameLen > 2 ? userName.slice(-2) : userName;
+          return this.getLastTwoCharacter(this.summary.username);
         },
         hasCarFocus() {
           return _.some(this.carfoucus, (o) => {
-            console.log(o);
             return o[0] > 0;
+          });
+        },
+        formatCurrentUsers() {
+          const $this = this;
+          return _.map($this.currentUsers, (o) => {
+            return _.assign(o, {
+              name: $this.getLastTwoCharacter(o.name),
+            });
           })
         },
       },
@@ -744,6 +749,10 @@
         }
       },
       methods: {
+        getLastTwoCharacter(char) {
+          const charLen = char ? char.length : 0;
+          return charLen > 2 ? char.slice(-2) : char;
+        },
         createTextAutoSlide() {
           $('.current-view').liMarquee({
             loop: -1,
@@ -1050,7 +1059,6 @@
           return this.userIconColors[Math.floor(Math.random() * this.userIconColors.length)];
         },
         handleOnlineList(online) {
-          console.log("online change: ", online);
           if (!_.keys(online).length) {
             return;
           }
