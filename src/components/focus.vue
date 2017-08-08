@@ -90,7 +90,7 @@
           const subTitleSize = 12 + 0.01 * this.perVw;
           _.forEach(listData, (value, key) => {
             if ( key < 5 ) {
-              if (value[0] >= 0) {
+              if (value[0] > 0) {
                 category.push(value[1]);
                 focusData.push(value[0]);
               }
@@ -100,121 +100,123 @@
           const total = _.reduce(allData, (sum, n) => {
             return sum + n;
           }, 0)
-          this.chart.setOption({
-            title: {
-              text: '客户关注占比',
-              left: 'center',
-              top: '8%',
-              padding: 0,
-              itemGap: 5,
-              textStyle: {
-                fontWeight: 'normal',
-                fontSize: titleSize,
-                color: '#fff',
+          if (focusData.length > 0) {
+            this.chart.setOption({
+              title: {
+                text: '客户关注占比',
+                left: 'center',
+                top: '8%',
+                padding: 0,
+                itemGap: 5,
+                textStyle: {
+                  fontWeight: 'normal',
+                  fontSize: titleSize,
+                  color: '#fff',
+                },
+                subtext: '看车零部件时长占比',
+                subtextStyle: {
+                  fontWeight: 'normal',
+                  fontSize: subTitleSize,
+                  color: '#7d7f90',
+                  marginTop: -100,
+                },
               },
-              subtext: '看车零部件时长占比',
-              subtextStyle: {
-                fontWeight: 'normal',
-                fontSize: subTitleSize,
-                color: '#7d7f90',
-                marginTop: -100,
-              },
-            },
-            legend: {
-              show: false,
-            },
-            grid: {
-              top: '25%',
-              left: '0%',
-              right: '0%',
-              bottom: '5%',
-              containLabel: true
-            },
-            yAxis: {
-              show: false,
-              type: 'value',
-              boundaryGap: [0, 0.01]
-            },
-            xAxis: {
-              type: 'category',
-              data: category,
-              offset: $this.chart._dom.offsetWidth < 250 ? 15 : 3,
-              splitLine: {
-                show: false
-              },
-              axisLine: {
+              legend: {
                 show: false,
               },
-              axisTick: {
-                show: false
+              grid: {
+                top: '25%',
+                left: '0%',
+                right: '0%',
+                bottom: '5%',
+                containLabel: true
               },
-              axisLabel: {
-                margin: 1 * this.perVw,
-                interval: 0,
-                textStyle: {
-                  fontSize: xAxisSize,
-                  color: '#b8b9c8',
-                  baseline: 'middle',
-                  align: 'center',
+              yAxis: {
+                show: false,
+                type: 'value',
+                boundaryGap: [0, 0.01]
+              },
+              xAxis: {
+                type: 'category',
+                data: category,
+                offset: $this.chart._dom.offsetWidth < 250 ? 15 : 3,
+                splitLine: {
+                  show: false
                 },
-                formatter: function(a) {
-                  if ($this.chart._dom.offsetWidth < 250 && a.length >= 3) {
-                    return $this.half(a);
-                  }
-                  return a;
+                axisLine: {
+                  show: false,
+                },
+                axisTick: {
+                  show: false
+                },
+                axisLabel: {
+                  margin: 1 * this.perVw,
+                  interval: 0,
+                  textStyle: {
+                    fontSize: xAxisSize,
+                    color: '#b8b9c8',
+                    baseline: 'middle',
+                    align: 'center',
+                  },
+                  formatter: function(a) {
+                    if ($this.chart._dom.offsetWidth < 250 && a.length >= 3) {
+                      return $this.half(a);
+                    }
+                    return a;
+                  },
                 },
               },
-            },
-            series: [
-              {
-                name: '用户重点关注',
-                type: 'bar',
-                barWidth: 12,
-                itemStyle: {
-                  normal: {
-                    barBorderRadius: 2,
-                    color: new echarts.graphic.LinearGradient(
-                      0, 0, 1, 0,
-                      [
-                        {offset: 0, color: 'rgb(241, 73, 57)'},
-                        {offset: 1, color: 'rgb(245, 123, 68)'}
-                      ]
-                    )
-                  },
-                  emphasis: {
-                    show: false,
-                  },
-                },
-                label: {
-                  normal: {
-                    show: true,
-                    position: 'top',
-                    formatter: function(a) {
-                      return $this.formatPercent(a.data, total);
+              series: [
+                {
+                  name: '用户重点关注',
+                  type: 'bar',
+                  barWidth: 12,
+                  itemStyle: {
+                    normal: {
+                      barBorderRadius: 2,
+                      color: new echarts.graphic.LinearGradient(
+                        0, 0, 1, 0,
+                        [
+                          {offset: 0, color: 'rgb(241, 73, 57)'},
+                          {offset: 1, color: 'rgb(245, 123, 68)'}
+                        ]
+                      )
                     },
-                    textStyle: {
-                      color: "#fff",
-                      fontSize: valueSize,
-                      fontWeight: 200,
-                    }
-                  },
-                  emphasis: {
-                    show: true,
-                    position: 'top',
-                    formatter: function(a) {
-                      return $this.formatPercent(a.data, total);
+                    emphasis: {
+                      show: false,
                     },
-                    textStyle: {
-                      color: "#fff",
-                      fontSize: valueSize,
-                      fontWeight: 200,
-                    }
                   },
-                },
-                data: focusData
-              }
-            ]
-          })
+                  label: {
+                    normal: {
+                      show: true,
+                      position: 'top',
+                      formatter: function(a) {
+                        return $this.formatPercent(a.data, total);
+                      },
+                      textStyle: {
+                        color: "#fff",
+                        fontSize: valueSize,
+                        fontWeight: 200,
+                      }
+                    },
+                    emphasis: {
+                      show: true,
+                      position: 'top',
+                      formatter: function(a) {
+                        return $this.formatPercent(a.data, total);
+                      },
+                      textStyle: {
+                        color: "#fff",
+                        fontSize: valueSize,
+                        fontWeight: 200,
+                      }
+                    },
+                  },
+                  data: focusData
+                }
+              ]
+            })
+          }
         }
       },
     }

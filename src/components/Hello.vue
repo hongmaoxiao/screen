@@ -274,7 +274,7 @@
       <div class="user-detail" ref="userDetail" v-show="showUserOverview">
         <div class="user-detail-header user-detail-line">
           <div class="user-icon" :style="{background: userDetailHeaderBg}">
-            <span>{{summary.username}}</span>
+            <span>{{lastTwoName}}</span>
           </div>
           <div class="user-username">
             {{summary.username}}
@@ -369,27 +369,32 @@
             </div>
           </div>
           <div class="user-detail-individuation-btm" v-else>
-            <div class="focus-individuation-item" v-if="summary.wheel">
-              <img :src="offlineHub">
-              <span :title="summary.wheel">{{summary.wheel}}</span>
-              <i class="arrow-left-top"></i>
-              <i class="arrow-right-btm"></i>
+            <div class="current-look-individuation" v-if="noKeyIndividuation">
+              暂未关注
             </div>
-            <div class="focus-individuation-item" v-if="summary.glass">
-              <img :src="offlineGlass">
-              <span :title="summary.glass">{{summary.glass}}</span>
-              <i class="arrow-left-top"></i>
-              <i class="arrow-right-btm"></i>
-            </div>
-            <div class="focus-individuation-item" v-if="summary.color">
-              <div class="color-wrapper">
-                <span class="look-color" :style="{background: summary.color.value}">
-                  <i class="look-color-arrow" :style="{background: summary.color.value}"></i>
-                </span>
+            <div class="current-has-look-individuation" v-else>
+              <div class="focus-individuation-item" v-if="summary.wheel">
+                <img :src="offlineHub">
+                <span :title="summary.wheel">{{summary.wheel}}</span>
+                <i class="arrow-left-top"></i>
+                <i class="arrow-right-btm"></i>
               </div>
-              <span :title="'车色-' + summary.color.name">车色-{{summary.color.name}}</span>
-              <i class="arrow-left-top"></i>
-              <i class="arrow-right-btm"></i>
+              <div class="focus-individuation-item" v-if="summary.glass">
+                <img :src="offlineGlass">
+                <span :title="summary.glass">{{summary.glass}}</span>
+                <i class="arrow-left-top"></i>
+                <i class="arrow-right-btm"></i>
+              </div>
+              <div class="focus-individuation-item" v-if="summary.color">
+                <div class="color-wrapper">
+                  <span class="look-color" :style="{background: summary.color.value}">
+                    <i class="look-color-arrow" :style="{background: summary.color.value}"></i>
+                  </span>
+                </div>
+                <span :title="'车色-' + summary.color.name">车色-{{summary.color.name}}</span>
+                <i class="arrow-left-top"></i>
+                <i class="arrow-right-btm"></i>
+              </div>
             </div>
           </div>
         </div>
@@ -412,7 +417,12 @@
             </div>
           </div>
           <div class="focus-part" v-else>
-            <span v-for="focus in summary.focus">{{focus}}</span>
+            <div class="no-focus" v-if="summary.focus.length === 0">
+              暂未关注
+            </div>
+            <div class="has-focus" v-else>
+              <span v-for="focus in summary.focus">{{focus}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -578,7 +588,7 @@
           UserOverviewHeight: 0,
           summary: {
             id: 0,
-            username: null,
+            username: '',
             phone: null,
             lookcar: null,
             intention: null,
@@ -691,8 +701,15 @@
           return this.currentLookBody ? this.currentLookBody : "暂未关注";
         },
         noCurrentLookIndividuation() {
-          console.log("!(this.currentLookWheelhub || this.currentLookGlass || this.currentLookColor.name): ", !(this.currentLookWheelhub || this.currentLookGlass || this.currentLookColor.name))
           return !(this.currentLookWheelhub || this.currentLookGlass || this.currentLookColor.name);
+        },
+        noKeyIndividuation() {
+          return !(this.summary.wheel || this.summary.glass || this.summary.color);
+        },
+        lastTwoName() {
+          const nameLen = this.summary.username ? this.summary.username.length : 0;
+          const userName = this.summary.username;
+          return nameLen > 2 ? userName.slice(-2) : userName;
         },
       },
       watch: {
@@ -1116,7 +1133,7 @@
         },
         fecthUserDetailInfo(user) {
           const $this = this;
-          axios.get(`${this.userDetailUrl}${user.id}`)
+          axios.get(`${this.userDetailUrl}${user.id}?car=${$this.carId}&day=${$this.activeDate}`)
           .then(response => {
             console.log("online: ", response.data.data)
             const parsed = response.data && response.data.data;
@@ -2048,10 +2065,10 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
       .focus-part-title {
         margin-bottom: 5%;
       }
+
       .focus-part {
-        @include flex('row', 'flex-start', 'baseline');
-        flex-wrap: wrap;
-        @include wh(100%, auto);
+        @include flex('row', 'center', 'center');
+        @include wh(100%, 50%);
 
         .focus-now-box {
           position: relative;
@@ -2084,7 +2101,20 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             }
           }
         }
-        & > span {
+
+        .no-focus {
+          @include flex('row', 'center', 'center');
+          color: #999;
+          font-size: calc(12px + 0.2vw);
+          @include wh(100%, auto);
+        }
+
+        .has-focus {
+          @include flex('row', 'flex-start', 'baseline');
+          flex-wrap: wrap;
+          @include wh(100%, auto);
+
+          & > span {
             padding: 0.06vw;
             background-color: #37b9fd;
             border-radius: 1px;
@@ -2099,6 +2129,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             line-height: 1.5em;
             font-size: calc(12px + 0.01vw);
           }
+        }
       }
     }
     .focus-title {
@@ -2148,6 +2179,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
     color: #999;
     @include wh(100%, auto);
     @include flex('row', 'center', 'center');
+    font-size: calc(12px + 0.2vw);
   }
 
   .current-has-look-individuation {
