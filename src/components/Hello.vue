@@ -326,7 +326,7 @@
               </div>
               <div class="phone-wrapper-num phone-wrapper-box">
                 <span class="phone-wrapper-placeholder"></span>
-                <span :class="'focus-car' + summary.id" class="phone-count focus-car" :title="summary.lookcar">{{summary.lookcar}}</span>
+                <span :class="'focus-car' + summary.id" class="phone-count focus-car" :title="lookcar">{{lookcar}}</span>
               </div>
             </div>
             <div class="phone-left-top phone-wrapper-inner phone-wrapper-inner-btm">
@@ -728,6 +728,9 @@
               name: $this.getLastTwoCharacter(o.name),
             });
           })
+        },
+        lookcar() {
+          return this.summary.lookcar ? this.summary.lookcar : '暂未关注';
         },
       },
       watch: {
@@ -2217,7 +2220,7 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
 
   .no-carfocus-title {
     position: absolute;
-    top: 0.3vw;
+    top: 0.1vw;
     text-align: center;
     font-size: calc(12px + 0.2vw);
     color: #fff;
