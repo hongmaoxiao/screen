@@ -537,29 +537,35 @@
               let url = window.location.href;
               const carRge = new RegExp($this.carRegExp);
               const timeRge = new RegExp($this.timeRegExp);
+              url = url.replace(timeRge, `t=${+new Date()}`);
               if (carRge.test(url)) {
-                if ($this.urlTimeParse(url)) {
-                  url = url.replace(timeRge, `t=${+new Date()}`);
-                  window.location.href = url.replace(carRge, `car=${id}`);
-                } else {
-                  window.location.href = url.replace(carRge, `car=${id}&t=${+new Date()}`);
-                }
+                window.location.href = url.replace(carRge, `car=${id}`);
               } else {
-                if (!$this.urlTimeParse(url)) {
-                  if (url.indexOf("?") > -1) {
-                    window.location.href = `${url}&car=${id}&t=${+new Date()}`;
-                  } else {
-                    window.location.href = `${url}?car=${id}&t=${+new Date()}`;
-                  }
-                } else {
-                  url = url.replace(timeRge, `t=${+new Date()}`);
-                  if (url.indexOf("?") > -1) {
-                    window.location.href = `${url}&car=${id}`;
-                  } else {
-                    window.location.href = `${url}?car=${id}`;
-                  }
-                }
+                window.location.href = `${url}&car=${id}`;
               }
+              // if (carRge.test(url)) {
+              //   if ($this.urlTimeRegTest(url)) {
+              //     url = url.replace(timeRge, `t=${+new Date()}`);
+              //     window.location.href = url.replace(carRge, `car=${id}`);
+              //   } else {
+              //     window.location.href = url.replace(carRge, `car=${id}&t=${+new Date()}`);
+              //   }
+              // } else {
+              //   if (!$this.urlTimeRegTest(url)) {
+              //     if (url.indexOf("?") > -1) {
+              //       window.location.href = `${url}&car=${id}&t=${+new Date()}`;
+              //     } else {
+              //       window.location.href = `${url}?car=${id}&t=${+new Date()}`;
+              //     }
+              //   } else {
+              //     url = url.replace(timeRge, `t=${+new Date()}`);
+              //     if (url.indexOf("?") > -1) {
+              //       window.location.href = `${url}&car=${id}`;
+              //     } else {
+              //       window.location.href = `${url}?car=${id}`;
+              //     }
+              //   }
+              // }
             }
           },
           dateSwiperOption: {
@@ -577,29 +583,35 @@
               let url = window.location.href;
               const dayRe = new RegExp($this.dayRegExp);
               const timeRge = new RegExp($this.timeRegExp);
+              url = url.replace(timeRge, `t=${+new Date()}`);
               if (dayRe.test(url)) {
-                if ($this.urlTimeParse(url)) {
-                  url = url.replace(timeRge, `t=${+new Date()}`);
-                  window.location.href = url.replace(dayRe, `day=${activeDate}`);
-                } else {
-                  window.location.href = url.replace(dayRe, `day=${activeDate}&t=${+new Date()}`);
-                }
+                window.location.href = url.replace(dayRe, `day=${activeDate}`);
               } else {
-                if (!$this.urlTimeParse(url)) {
-                  if (url.indexOf("?") > -1) {
-                    window.location.href = `${url}&day=${activeDate}&t=${+new Date()}`;
-                  } else {
-                    window.location.href = `${url}?day=${activeDate}&t=${+new Date()}`;
-                  }
-                } else {
-                  url = url.replace(timeRge, `t=${+new Date()}`);
-                  if (url.indexOf("?") > -1) {
-                    window.location.href = `${url}&day=${activeDate}`;
-                  } else {
-                    window.location.href = `${url}?day=${activeDate}`;
-                  }
-                }
+                window.location.href = `${url}&day=${activeDate}`;
               }
+              // if (dayRe.test(url)) {
+              //   if ($this.urlTimeRegTest(url)) {
+              //     url = url.replace(timeRge, `t=${+new Date()}`);
+              //     window.location.href = url.replace(dayRe, `day=${activeDate}`);
+              //   } else {
+              //     window.location.href = url.replace(dayRe, `day=${activeDate}&t=${+new Date()}`);
+              //   }
+              // } else {
+              //   if (!$this.urlTimeRegTest(url)) {
+              //     if (url.indexOf("?") > -1) {
+              //       window.location.href = `${url}&day=${activeDate}&t=${+new Date()}`;
+              //     } else {
+              //       window.location.href = `${url}?day=${activeDate}&t=${+new Date()}`;
+              //     }
+              //   } else {
+              //     url = url.replace(timeRge, `t=${+new Date()}`);
+              //     if (url.indexOf("?") > -1) {
+              //       window.location.href = `${url}&day=${activeDate}`;
+              //     } else {
+              //       window.location.href = `${url}?day=${activeDate}`;
+              //     }
+              //   }
+              // }
             }
           },
           swiperOption: {
@@ -743,11 +755,12 @@
         },
         formatCurrentUsers() {
           const $this = this;
-          return _.map($this.currentUsers, (o) => {
-            return _.assign(o, {
-              name: $this.getLastTwoCharacter(o.name),
-            });
-          })
+          return _.sortBy(
+            _.map($this.currentUsers, (o) => {
+              return _.assign(o, {
+                name: $this.getLastTwoCharacter(o.name),
+              });
+            }), [(o) => this.sortByOnline(o.online)]);
         },
         lookcar() {
           return this.summary.lookcar ? this.summary.lookcar : '暂未关注';
@@ -773,8 +786,12 @@
         }
       },
       methods: {
+        sortByOnline(a, b) {
+          return !!b - !!a;
+        },
         fetchDatas() {
           const $this = this;
+          this.redirect(window.location.href);
           this.getUrlHash();
           this.fecthOnlineDatas();
           this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
@@ -785,7 +802,12 @@
           this.handleNotHideDetail();
           this.createTextAutoSlide();
         },
-        urlTimeParse(url) {
+        redirect(url) {
+          if (!this.urlTimeRegTest(url)) {
+            window.location.href = `${url}?t=${+new Date()}`;
+          };
+        },
+        urlTimeRegTest(url) {
           const timeReg = new RegExp(this.timeRegExp);
           const timeMatch = url.match(timeReg);
           return timeReg.test(url);
@@ -887,7 +909,7 @@
         },
         setCarSwiperActive() {
           const carActiveIndex = _.findIndex(this.carList, (o) => {
-            return o.car_id ===  this.carId;
+            return +o.car_id ===  +this.carId;
           })
           if (this.currentSlideCarIndex === carActiveIndex) {
             return;
