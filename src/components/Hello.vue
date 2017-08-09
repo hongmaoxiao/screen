@@ -536,14 +536,28 @@
               const id = $this.carList[swiper.activeIndex].car_id;
               let url = window.location.href;
               const carRge = new RegExp($this.carRegExp);
-              const carMatch = url.match(carRge);
-              if (carMatch) {
-                window.location.href = url.replace(carRge, `car=${id}`);
-              } else {
-                if (url.indexOf("?") > -1) {
-                  window.location.href = `${url}&car=${id}`;
+              const timeRge = new RegExp($this.timeRegExp);
+              if (carRge.test(url)) {
+                if ($this.urlTimeParse(url)) {
+                  url = url.replace(timeRge, `t=${+new Date()}`);
+                  window.location.href = url.replace(carRge, `car=${id}`);
                 } else {
-                  window.location.href = `${url}?car=${id}`;
+                  window.location.href = url.replace(carRge, `car=${id}&t=${+new Date()}`);
+                }
+              } else {
+                if (!$this.urlTimeParse(url)) {
+                  if (url.indexOf("?") > -1) {
+                    window.location.href = `${url}&car=${id}&t=${+new Date()}`;
+                  } else {
+                    window.location.href = `${url}?car=${id}&t=${+new Date()}`;
+                  }
+                } else {
+                  url = url.replace(timeRge, `t=${+new Date()}`);
+                  if (url.indexOf("?") > -1) {
+                    window.location.href = `${url}&car=${id}`;
+                  } else {
+                    window.location.href = `${url}?car=${id}`;
+                  }
                 }
               }
             }
@@ -561,15 +575,29 @@
             onSlideChangeEnd(swiper) {
               const activeDate = $this.originDateList[swiper.activeIndex];
               let url = window.location.href;
-              const dayRe = new RegExp($this.dayRegRxp);
-              const dayMatch = url.match(dayRe);
-              if (dayMatch) {
-                window.location.href = url.replace(dayRe, `day=${activeDate}`);
-              } else {
-                if (url.indexOf("?") > -1) {
-                  window.location.href = `${url}&day=${activeDate}`;
+              const dayRe = new RegExp($this.dayRegExp);
+              const timeRge = new RegExp($this.timeRegExp);
+              if (dayRe.test(url)) {
+                if ($this.urlTimeParse(url)) {
+                  url = url.replace(timeRge, `t=${+new Date()}`);
+                  window.location.href = url.replace(dayRe, `day=${activeDate}`);
                 } else {
-                  window.location.href = `${url}?day=${activeDate}`;
+                  window.location.href = url.replace(dayRe, `day=${activeDate}&t=${+new Date()}`);
+                }
+              } else {
+                if (!$this.urlTimeParse(url)) {
+                  if (url.indexOf("?") > -1) {
+                    window.location.href = `${url}&day=${activeDate}&t=${+new Date()}`;
+                  } else {
+                    window.location.href = `${url}?day=${activeDate}&t=${+new Date()}`;
+                  }
+                } else {
+                  url = url.replace(timeRge, `t=${+new Date()}`);
+                  if (url.indexOf("?") > -1) {
+                    window.location.href = `${url}&day=${activeDate}`;
+                  } else {
+                    window.location.href = `${url}?day=${activeDate}`;
+                  }
                 }
               }
             }
@@ -633,7 +661,8 @@
           purchaseList: [],
           carfoucus: [],
           carRegExp: 'car=(\\d+)',
-          dayRegRxp: 'day=(\\w+-\\w+-\\w+)',
+          dayRegExp: 'day=(\\w+-\\w+-\\w+)',
+          timeRegExp: 't=(\\d+)',
           basicUrl: '/dealer/factory/overview/',
           focusUrl: '/dealer/users/experience/report/',
           onlineUrl: '/dealer/screen/online/users',
@@ -743,7 +772,7 @@
         currentUsers(val) {
           this.swiperGroup = val;
         },
-        '$route': 'getUrlHash',
+        // '$route': 'getUrlHash',
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
@@ -753,6 +782,14 @@
         }
       },
       methods: {
+        urlTimeParse(url) {
+          const timeReg = new RegExp(this.timeRegExp);
+          const timeMatch = url.match(timeReg);
+          console.log("url:", url);
+          console.log("timeReg:", timeReg);
+          console.log("timeMatch:", timeMatch);
+          return timeReg.test(url);
+        },
         getLastTwoCharacter(char) {
           const charLen = char ? char.length : 0;
           return charLen > 2 ? char.slice(-2) : char;
@@ -766,7 +803,7 @@
         getUrlHash() {
           const url = window.location.href;
           const carMatch = url.match(new RegExp(this.carRegExp));
-          const dayMatch = url.match(new RegExp(this.dayRegRxp));
+          const dayMatch = url.match(new RegExp(this.dayRegExp));
           this.carId = carMatch ? parseInt(carMatch[1]) : this.getCarId();
           if (this.ifIsToday(this.activeDate)) {
             this.createfocusWs(this.carId);
