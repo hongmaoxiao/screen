@@ -679,16 +679,7 @@
         }
       },
       mounted() {
-        const $this = this;
-        this.getUrlHash();
-        this.fecthOnlineDatas();
-        this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
-        this.windowHeight = document.body.clientHeight;
-        this.windowWidth = document.body.clientWidth;
-        window.addEventListener('resize', this.handleResize);
-        window.addEventListener('click', this.handleShowOrHideDetail);
-        this.handleNotHideDetail();
-        this.createTextAutoSlide();
+        this.fetchDatas();
       },
       computed: {
         communicate() {
@@ -772,7 +763,7 @@
         currentUsers(val) {
           this.swiperGroup = val;
         },
-        // '$route': 'getUrlHash',
+        '$route': 'fetchDatas',
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
@@ -782,12 +773,21 @@
         }
       },
       methods: {
+        fetchDatas() {
+          const $this = this;
+          this.getUrlHash();
+          this.fecthOnlineDatas();
+          this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
+          this.windowHeight = document.body.clientHeight;
+          this.windowWidth = document.body.clientWidth;
+          window.addEventListener('resize', this.handleResize);
+          window.addEventListener('click', this.handleShowOrHideDetail);
+          this.handleNotHideDetail();
+          this.createTextAutoSlide();
+        },
         urlTimeParse(url) {
           const timeReg = new RegExp(this.timeRegExp);
           const timeMatch = url.match(timeReg);
-          console.log("url:", url);
-          console.log("timeReg:", timeReg);
-          console.log("timeMatch:", timeMatch);
           return timeReg.test(url);
         },
         getLastTwoCharacter(char) {
