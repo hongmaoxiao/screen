@@ -743,6 +743,7 @@
         currentUsers(val) {
           this.swiperGroup = val;
         },
+        '$route': 'getUrlHash',
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
