@@ -126,7 +126,7 @@
                   </div>
                   <div class="core-header-title">
                     <p class="main-title">颜色偏好统计</p>
-                    <p class="sub-title">看车颜色时长占比</p>
+                    <p class="sub-title">看车颜色人数占比</p>
                   </div>
                 </div>
                 <div class="core-content color-purchase-content core-color">

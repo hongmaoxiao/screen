@@ -9,6 +9,7 @@
     // 引入图
     require('echarts/lib/chart/scatter');
     require('echarts/lib/chart/effectScatter');
+    // require('echarts/lib/component/tooltip');
     export default {
       name: 'focusScatterChart',
       props: {
@@ -46,23 +47,23 @@
           chart: null,
           positionMap: {
             '仪表盘': {
-              x: 100,
+              x: 110,
               y: 300,
             },
             '左前门': {
-              x: 40,
+              x: 50,
               y: 220,
             },
             '空调区': {
-              x: 40,
-              y: 300,
+              x: 140,
+              y: 280,
             },
             '副驾驶位': {
-              x: 180,
-              y: 230,
+              x: 168,
+              y: 200,
             },
             '发动机盖': {
-              x: 200,
+              x: 140,
               y: 400,
             },
             '右后门': {
@@ -82,8 +83,8 @@
               y: 435,
             },
             '轮毂': {
-              x: 40,
-              y: 380,
+              x: 50,
+              y: 320,
             },
             '后备箱': {
               x: 140,
@@ -94,16 +95,16 @@
               y: 240,
             },
             '车窗': {
-              x: 170,
-              y: 220,
+              x: 220,
+              y: 200,
             },
             '后保险杠': {
               x: 140,
-              y: 30,
+              y: 15,
             },
             '后座': {
-              x: 180,
-              y: 130,
+              x: 168,
+              y: 142,
             },
             '天窗': {
               x: 140,
@@ -114,8 +115,8 @@
               y: 300,
             },
             '手扶箱': {
-              x: 320,
-              y: 250,
+              x: 140,
+              y: 210,
             },
             '前大灯': {
               x: 220,
@@ -126,8 +127,8 @@
               y: 25,
             },
             '方向盘': {
-              x: 100,
-              y: 270,
+              x: 120,
+              y: 250,
             },
             '后排气': {
               x: 220,
@@ -142,11 +143,11 @@
               y: 250,
             },
             '18寸轮毂': {
-              x: 240,
+              x: 230,
               y: 90,
             },
             '19寸轮毂': {
-              x: 40,
+              x: 50,
               y: 90,
             },
           }
@@ -198,7 +199,7 @@
           let topFocusScatterData = [];
           const max = listData[0] ? listData[0][0] : 100;
           topFocusScatterData = this.mapTenLook(_.uniq(lastTenLook), max);
-          const labelSize = 12 + 0.25 * this.perVw;
+          const labelSize = 12 + 0.15 * this.perVw;
           _.forEach(listData, (value, key) => {
             const pos = $this.positionMap[value[1]];
             if (pos && pos.x && pos.y) {
@@ -291,7 +292,7 @@
                     formatter: function(res) {
                       return res.data[3];
                     },
-                    offset: [0, -20],
+                    offset: [0, -10],
                     textStyle: {
                       color: "#fff",
                       fontSize: labelSize,
