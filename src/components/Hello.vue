@@ -186,11 +186,11 @@
                       {{item.part_name}}
                     </p>
                     <p class="individuation-overview-looktime individuation-num">
-                      <span>{{item.look_times}}</span>
+                      <span>{{item.time}}</span>
                       <span title="观看总时长(分钟)">观看总时长(分钟)</span>
                     </p>
                     <p class="individuation-overview-lookcount individuation-num">
-                      <span>{{item.time}}</span>
+                      <span>{{item.look_times}}</span>
                       <span title="观看总次数">观看总次数</span>
                     </p>
                   </div>
@@ -679,8 +679,7 @@
           focusUrl: '/dealer/users/experience/report/',
           onlineUrl: '/dealer/screen/online/users',
           userDetailUrl: '/dealer/users/online/',
-          wsBaseUrl: 'wss://dms.autoforce.net/ws',
-          focusWsUrl: '/dealer/screen/dynamic/focus',
+          wsBaseUrl: '',
           focusWs: null,
           onlineCount: 0,
           offlineCount: 0,
@@ -786,12 +785,21 @@
         }
       },
       methods: {
+        getWsUrl() {
+            let host = location.hostname;
+            if (location.port.length) {
+              host = `${host}:${location.port}`;
+            }
+            const prot = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            return `${prot}//${host}/ws/dealer/screen/dynamic/focus`;
+        },
         sortByOnline(a, b) {
           return !!b - !!a;
         },
         fetchDatas() {
           const $this = this;
           this.redirect(window.location.href);
+          this.wsBaseUrl = this.getWsUrl();
           this.getUrlHash();
           this.fecthOnlineDatas();
           this.scatterWidth = this.$refs.scatter.offsetHeight * 0.98 * 487 / 973  + 30 + 'px';
@@ -854,7 +862,7 @@
             return;
           }
 
-          this.focusWs = new WebSocket(`${this.wsBaseUrl}${this.focusWsUrl}?car_id=${carid}`);
+          this.focusWs = new WebSocket(`${this.wsBaseUrl}?car_id=${carid}`);
 
           this.focusWs.onmessage = (msg) => {
             console.log("focusWsMsg: ", msg.data);
@@ -1011,7 +1019,7 @@
           });
         },
         assignBasicDatas(parsed) {
-          // console.log("parsed: ", parsed);
+          console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;
