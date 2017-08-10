@@ -775,6 +775,9 @@
         currentUsers(val) {
           this.swiperGroup = val;
         },
+        scatterWidth(val) {
+          this.scatterWidth = val;
+        },
         '$route': 'fetchDatas',
       },
       beforeDestroy() {
@@ -1019,7 +1022,6 @@
           });
         },
         assignBasicDatas(parsed) {
-          console.log("parsed: ", parsed);
           if (parsed) {
             this.averageLookTime = parsed.avg_look_time;
             this.wrate = parsed.wrate;

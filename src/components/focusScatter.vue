@@ -169,6 +169,14 @@
         perVw(newVal) {
           this.perVw = newVal;
         },
+        width(newWidth) {
+          this.width = newWidth;
+          if (this.chart) {
+            this.chart.resize({
+              width: newWidth,
+            })
+          }
+        }
       },
       beforeDestroy() {
         window.removeEventListener('resize', this.handleResize);
