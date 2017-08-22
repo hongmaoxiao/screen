@@ -142,7 +142,7 @@
 
           split = this.getGap(min, max);
           const cut = _.findIndex(timeArr, (o) => {
-            return o < 3;
+            return o > 0 && o < 3;
           })
           timeArrLen = timeArr.length;
           userCategory = this.getCategoryDatas({
