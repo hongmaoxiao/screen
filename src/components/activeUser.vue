@@ -7,6 +7,8 @@
     const echarts = require('echarts/lib/echarts');
     // 引入图
     require('echarts/lib/chart/line');
+    require('echarts/lib/component/visualMap');
+    require('echarts/lib/component/tooltip');
     export default {
       name: 'activeUserChart',
       props: {
@@ -79,29 +81,95 @@
           }
           return split;
         },
+        getCategoryDatas(datas) {
+          const $this = this;
+          let res = [];
+          for (let i = 0, len = datas.timeArr.length; i < len; i++) {
+            if (i < datas.cut) {
+              res.push({
+                value: $this.parseCategoryTime(datas.timeArr[i]),
+                textStyle: {
+                  color: datas.normalColor
+                }
+              })
+            } else if (i === datas.cut) {
+              res.push({
+                value: `${$this.parseCategoryTime(datas.timeArr[i])}\n${$this.parseSplitTime(new Date())}`,
+                textStyle: {
+                  color: datas.activeColor
+                }
+              })
+            } else {
+              res.push({
+                value: $this.parseCategoryTime(datas.timeArr[i]),
+                textStyle: {
+                  color: datas.activeColor
+                }
+              })
+            }
+          }
+
+          return res;
+        },
+        parseCategoryTime(time) {
+          return `${time}:00`;
+        },
+        parseSplitTime(val) {
+          const date = new Date(val);
+          const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+          const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+          return `${month}-${day}`
+        },
         setActiveUser(listData) {
+          const normalColor = '#7D7F90';
+          const activeColor = '#37CEFD';
           let userDatas = [];
           let userCategory = [];
+          let timeArr = [];
+          let timeArrLen;
           let max = 0;
           let min = 0;
           let split = 5;
           const nameSize = 12 + 0.01 * this.perVw;
           _.forEach(listData, function(userObj) {
             _.forEach(userObj, function(user, time) {
-              userCategory.push(time + ":00");
+              timeArr.push(+time);
               userDatas.push(user);
             })
           });
           min = _.min(userDatas);
           max = _.max(userDatas);
+
           split = this.getGap(min, max);
+          const cut = _.findIndex(timeArr, (o) => {
+            return o < 3;
+          })
+          timeArrLen = timeArr.length;
+          userCategory = this.getCategoryDatas({
+            timeArr,
+            cut,
+            normalColor,
+            activeColor,
+          });
           this.chart.setOption({
-              color: ['#37b9fd'],
               grid: {
                 left: '2%',
                 right: '2%',
                 bottom: '5%',
                 containLabel: true
+              },
+              tooltip: {
+                show: true,
+                trigger: 'item',
+                position: 'top',
+                backgroundColor: 'transparent',
+                borderColor: 'transparent',
+                formatter: function(a) {
+                  return `${a.value}人`;
+                },
+                textStyle: {
+                  color: '#fff',
+                }
               },
               xAxis: [
                 {
@@ -158,33 +226,39 @@
                   }
                 },
               }],
+              visualMap: {
+                show: false,
+                dimension: 0,
+                pieces: [{
+                  lt: cut,
+                  color: normalColor
+                }, {
+                  gte: cut,
+                  lte: timeArrLen,
+                  color: activeColor
+                }]
+              },
               series: [
                 {
                   name:'活跃用户',
                   type:'line',
                   smooth: true,
                   symbol: 'circle',
-                  symbolSize: 5,
+                  symbolSize: 10,
                   showSymbol: true,
                   lineStyle: {
                     normal: {
-                      color: '#37b9fd',
                       width: 3,
                     },
                     emphasis: {
-                      color: '#37b9fd',
                       width: 3,
                     },
                   },
                   itemStyle: {
                     normal: {
-                      color: '#37b9fd',
-                      borderColor: 'rgba(55, 185, 253, 0.2)',
                       borderWidth: 12
                     },
                     emphasis: {
-                      color: '#37b9fd',
-                      borderColor: 'rgba(55, 185, 253, 0.2)',
                       borderWidth: 12
                     },
                   },
