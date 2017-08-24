@@ -105,7 +105,7 @@
               title: {
                 text: '客户关注占比',
                 left: 'center',
-                top: '8%',
+                top: '5%',
                 padding: 0,
                 itemGap: 5,
                 textStyle: {
@@ -125,11 +125,11 @@
                 show: false,
               },
               grid: {
-                top: '25%',
-                left: '5%',
-                right: '5%',
-                bottom: '15%',
-                containLabel: false
+                top: '30%',
+                left: '-8%',
+                right: '0%',
+                bottom: '5%',
+                containLabel: true
               },
               yAxis: {
                 show: false,
