@@ -126,10 +126,10 @@
               },
               grid: {
                 top: '25%',
-                left: '0%',
-                right: '0%',
-                bottom: '5%',
-                containLabel: true
+                left: '5%',
+                right: '5%',
+                bottom: '15%',
+                containLabel: false
               },
               yAxis: {
                 show: false,
@@ -139,15 +139,16 @@
               xAxis: {
                 type: 'category',
                 data: category,
-                offset: $this.chart._dom.offsetWidth < 250 ? 15 : 3,
+                nameLocation: 'start',
+                offset: $this.chart._dom.offsetWidth < 250 ? 8 : 3,
                 splitLine: {
-                  show: false
+                  show: false,
                 },
                 axisLine: {
                   show: false,
                 },
                 axisTick: {
-                  show: false
+                  show: false,
                 },
                 axisLabel: {
                   margin: 1 * this.perVw,
