@@ -158,7 +158,7 @@
                 </div>
               </div>
               <div class="core-content core-content-btm">
-                <active-user :perVw="perVw" :listData="activeUser" height='100%' width='100%' />
+                <active-user :perVw="perVw" :isToday="isToday" :listData="activeUser" height='100%' width='100%' />
               </div>
             </div>
           </div>
@@ -764,6 +764,9 @@
         lookcar() {
           return this.summary.lookcar ? this.summary.lookcar : '暂未关注';
         },
+        isToday() {
+          return this.ifIsToday(this.activeDate);
+        }
       },
       watch: {
         windowHeight(val) {
@@ -789,12 +792,15 @@
       },
       methods: {
         getWsUrl() {
-            let host = location.hostname;
-            if (location.port.length) {
-              host = `${host}:${location.port}`;
-            }
-            const prot = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            return `${prot}//${host}/ws/dealer/screen/dynamic/focus`;
+          if (process.env.NODE_ENV === 'development') {
+            return 'wss://dms.autoforce.net/ws/dealer/screen/dynamic/focus';
+          }
+          let host = location.hostname;
+          if (location.port.length) {
+            host = `${host}:${location.port}`;
+          }
+          const prot = location.protocol === 'https:' ? 'wss:' : 'ws:';
+          return `${prot}//${host}/ws/dealer/screen/dynamic/focus`;
         },
         sortByOnline(a, b) {
           return !!b - !!a;
@@ -838,7 +844,7 @@
           const carMatch = url.match(new RegExp(this.carRegExp));
           const dayMatch = url.match(new RegExp(this.dayRegExp));
           this.carId = carMatch ? parseInt(carMatch[1]) : this.getCarId();
-          if (this.ifIsToday(this.activeDate)) {
+          if (this.isToday) {
             this.createfocusWs(this.carId);
           }
           this.activeDate = dayMatch ? dayMatch[1] : this.parseSelectDay(new Date());
@@ -869,7 +875,7 @@
 
           this.focusWs.onmessage = (msg) => {
             console.log("focusWsMsg: ", msg.data);
-            if (this.ifIsToday(this.activeDate)) {
+            if (this.isToday) {
               if (msg.data) {
                 const data = JSON.parse(msg.data);
                 if (data.screen_all_look) {
@@ -1041,7 +1047,7 @@
           }
         },
         handleCurrentOnlineUsers(users) {
-          if (this.ifIsToday(this.activeDate)) {
+          if (this.isToday) {
             this.currentOnlineUsers = users;
           } else {
             this.currentOnlineUsers = 0;

@@ -1,5 +1,12 @@
 <template>
-    <div :class="className" :perVw="perVw" :listData="listData" :id="id" :style="{height: height, width: width}"></div>
+    <div
+      :class="className"
+      :perVw="perVw"
+      :listData="listData"
+      :id="id"
+      :style="{height: height, width: width}"
+      :isToday="isToday"
+      ></div>
 </template>
 <script>
     import _ from 'lodash';
@@ -35,6 +42,10 @@
         perVw: {
           type: Number,
           require: true
+        },
+        isToday: {
+          type: Boolean,
+          require: true,
         }
       },
       data() {
@@ -130,6 +141,7 @@
           let max = 0;
           let min = 0;
           let split = 5;
+          let cut = -1;
           const nameSize = 12 + 0.01 * this.perVw;
           _.forEach(listData, function(userObj) {
             _.forEach(userObj, function(user, time) {
@@ -141,11 +153,11 @@
           max = _.max(userDatas);
 
           split = this.getGap(min, max);
-          const cut = _.findIndex(timeArr, (o) => {
-            console.log("ooo: ", o);
-            return o >= 0 && o < 3;
-          })
-          console.log("cut: ", cut);
+          if (this.isToday) {
+            cut = _.findIndex(timeArr, (o) => {
+              return o >= 0 && o < 3;
+            })
+          }
           timeArrLen = timeArr.length;
           userCategory = this.getCategoryDatas({
             timeArr,
