@@ -29,7 +29,8 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/dealer': {
-        target: 'https://dms.autoforce.net',
+        // target: 'https://dms.autoforce.net',
+        target: 'http://localhost:3000',
         changeOrigin: true
       }
     },

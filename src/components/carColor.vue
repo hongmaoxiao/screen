@@ -47,8 +47,10 @@
         };
       },
       watch: {
-        listData(newList) {
-          this.setCarPreference(newList);
+        listData(newList, oldList) {
+          if (!_.isEqual(newList, oldList)) {
+            this.setCarPreference(newList);
+          }
         },
         perVw(newVal) {
           this.perVw = newVal;

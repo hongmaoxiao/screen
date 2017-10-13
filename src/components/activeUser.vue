@@ -54,8 +54,10 @@
         };
       },
       watch: {
-        listData(newList) {
-          this.setActiveUser(newList);
+        listData(newList, oldList) {
+          if (!_.isEqual(newList, oldList)) {
+            this.setActiveUser(newList);
+          }
         },
         perVw(newVal) {
           this.perVw = newVal;
@@ -93,34 +95,55 @@
           return split;
         },
         getCategoryDatas(datas) {
+          console.log("mmmm: ", datas);
           const $this = this;
-          let res = [];
-          for (let i = 0, len = datas.timeArr.length; i < len; i++) {
+          return _.map(datas.timeArr, function(o, i) {
             if (i < datas.cut) {
-              res.push({
-                value: $this.parseCategoryTime(datas.timeArr[i]),
+              return {
+                value: $this.parseCategoryTime(o),
                 textStyle: {
                   color: datas.normalColor
                 }
-              })
+              }
             } else if (i === datas.cut) {
-              res.push({
+              return {
                 value: `${$this.parseCategoryTime(datas.timeArr[i])}\n${$this.parseSplitTime(new Date())}`,
                 textStyle: {
                   color: datas.activeColor
                 }
-              })
+              }
             } else {
-              res.push({
-                value: $this.parseCategoryTime(datas.timeArr[i]),
+              return {
+                value: $this.parseCategoryTime(o),
                 textStyle: {
-                  color: datas.activeColor
+                  color: datas.normalColor
                 }
-              })
+              }
             }
+          });
+        },
+        getvisualMap(datas) {
+          if (datas.isToday) {
+            return {
+              type: 'piecewise',
+              show: false,
+              dimension: 0,
+              pieces: [{
+                lt: datas.cut,
+                color: datas.normalColor
+              }, {
+                gte: datas.cut,
+                lte: datas.timeArrLen,
+                color: datas.activeColor
+              }]
+            };
           }
-
-          return res;
+          return {
+            type: 'continuous',
+            show: false,
+            dimension: 0,
+            color: [datas.normalColor],
+          };
         },
         parseCategoryTime(time) {
           return `${time}:00`;
@@ -142,6 +165,7 @@
           let min = 0;
           let split = 5;
           let cut = -1;
+          let visualMap = null;
           const nameSize = 12 + 0.01 * this.perVw;
           _.forEach(listData, function(userObj) {
             _.forEach(userObj, function(user, time) {
@@ -164,6 +188,13 @@
             cut,
             normalColor,
             activeColor,
+          });
+          visualMap = this.getvisualMap({
+            timeArrLen,
+            cut,
+            normalColor,
+            activeColor,
+            isToday: this.isToday,
           });
           this.chart.setOption({
               grid: {
@@ -240,18 +271,7 @@
                   }
                 },
               }],
-              visualMap: {
-                show: false,
-                dimension: 0,
-                pieces: [{
-                  lt: cut,
-                  color: normalColor
-                }, {
-                  gte: cut,
-                  lte: timeArrLen,
-                  color: activeColor
-                }]
-              },
+              visualMap,
               series: [
                 {
                   name:'活跃用户',

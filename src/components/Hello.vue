@@ -14,24 +14,24 @@
               {{scrollText}}
             </div>
             <div class="current-lookcar scroll-style scroll-swiper">
-              <swiper :options="carSwiperOption" ref="carSwiper">
+              <swiper :options="carSwiperOption" ref="carSwiper" v-show="carList.length > 0">
                 <swiper-slide
                   v-for="car in carList"
                   key="car.car_id"
                 >
-                  <span class="slide-inner-text">{{ car.carname }}</span>
+                  <span class="slide-inner-text">{{ car.carname ? car.carname : '' }}</span>
                 </swiper-slide>
                 <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
                 <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
               </swiper>
             </div>
             <div class="current-day scroll-style scroll-swiper">
-              <swiper :options="dateSwiperOption" ref="dateSwiper">
+              <swiper :options="dateSwiperOption" ref="dateSwiper" v-show="dateList.length > 0">
                 <swiper-slide
                   v-for="date in dateList"
                   key="date"
                 >
-                  <span class="slide-inner-text">{{ date }}</span>
+                  <span class="slide-inner-text">{{ date ? date : '' }}</span>
                 </swiper-slide>
                 <div class="swiper-button-prev swiper-button-red" slot="button-prev"></div>
                 <div class="swiper-button-next swiper-button-red" slot="button-next"></div>
@@ -178,8 +178,7 @@
                   class="individuation-item"
                   v-for="(item, key) in individuationList"
                 >
-                  <div class="individuation-img">
-                    <img :src="item.src">
+                  <div class="individuation-img" :style="{backgroundImage: 'url(' + item.src + ')'}">
                   </div>
                   <div class="individuation-overview">
                     <p class="individuation-overview-title">
@@ -471,7 +470,6 @@
     import popEye from './pop-eye.svg';
     import popCarbg from './pop-carbg.svg';
 
-
     axios.defaults.headers.common['Content-type'] = "application/json";
 
     export default {
@@ -533,6 +531,7 @@
             prevButton: '.swiper-button-prev',
             spaceBetween: 30,
             onSlideChangeEnd(swiper) {
+              console.log("swiper: ", swiper);
               const id = $this.carList[swiper.activeIndex].car_id;
               let url = window.location.href;
               const carRge = new RegExp($this.carRegExp);
@@ -991,12 +990,15 @@
         },
         fetchBasicDatas() {
           const $this = this;
+          // console.log("url: ", `${this.basicUrl}${this.carId}?day=${this.activeDate}`);
           axios.get(`${this.basicUrl}${this.carId}?day=${this.activeDate}`)
           .then(response => {
             // console.log("response: ", response);
             // console.log("activeDate: ", this.activeDate);
             if (response.status === 200) {
-              $this.assignBasicDatas(response.data);
+              if (Object.keys(response.data).length > 0) {
+                $this.assignBasicDatas(response.data);
+              }
             }
             setTimeout($this.fetchBasicDatas, 5000);
           })
@@ -1038,7 +1040,7 @@
             this.activeUser = parsed.active_user_num.date;
             this.purchaseList = parsed.car_intention;
             this.carfoucus = _.sortBy(parsed.carfoucus, [function(data) {
-              return -data[0];
+              return -data[0] && data[1];
             }]);
             this.carList = parsed.dealer_car;
             this.setCarSwiperActive();
@@ -1618,10 +1620,9 @@ $mainShadows: 0 1px 0 0 rgba(0, 0, 0, 0.3);
             @include wh(40%, 100%);
             @include flex('column', 'center', 'center');
             margin: 0 5% 0 5%;
-
-            & > img {
-              @include wh(100%, auto);
-            }
+            background-size: 100%, 100%;
+            background-repeat: no-repeat;
+            background-position: center;
           }
         }
       }

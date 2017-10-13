@@ -44,8 +44,10 @@
         };
       },
       watch: {
-        listData(newList) {
-          this.setFocus(newList);
+        listData(newList, oldList) {
+          if (!_.isEqual(newList, oldList)) {
+            this.setFocus(newList);
+          }
         },
         perVw(newVal) {
           this.perVw = newVal;

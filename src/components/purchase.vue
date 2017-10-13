@@ -37,8 +37,10 @@
         }
       },
       watch: {
-        listData(newList) {
-          this.setPunnel(newList);
+        listData(newList, oldList) {
+          if (!_.isEqual(newList, oldList)) {
+            this.setPunnel(newList);
+          }
         },
         perVw(newVal) {
           this.perVw = newVal;

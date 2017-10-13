@@ -158,8 +158,7 @@
       },
       watch: {
         listData(newList, oldList) {
-          const diff = _.differenceBy(newList, oldList, _.isEqual);
-          if (diff.length > 0) {
+          if (!_.isEqual(newList, oldList)) {
             this.render(newList, this.lastTenLook);
           }
         },
